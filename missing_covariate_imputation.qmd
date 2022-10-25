@@ -1,0 +1,192 @@
+---
+title: "Missing covariate imputation"
+execute: 
+  freeze: auto
+---
+
+
+In this example, we use the `nhanes2` data set from the `mice` R-package to illustrate how to do missing covariate imputation in INLA by using a measurement error model.
+
+## Loading packages
+
+```{r}
+#| label: setup
+#| message: false
+library(mice)    # Just used for the nhanes2 data set
+library(INLA)    # INLA modelling
+library(dplyr)   # Data wrangling of the results
+```
+
+## Loading and preparing the data
+
+```{r}
+# Using the nhanes data set found in mice so we can compare to mice:
+data(nhanes2)
+
+n <- nrow(nhanes2)
+
+# Manualy dummy-code age:
+age2 <- ifelse(nhanes2$age == "40-59", 1, 0)
+age3 <- ifelse(nhanes2$age == "60-99", 1, 0)
+
+# Center the response and continuous covariates
+chl <- scale(nhanes2$chl, scale = FALSE)[,1]
+bmi <- scale(nhanes$bmi, scale = FALSE)[,1]
+
+```
+
+## Modelling
+
+We want to fit the model
+
+$$
+chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
+$$
+TODO: Coefficient names are not consistent
+
+### Specifying priors
+
+```{r}
+# Priors for model of interest coefficients
+prior.beta = c(0, 1/1000) # N(0, 10^3)
+
+# Priors for exposure model coefficients
+prior.alpha <- c(0, 1/10000) # N(0, 10^4) 
+
+# Priors for y, measurement error and true x-value precision
+prior.prec.y <- c(0.5, 0.5) # Gamma(0.5, 0.5)
+prior.prec.u_c <- c(0.5, 0.5) # Gamma(0.5, 0.5)
+prior.prec.x <- c(0.5, 0.5) # Gamma(0.5, 0.5) 
+
+# Initial values
+prec.y <- 1
+prec.u_c <- 1
+prec.x <- 1
+```
+
+
+### Setting up the matrices for the joint model
+
+```{r}
+Y <- matrix(NA, 3*n, 3)
+
+Y[1:n, 1] <- chl             # Regression model of interest response
+Y[n+(1:n), 2] <- bmi         # Error model response
+Y[2*n+(1:n), 3] <- rep(0, n) # Exposure model response
+
+beta.0 <- c(rep(1, n), rep(NA, n), rep(NA, n))
+beta.x <- c(1:n, rep(NA, n), rep(NA, n))
+beta.z2 <- c(age2, rep(NA, n), rep(NA, n))
+beta.z3 <- c(age3, rep(NA, n), rep(NA, n))
+
+id.x <- c(rep(NA, n), 1:n, 1:n) 
+weight.x <- c(rep(1, n), rep(1, n), rep(-1, n))
+
+alpha.0 <- c(rep(NA, n), rep(NA, n), rep(1, n))
+alpha.z2 <- c(rep(NA, n), rep(NA, n), age2)
+alpha.z3 <- c(rep(NA, n), rep(NA, n), age3)
+
+dd <- data.frame(Y = Y, 
+                 beta.0 = beta.0,
+                 beta.x = beta.x,
+                 beta.z2 = beta.z2,
+                 beta.z3 = beta.z3,
+                 id.x = id.x,
+                 weight.x = weight.x,
+                 alpha.0 = alpha.0,
+                 alpha.z2 = alpha.z2,
+                 alpha.z3 = alpha.z3)
+```
+
+### INLA formula
+```{r}
+formula = Y ~ - 1 + beta.0 + beta.z2 + beta.z3 + 
+  f(beta.x, copy="id.x", 
+    hyper = list(beta = list(param = prior.beta, fixed=FALSE))) +
+  f(id.x, weight.x, model="iid", values = 1:n, 
+    hyper = list(prec = list(initial = -15, fixed=TRUE))) +
+  alpha.0 + alpha.z2 + alpha.z3
+```
+
+### Scaling of ME precision
+
+Since we are not assuming any measurement error here, we need to "turn off" the error model for the observations where the observation is not missing. 
+```{r}
+# Scale the measurement error precision according to whether observations are missing or not (1 if missing, large if not missing)
+M <- ifelse(is.na(bmi), 1, 10^12)
+Scale <- c(rep(1, n), M, rep(1, n))
+```
+
+### Fitting the model
+```{r}
+model_missing <- inla(formula, data = dd, scale = Scale,
+                     family = c("gaussian", "gaussian", "gaussian"),
+                     control.family = list(
+                       list(hyper = list(prec = list(initial = log(prec.y), 
+                                                     param = prior.prec.y, 
+                                                     fixed = FALSE))),
+                       list(hyper = list(prec = list(initial = log(prec.u_c), 
+                                                     param = prior.prec.u_c, 
+                                                     fixed = TRUE))),
+                       list(hyper = list(prec = list(initial = log(prec.x), 
+                                                     param = prior.prec.x, 
+                                                     fixed = FALSE)))
+                     ),
+                     control.fixed = list(
+                       mean = list(beta.0 = prior.beta[1], 
+                                   beta.z2 = prior.beta[1], 
+                                   beta.z3 = prior.beta[1],  
+                                   alpha.0 = prior.alpha[1], 
+                                   alpha.z2 = prior.alpha[1],
+                                   alpha.z3 = prior.alpha[1]), 
+                       prec = list(beta.0 = prior.beta[2], 
+                                   beta.z2 = prior.beta[2], 
+                                   beta.z3 = prior.beta[2],  
+                                   alpha.0 = prior.alpha[2], 
+                                   alpha.z2 = prior.alpha[2],
+                                   alpha.z3 = prior.alpha[2])),
+                     verbose=F)
+```
+
+
+```{r}
+# Save results:
+saveRDS(model_missing, file = "results/model_missing.rds")
+```
+
+## Results
+
+The posterior means and standard deviations are presented in the table below.
+
+```{r, echo = FALSE}
+return_estimates <- function(inla.object){
+  fixed <- data.frame(inla.object$summary.fixed)
+  fixed <- fixed[, names(fixed) != "kld"]
+  fixed$coefficient.name <- rownames(fixed)
+  hyperpar <- data.frame(inla.object$summary.hyperpar)
+  hyperpar$coefficient.name <- rownames(hyperpar)
+
+  # Extract all coefficients that contain "beta" (the coefficients of the model of interest)
+  betas <- rbind(dplyr::filter(fixed, grepl("beta", coefficient.name)),
+                 dplyr::filter(hyperpar, grepl("beta", coefficient.name)))
+  # Extract all coefficients that contain "alpha" (the coefficients of the imputation model)
+  alphas <- dplyr::filter(fixed, grepl("alpha", coefficient.name))
+  
+  # All coefficients
+  all_coefs <- dplyr::bind_rows("Imputation model" = alphas, 
+                                "Model of interest" = betas, 
+                                .id = "model")
+  
+  return(all_coefs)
+}
+```
+
+```{r, echo = FALSE}
+library(gt)
+
+return_estimates(model_missing) |> 
+  select(coefficient.name, mean, sd, model)|> 
+  arrange(desc(model)) |> # Arrange so the MOI coefs are at the top
+  group_by(model) |> # Group by model type
+  gt(rowname_col = "coefficient.name")
+```

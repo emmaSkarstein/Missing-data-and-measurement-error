@@ -1,0 +1,31 @@
+project:
+  type: website
+
+website:
+  title: "Missing data and measurement error"
+  navbar:
+    left:
+      - href: index.qmd
+        text: " "
+  sidebar:
+    style: "docked"
+    contents:
+      - section: "Datasets"
+        contents:
+          - loading_data.qmd
+      - section: "Examples"
+        contents:
+          - missing_covariate_imputation.qmd
+          - missing_and_mismeasured_covariate.qmd
+          - simulation_example.qmd
+          - simulation_study.qmd
+          - example_in_inlabru.qmd
+
+format:
+  html:
+    theme: journal
+    css: styles.css
+    toc: true
+
+
+

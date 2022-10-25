@@ -1,0 +1,71 @@
+---
+title: "Datasets"
+---
+
+The examples in this paper use three different datasets. 
+
+## Bloodpressure data
+Repeated systolic blood pressure measurements with measurement error.
+
+A dataset containing a repeated blood pressure measurement along with some other variables for participants in the Third National Health and Nutrition Survey (NHANES III), merged with data from the US National Death Index by Ruth H. Keogh and Jonathan Bartlett.
+
+### Load the data
+```{r}
+bloodpressure <- read.csv("data/bloodpressure.csv")
+```
+
+### Format
+A data frame with 6519 rows and 8 variables:
+
+- `sbp1`: systolic blood pressure (standardized), first measurement
+- `sbp2`: systolic blood pressure (standardized), second measurement
+- `sex`: Sex (0 = ?, 1 = ?)
+- `age`: Age (standardized)
+- `smoke`: Smoking status (0 = no, 1 = yes)
+- `diabetes`: diabetes status (0 = no, 1 = yes)
+- `d`: censoring status (0 = censored, 1 = observed death due to cardiovascular disease)
+- `t`: time until death due to cardiovascular disease occurs
+
+
+### Source
+<https://github.com/ruthkeogh/meas_error_handbook>
+
+
+## NHANES example
+A small data set with missing values.
+
+
+### Load the data
+```{r}
+#| message: false
+library(mice)
+data(nhanes2)
+```
+
+### Format
+A data frame with 25 rows and 4 variables:
+
+- `age`: Age group (1=20-39, 2=40-59, 3=60+)
+- `bmi`: Age group (1=20-39, 2=40-59, 3=60+)
+- `hyp`: Hypertensive (1=no,2=yes)
+- `chl`: Total serum cholesterol (mg/dL)
+
+### Source
+The {mice} package, originally from Schafer, J.L. (1997). *Analysis of Incomplete Multivariate Data*. London: Chapman & Hall. Table 6.14.
+
+## Simulated data with measurement error and missing values
+
+A dataset containing three simulated variables, generated in the example "Simulation: Berkson and classical measurement error alongside missing data".
+
+### Load the data
+```{r}
+simulated_data <- read.csv("data/simulated_data.csv")
+```
+
+### Format
+A data frame with 1000 rows and 3 variables:
+
+- `y`: response variable, continuous
+- `w`: covariate with classical and Berkson measurement error, and missing data, continuous
+- `z`: covariate with no error or missingness, continuous
+

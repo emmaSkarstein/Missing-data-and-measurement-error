@@ -1,0 +1,40 @@
+---
+title: 'Supplementary material and reproducible research files for article "*A Joint Bayesian Framework for Measurement Error and Missing Data using Integrated Nested Laplace Approximations*"'
+---
+
+Authors: Skarstein, E., Martino, S., Muff, S.
+
+This supplementary material was written by Skarstein, E., but code for analysis was developed jointly between authors.
+
+In case of any questions or comments, please do not hesitate to contact <emma.s.skarstein@ntnu.no>!
+
+This website contains scripts, tutorials and data to reproduce all analysis and figures from the manuscript.
+
+## Examples 
+These include scripts to run the code for analysis, including comments and explanations.
+
+- Simulation example
+- Simulation study
+- Missing value imputation using INLA
+- Missing and mismeasured covariates
+- Examples in ‘inlabru’
+
+## Datasets
+All the data sets that are used in the paper can be downloaded manually from [link to github repo], or like this:
+
+```{r}
+# Code to download data
+```
+
+## Session info
+
+The code was written and run in R with the following software versions:
+
+```{r, results='asis', echo=FALSE}
+sessioninfo::session_info(pkgs = c("INLA", "inlabru")) |> 
+  details::details(
+    summary = 'Current session info',
+    open    = TRUE
+  )
+```
+
