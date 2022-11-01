@@ -15,6 +15,8 @@ In this example, we use the `nhanes2` data set from the `mice` R-package to illu
 library(mice)    # Just used for the nhanes2 data set
 library(INLA)    # INLA modelling
 library(dplyr)   # Data wrangling of the results
+library(gt)      # Tables
+
 ```
 
 ## Loading and preparing the data
@@ -23,16 +25,17 @@ library(dplyr)   # Data wrangling of the results
 # Using the nhanes data set found in mice so we can compare to mice:
 data(nhanes2)
 
+head(nhanes2)
+
 n <- nrow(nhanes2)
 
-# Manualy dummy-code age:
+# Manually dummy-code age:
 age2 <- ifelse(nhanes2$age == "40-59", 1, 0)
 age3 <- ifelse(nhanes2$age == "60-99", 1, 0)
 
 # Center the response and continuous covariates
 chl <- scale(nhanes2$chl, scale = FALSE)[,1]
-bmi <- scale(nhanes$bmi, scale = FALSE)[,1]
-
+bmi <- scale(nhanes2$bmi, scale = FALSE)[,1]
 ```
 
 ## Modelling
@@ -114,6 +117,7 @@ Since we are not assuming any measurement error here, we need to "turn off" the 
 ```{r}
 # Scale the measurement error precision according to whether observations are missing or not (1 if missing, large if not missing)
 M <- ifelse(is.na(bmi), 1, 10^12)
+# Scaling the precision to be large for the error model (since we only have correctly observed or missing data, we want high precision for the correctly observed data and for the missing data it doesn't matter)
 Scale <- c(rep(1, n), M, rep(1, n))
 ```
 
@@ -154,11 +158,54 @@ model_missing <- inla(formula, data = dd, scale = Scale,
 saveRDS(model_missing, file = "results/model_missing.rds")
 ```
 
+### Fitting a complete case model
+
+```{r}
+# Where is bmi missing? 
+missing_bmi <- is.na(bmi)
+
+dd_naive <- data.frame(Y = chl, 
+                       beta.0 = rep(1, length(bmi)),
+                       beta.x = bmi, 
+                       beta.z2 = age2, 
+                       beta.z3 = age3)[!missing_bmi, ]
+
+
+# Priors for model of interest coefficients
+prior.beta <- c(0, 1/1000) # N(0, 10^3)
+
+# Formula
+formula <- Y ~ - 1 + beta.0 + beta.z2 + beta.z3 + beta.x
+
+# Fit model
+model_naive <- inla(formula,
+              data = dd_naive,
+              family = c("gaussian"),
+              control.family = list(
+                list(hyper = list(prec = list(initial = log(1), 
+                                              param = c(0.5, 0.5), # Gamma(0.5, 0.5) 
+                                              fixed = FALSE)))),
+              control.fixed = list(
+                       mean = list(beta.0 = prior.beta[1], 
+                                   beta.z2 = prior.beta[1], 
+                                   beta.z3 = prior.beta[1],
+                                   beta.x = prior.beta[1]), 
+                       prec = list(beta.0 = prior.beta[2], 
+                                   beta.z2 = prior.beta[2], 
+                                   beta.z3 = prior.beta[2],  
+                                   beta.x = prior.beta[2])),
+)
+```
+
+
+
 ## Results
 
 The posterior means and standard deviations are presented in the table below.
 
-```{r, echo = FALSE}
+```{r}
+#| echo: false
+
 return_estimates <- function(inla.object){
   fixed <- data.frame(inla.object$summary.fixed)
   fixed <- fixed[, names(fixed) != "kld"]
@@ -181,12 +228,48 @@ return_estimates <- function(inla.object){
 }
 ```
 
-```{r, echo = FALSE}
-library(gt)
+```{r}
+#| echo: false
+#| eval: false
 
-return_estimates(model_missing) |> 
-  select(coefficient.name, mean, sd, model)|> 
-  arrange(desc(model)) |> # Arrange so the MOI coefs are at the top
-  group_by(model) |> # Group by model type
+return_estimates(model_missing) %>% 
+  select(coefficient.name, mean, sd, model) %>% 
+  arrange(desc(model)) %>% # Arrange so the MOI coefs are at the top
+  group_by(model) %>% # Group by model type
   gt(rowname_col = "coefficient.name")
 ```
+
+
+```{r}
+#| echo: false
+inla_mcmc_results <- tibble::tribble(
+  ~coefficient.name, ~model,              ~inla_mcmc.mean, ~inla_mcmc.sd,
+  "beta.0",          "Model of interest", 43.469, 62.603,
+  "Beta for beta.x", "Model of interest", 4.864, 2.206, 
+  "beta.z2",         "Model of interest", 29.501, 17.871, 
+  "beta.z3",         "Model of interest", 49.449, 23.207
+)
+
+naive_results <- return_estimates(model_naive) |> 
+  select(coefficient.name, mean, sd, model) %>% 
+  rename(naive.mean = mean, naive.sd = sd)
+naive_results$coefficient.name[4] <- "Beta for beta.x"
+
+return_estimates(model_missing) %>% 
+  select(coefficient.name, mean, sd, model) %>% 
+  rename(me_adjusted.mean = mean, me_adjusted.sd = sd) %>%
+  full_join(naive_results, by = c("coefficient.name", "model")) %>% 
+  full_join(inla_mcmc_results, by = c("coefficient.name", "model")) %>% 
+  mutate_if(is.numeric, round, digits = 3) %>% 
+  arrange(desc(model)) %>% # Arrange so the MOI coefs are at the top
+  group_by(model) %>% # Group by model type
+  gt(rowname_col = "coefficient.name") %>% 
+  tab_spanner_delim(
+    delim = "."
+  )
+
+```
+
+
+https://stefvanbuuren.name/RECAPworkshop/Practicals/RECAP_Practical_II.html 
+

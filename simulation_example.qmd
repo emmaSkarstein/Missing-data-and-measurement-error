@@ -26,6 +26,7 @@ Some text from the paper: and the respective likelihood functions for each of th
 The data is generated in the following code.
 
 ```{r}
+set.seed(2022)
 n <- 1000
 
 # Covariate without error:
@@ -365,13 +366,32 @@ model_sim <- inla(formula, data = dd, scale = scale.vec,
 
 ```{r}
 # Summary of fixed effects:
-model_sim$summary.fixed[1:2]
+fixed <- model_sim$summary.fixed[1:2]
+fixed 
 
 # Summary of random effects:
-model_sim$summary.hyperpar[1:2]
+hyper <- model_sim$summary.hyperpar[1:2]
+hyper
 ```
 
 The fixed effects can then be accessed through `model$summary.fixed`, whereas the posterior mean and sd for the coefficient of $\boldsymbol{x}$ can be accessed through `model$summary.hyperpar`. [todo: what are the two precisions? The precision for the MOI and the imputation model?]
+
+```{r}
+true_values <- tibble::tribble(
+  ~coef_name, ~mean,
+  "Beta for beta.x", 2, 
+  "beta.z", 2, 
+  "beta.0", 1, 
+  "alpha.0", 1, 
+  "alpha.z", 2
+)
+
+post_estimates <- bind_rows(fixed, hyper) %>% 
+  mutate(coef_name = rownames(.)) %>% 
+  full_join(true_values, by = "coef_name")
+
+ggplot(post_estimates, aes())
+```
 
 
 

@@ -170,7 +170,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./loading_data.html" class="sidebar-item-text sidebar-link">Loading the data</a>
+  <a href="./loading_data.html" class="sidebar-item-text sidebar-link">Datasets</a>
   </div>
 </li>
       </ul>
@@ -228,6 +228,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#inla-formula" id="toc-inla-formula" class="nav-link" data-scroll-target="#inla-formula">INLA formula</a></li>
   <li><a href="#scaling-of-me-precision" id="toc-scaling-of-me-precision" class="nav-link" data-scroll-target="#scaling-of-me-precision">Scaling of ME precision</a></li>
   <li><a href="#fitting-the-model" id="toc-fitting-the-model" class="nav-link" data-scroll-target="#fitting-the-model">Fitting the model</a></li>
+  <li><a href="#fitting-a-complete-case-model" id="toc-fitting-a-complete-case-model" class="nav-link" data-scroll-target="#fitting-a-complete-case-model">Fitting a complete case model</a></li>
   </ul></li>
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
   </ul>
@@ -258,7 +259,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mice)    <span class="co"># Just used for the nhanes2 data set</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(INLA)    <span class="co"># INLA modelling</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)   <span class="co"># Data wrangling of the results</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)   <span class="co"># Data wrangling of the results</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)      <span class="co"># Tables</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="loading-and-preparing-the-data" class="level2">
@@ -267,15 +269,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the nhanes data set found in mice so we can compare to mice:</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(nhanes2)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(nhanes2)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Manualy dummy-code age:</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>age2 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(nhanes2<span class="sc">$</span>age <span class="sc">==</span> <span class="st">"40-59"</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>age3 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(nhanes2<span class="sc">$</span>age <span class="sc">==</span> <span class="st">"60-99"</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Center the response and continuous covariates</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>chl <span class="ot">&lt;-</span> <span class="fu">scale</span>(nhanes2<span class="sc">$</span>chl, <span class="at">scale =</span> <span class="cn">FALSE</span>)[,<span class="dv">1</span>]</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>bmi <span class="ot">&lt;-</span> <span class="fu">scale</span>(nhanes<span class="sc">$</span>bmi, <span class="at">scale =</span> <span class="cn">FALSE</span>)[,<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(nhanes2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    age  bmi  hyp chl
+1 20-39   NA &lt;NA&gt;  NA
+2 40-59 22.7   no 187
+3 20-39   NA   no 187
+4 60-99   NA &lt;NA&gt;  NA
+5 20-39 20.4   no 113
+6 60-99   NA &lt;NA&gt; 184</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(nhanes2)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Manually dummy-code age:</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>age2 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(nhanes2<span class="sc">$</span>age <span class="sc">==</span> <span class="st">"40-59"</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>age3 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(nhanes2<span class="sc">$</span>age <span class="sc">==</span> <span class="st">"60-99"</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Center the response and continuous covariates</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>chl <span class="ot">&lt;-</span> <span class="fu">scale</span>(nhanes2<span class="sc">$</span>chl, <span class="at">scale =</span> <span class="cn">FALSE</span>)[,<span class="dv">1</span>]</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>bmi <span class="ot">&lt;-</span> <span class="fu">scale</span>(nhanes2<span class="sc">$</span>bmi, <span class="at">scale =</span> <span class="cn">FALSE</span>)[,<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="modelling" class="level2">
@@ -288,110 +300,150 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
 <section id="specifying-priors" class="level3">
 <h3 class="anchored" data-anchor-id="specifying-priors">Specifying priors</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for model of interest coefficients</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>prior.beta <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">1000</span>) <span class="co"># N(0, 10^3)</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for exposure model coefficients</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>prior.alpha <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">10000</span>) <span class="co"># N(0, 10^4) </span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for y, measurement error and true x-value precision</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>prior.prec.y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>prior.prec.u_c <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>prior.prec.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5) </span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial values</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>prec.y <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>prec.u_c <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>prec.x <span class="ot">&lt;-</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for model of interest coefficients</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>prior.beta <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">1000</span>) <span class="co"># N(0, 10^3)</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for exposure model coefficients</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>prior.alpha <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">10000</span>) <span class="co"># N(0, 10^4) </span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for y, measurement error and true x-value precision</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>prior.prec.y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>prior.prec.u_c <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>prior.prec.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5) </span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial values</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>prec.y <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>prec.u_c <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>prec.x <span class="ot">&lt;-</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="setting-up-the-matrices-for-the-joint-model" class="level3">
 <h3 class="anchored" data-anchor-id="setting-up-the-matrices-for-the-joint-model">Setting up the matrices for the joint model</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n, <span class="dv">3</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span>] <span class="ot">&lt;-</span> chl             <span class="co"># Regression model of interest response</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>Y[n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">2</span>] <span class="ot">&lt;-</span> bmi         <span class="co"># Error model response</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">2</span><span class="sc">*</span>n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n) <span class="co"># Exposure model response</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>beta<span class="fl">.0</span> <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>beta.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>beta.z2 <span class="ot">&lt;-</span> <span class="fu">c</span>(age2, <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>beta.z3 <span class="ot">&lt;-</span> <span class="fu">c</span>(age3, <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>id.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span><span class="sc">:</span>n) </span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>weight.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span>, n))</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>alpha<span class="fl">.0</span> <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, n))</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>alpha.z2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), age2)</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>alpha.z3 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), age3)</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>dd <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Y =</span> Y, </span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.0 =</span> beta<span class="fl">.0</span>,</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.x =</span> beta.x,</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.z2 =</span> beta.z2,</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.z3 =</span> beta.z3,</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>                 <span class="at">id.x =</span> id.x,</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>                 <span class="at">weight.x =</span> weight.x,</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha.0 =</span> alpha<span class="fl">.0</span>,</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha.z2 =</span> alpha.z2,</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha.z3 =</span> alpha.z3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n, <span class="dv">3</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span>] <span class="ot">&lt;-</span> chl             <span class="co"># Regression model of interest response</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>Y[n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">2</span>] <span class="ot">&lt;-</span> bmi         <span class="co"># Error model response</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">2</span><span class="sc">*</span>n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n) <span class="co"># Exposure model response</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>beta<span class="fl">.0</span> <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>beta.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>beta.z2 <span class="ot">&lt;-</span> <span class="fu">c</span>(age2, <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>beta.z3 <span class="ot">&lt;-</span> <span class="fu">c</span>(age3, <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>id.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span><span class="sc">:</span>n) </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>weight.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span>, n))</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>alpha<span class="fl">.0</span> <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, n))</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>alpha.z2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), age2)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>alpha.z3 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), age3)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>dd <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Y =</span> Y, </span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.0 =</span> beta<span class="fl">.0</span>,</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.x =</span> beta.x,</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.z2 =</span> beta.z2,</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.z3 =</span> beta.z3,</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>                 <span class="at">id.x =</span> id.x,</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>                 <span class="at">weight.x =</span> weight.x,</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha.0 =</span> alpha<span class="fl">.0</span>,</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha.z2 =</span> alpha.z2,</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha.z3 =</span> alpha.z3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="inla-formula" class="level3">
 <h3 class="anchored" data-anchor-id="inla-formula">INLA formula</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>formula <span class="ot">=</span> Y <span class="sc">~</span> <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> beta<span class="fl">.0</span> <span class="sc">+</span> beta.z2 <span class="sc">+</span> beta.z3 <span class="sc">+</span> </span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(beta.x, <span class="at">copy=</span><span class="st">"id.x"</span>, </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">beta =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.beta, <span class="at">fixed=</span><span class="cn">FALSE</span>))) <span class="sc">+</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(id.x, weight.x, <span class="at">model=</span><span class="st">"iid"</span>, <span class="at">values =</span> <span class="dv">1</span><span class="sc">:</span>n, </span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  alpha<span class="fl">.0</span> <span class="sc">+</span> alpha.z2 <span class="sc">+</span> alpha.z3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>formula <span class="ot">=</span> Y <span class="sc">~</span> <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> beta<span class="fl">.0</span> <span class="sc">+</span> beta.z2 <span class="sc">+</span> beta.z3 <span class="sc">+</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(beta.x, <span class="at">copy=</span><span class="st">"id.x"</span>, </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">beta =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.beta, <span class="at">fixed=</span><span class="cn">FALSE</span>))) <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(id.x, weight.x, <span class="at">model=</span><span class="st">"iid"</span>, <span class="at">values =</span> <span class="dv">1</span><span class="sc">:</span>n, </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  alpha<span class="fl">.0</span> <span class="sc">+</span> alpha.z2 <span class="sc">+</span> alpha.z3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="scaling-of-me-precision" class="level3">
 <h3 class="anchored" data-anchor-id="scaling-of-me-precision">Scaling of ME precision</h3>
 <p>Since we are not assuming any measurement error here, we need to “turn off” the error model for the observations where the observation is not missing.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Scale the measurement error precision according to whether observations are missing or not (1 if missing, large if not missing)</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(bmi), <span class="dv">1</span>, <span class="dv">10</span><span class="sc">^</span><span class="dv">12</span>)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>Scale <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), M, <span class="fu">rep</span>(<span class="dv">1</span>, n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Scale the measurement error precision according to whether observations are missing or not (1 if missing, large if not missing)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(bmi), <span class="dv">1</span>, <span class="dv">10</span><span class="sc">^</span><span class="dv">12</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Scaling the precision to be large for the error model (since we only have correctly observed or missing data, we want high precision for the correctly observed data and for the missing data it doesn't matter)</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>Scale <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), M, <span class="fu">rep</span>(<span class="dv">1</span>, n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="fitting-the-model" class="level3">
 <h3 class="anchored" data-anchor-id="fitting-the-model">Fitting the model</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>model_missing <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula, <span class="at">data =</span> dd, <span class="at">scale =</span> Scale,</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">family =</span> <span class="fu">c</span>(<span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>),</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">control.family =</span> <span class="fu">list</span>(</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.y), </span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">param =</span> prior.prec.y, </span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_c), </span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">param =</span> prior.prec.u_c, </span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">fixed =</span> <span class="cn">TRUE</span>))),</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x), </span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">param =</span> prior.prec.x, </span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">fixed =</span> <span class="cn">FALSE</span>)))</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>                     ),</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>                     <span class="at">control.fixed =</span> <span class="fu">list</span>(</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                       <span class="at">mean =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">1</span>], </span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.z2 =</span> prior.beta[<span class="dv">1</span>], </span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.z3 =</span> prior.beta[<span class="dv">1</span>],  </span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">1</span>], </span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.z2 =</span> prior.alpha[<span class="dv">1</span>],</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.z3 =</span> prior.alpha[<span class="dv">1</span>]), </span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>                       <span class="at">prec =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">2</span>], </span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.z2 =</span> prior.beta[<span class="dv">2</span>], </span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.z3 =</span> prior.beta[<span class="dv">2</span>],  </span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">2</span>], </span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.z2 =</span> prior.alpha[<span class="dv">2</span>],</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.z3 =</span> prior.alpha[<span class="dv">2</span>])),</span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>                     <span class="at">verbose=</span>F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>model_missing <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula, <span class="at">data =</span> dd, <span class="at">scale =</span> Scale,</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">family =</span> <span class="fu">c</span>(<span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>),</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">control.family =</span> <span class="fu">list</span>(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.y), </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">param =</span> prior.prec.y, </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_c), </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">param =</span> prior.prec.u_c, </span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">fixed =</span> <span class="cn">TRUE</span>))),</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x), </span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">param =</span> prior.prec.x, </span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">fixed =</span> <span class="cn">FALSE</span>)))</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>                     ),</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>                     <span class="at">control.fixed =</span> <span class="fu">list</span>(</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>                       <span class="at">mean =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">1</span>], </span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.z2 =</span> prior.beta[<span class="dv">1</span>], </span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.z3 =</span> prior.beta[<span class="dv">1</span>],  </span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">1</span>], </span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.z2 =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.z3 =</span> prior.alpha[<span class="dv">1</span>]), </span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>                       <span class="at">prec =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">2</span>], </span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.z2 =</span> prior.beta[<span class="dv">2</span>], </span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.z3 =</span> prior.beta[<span class="dv">2</span>],  </span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">2</span>], </span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.z2 =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.z3 =</span> prior.alpha[<span class="dv">2</span>])),</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>                     <span class="at">verbose=</span>F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save results:</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(model_missing, <span class="at">file =</span> <span class="st">"results/model_missing.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save results:</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(model_missing, <span class="at">file =</span> <span class="st">"results/model_missing.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="fitting-a-complete-case-model" class="level3">
+<h3 class="anchored" data-anchor-id="fitting-a-complete-case-model">Fitting a complete case model</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Where is bmi missing? </span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>missing_bmi <span class="ot">&lt;-</span> <span class="fu">is.na</span>(bmi)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>dd_naive <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Y =</span> chl, </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">beta.0 =</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">length</span>(bmi)),</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                       <span class="at">beta.x =</span> bmi, </span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">beta.z2 =</span> age2, </span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>                       <span class="at">beta.z3 =</span> age3)[<span class="sc">!</span>missing_bmi, ]</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for model of interest coefficients</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>prior.beta <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">1000</span>) <span class="co"># N(0, 10^3)</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Formula</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>formula <span class="ot">&lt;-</span> Y <span class="sc">~</span> <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> beta<span class="fl">.0</span> <span class="sc">+</span> beta.z2 <span class="sc">+</span> beta.z3 <span class="sc">+</span> beta.x</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit model</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>model_naive <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula,</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> dd_naive,</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>              <span class="at">family =</span> <span class="fu">c</span>(<span class="st">"gaussian"</span>),</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>              <span class="at">control.family =</span> <span class="fu">list</span>(</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>                <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(<span class="dv">1</span>), </span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">param =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>), <span class="co"># Gamma(0.5, 0.5) </span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">fixed =</span> <span class="cn">FALSE</span>)))),</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>              <span class="at">control.fixed =</span> <span class="fu">list</span>(</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>                       <span class="at">mean =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">1</span>], </span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.z2 =</span> prior.beta[<span class="dv">1</span>], </span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.z3 =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.x =</span> prior.beta[<span class="dv">1</span>]), </span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>                       <span class="at">prec =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">2</span>], </span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.z2 =</span> prior.beta[<span class="dv">2</span>], </span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.z3 =</span> prior.beta[<span class="dv">2</span>],  </span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.x =</span> prior.beta[<span class="dv">2</span>])),</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
@@ -402,14 +454,17 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
 
 </div>
 <div class="cell">
+
+</div>
+<div class="cell">
 <div class="cell-output-display">
 
-<div id="vdmwfrrleo" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="ppxcdxhwql" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#vdmwfrrleo .gt_table {
+#ppxcdxhwql .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -434,7 +489,7 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   border-left-color: #D3D3D3;
 }
 
-#vdmwfrrleo .gt_heading {
+#ppxcdxhwql .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -446,7 +501,7 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   border-right-color: #D3D3D3;
 }
 
-#vdmwfrrleo .gt_title {
+#ppxcdxhwql .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -458,7 +513,7 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   border-bottom-width: 0;
 }
 
-#vdmwfrrleo .gt_subtitle {
+#ppxcdxhwql .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -470,13 +525,13 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   border-top-width: 0;
 }
 
-#vdmwfrrleo .gt_bottom_border {
+#ppxcdxhwql .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#vdmwfrrleo .gt_col_headings {
+#ppxcdxhwql .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -491,7 +546,7 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   border-right-color: #D3D3D3;
 }
 
-#vdmwfrrleo .gt_col_heading {
+#ppxcdxhwql .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -511,7 +566,7 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   overflow-x: hidden;
 }
 
-#vdmwfrrleo .gt_column_spanner_outer {
+#ppxcdxhwql .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -523,15 +578,15 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   padding-right: 4px;
 }
 
-#vdmwfrrleo .gt_column_spanner_outer:first-child {
+#ppxcdxhwql .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#vdmwfrrleo .gt_column_spanner_outer:last-child {
+#ppxcdxhwql .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#vdmwfrrleo .gt_column_spanner {
+#ppxcdxhwql .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -543,7 +598,7 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   width: 100%;
 }
 
-#vdmwfrrleo .gt_group_heading {
+#ppxcdxhwql .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -568,7 +623,7 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   vertical-align: middle;
 }
 
-#vdmwfrrleo .gt_empty_group_heading {
+#ppxcdxhwql .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -583,15 +638,15 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   vertical-align: middle;
 }
 
-#vdmwfrrleo .gt_from_md > :first-child {
+#ppxcdxhwql .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#vdmwfrrleo .gt_from_md > :last-child {
+#ppxcdxhwql .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#vdmwfrrleo .gt_row {
+#ppxcdxhwql .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -610,7 +665,7 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   overflow-x: hidden;
 }
 
-#vdmwfrrleo .gt_stub {
+#ppxcdxhwql .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -623,7 +678,7 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   padding-right: 5px;
 }
 
-#vdmwfrrleo .gt_stub_row_group {
+#ppxcdxhwql .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -637,11 +692,11 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   vertical-align: top;
 }
 
-#vdmwfrrleo .gt_row_group_first td {
+#ppxcdxhwql .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#vdmwfrrleo .gt_summary_row {
+#ppxcdxhwql .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -651,16 +706,16 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   padding-right: 5px;
 }
 
-#vdmwfrrleo .gt_first_summary_row {
+#ppxcdxhwql .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#vdmwfrrleo .gt_first_summary_row.thick {
+#ppxcdxhwql .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#vdmwfrrleo .gt_last_summary_row {
+#ppxcdxhwql .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -670,7 +725,7 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   border-bottom-color: #D3D3D3;
 }
 
-#vdmwfrrleo .gt_grand_summary_row {
+#ppxcdxhwql .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -680,7 +735,7 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   padding-right: 5px;
 }
 
-#vdmwfrrleo .gt_first_grand_summary_row {
+#ppxcdxhwql .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -690,11 +745,11 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   border-top-color: #D3D3D3;
 }
 
-#vdmwfrrleo .gt_striped {
+#ppxcdxhwql .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#vdmwfrrleo .gt_table_body {
+#ppxcdxhwql .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -703,7 +758,7 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   border-bottom-color: #D3D3D3;
 }
 
-#vdmwfrrleo .gt_footnotes {
+#ppxcdxhwql .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -717,7 +772,7 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   border-right-color: #D3D3D3;
 }
 
-#vdmwfrrleo .gt_footnote {
+#ppxcdxhwql .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-left: 4px;
@@ -726,7 +781,7 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   padding-right: 5px;
 }
 
-#vdmwfrrleo .gt_sourcenotes {
+#ppxcdxhwql .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -740,7 +795,7 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   border-right-color: #D3D3D3;
 }
 
-#vdmwfrrleo .gt_sourcenote {
+#ppxcdxhwql .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -748,36 +803,36 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   padding-right: 5px;
 }
 
-#vdmwfrrleo .gt_left {
+#ppxcdxhwql .gt_left {
   text-align: left;
 }
 
-#vdmwfrrleo .gt_center {
+#ppxcdxhwql .gt_center {
   text-align: center;
 }
 
-#vdmwfrrleo .gt_right {
+#ppxcdxhwql .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#vdmwfrrleo .gt_font_normal {
+#ppxcdxhwql .gt_font_normal {
   font-weight: normal;
 }
 
-#vdmwfrrleo .gt_font_bold {
+#ppxcdxhwql .gt_font_bold {
   font-weight: bold;
 }
 
-#vdmwfrrleo .gt_font_italic {
+#ppxcdxhwql .gt_font_italic {
   font-style: italic;
 }
 
-#vdmwfrrleo .gt_super {
+#ppxcdxhwql .gt_super {
   font-size: 65%;
 }
 
-#vdmwfrrleo .gt_two_val_uncert {
+#ppxcdxhwql .gt_two_val_uncert {
   display: inline-block;
   line-height: 1em;
   text-align: right;
@@ -786,31 +841,31 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   margin-left: 0.1em;
 }
 
-#vdmwfrrleo .gt_footnote_marks {
+#ppxcdxhwql .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 75%;
   vertical-align: 0.4em;
 }
 
-#vdmwfrrleo .gt_asterisk {
+#ppxcdxhwql .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#vdmwfrrleo .gt_slash_mark {
+#ppxcdxhwql .gt_slash_mark {
   font-size: 0.7em;
   line-height: 0.7em;
   vertical-align: 0.15em;
 }
 
-#vdmwfrrleo .gt_fraction_numerator {
+#ppxcdxhwql .gt_fraction_numerator {
   font-size: 0.6em;
   line-height: 0.6em;
   vertical-align: 0.45em;
 }
 
-#vdmwfrrleo .gt_fraction_denominator {
+#ppxcdxhwql .gt_fraction_denominator {
   font-size: 0.6em;
   line-height: 0.6em;
   vertical-align: -0.05em;
@@ -820,39 +875,82 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
   
   <thead class="gt_col_headings">
     <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1"></th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2">
+        <span class="gt_column_spanner">me_adjusted</span>
+      </th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2">
+        <span class="gt_column_spanner">naive</span>
+      </th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2">
+        <span class="gt_column_spanner">inla_mcmc</span>
+      </th>
+    </tr>
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">mean</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">sd</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">mean</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">sd</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">mean</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">sd</th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
     <tr class="gt_group_heading_row">
-      <td colspan="3" class="gt_group_heading">Model of interest</td>
+      <td colspan="7" class="gt_group_heading">Model of interest</td>
     </tr>
     <tr class="gt_row_group_first"><td class="gt_row gt_right gt_stub">beta.0</td>
-<td class="gt_row gt_right">-15.259895</td>
-<td class="gt_row gt_right">11.843351</td></tr>
+<td class="gt_row gt_right">-16.464</td>
+<td class="gt_row gt_right">10.764</td>
+<td class="gt_row gt_right">-15.551</td>
+<td class="gt_row gt_right">12.919</td>
+<td class="gt_row gt_right">43.469</td>
+<td class="gt_row gt_right">62.603</td></tr>
     <tr><td class="gt_row gt_right gt_stub">beta.z2</td>
-<td class="gt_row gt_right">25.350963</td>
-<td class="gt_row gt_right">17.688393</td></tr>
+<td class="gt_row gt_right">27.180</td>
+<td class="gt_row gt_right">16.038</td>
+<td class="gt_row gt_right">26.651</td>
+<td class="gt_row gt_right">18.579</td>
+<td class="gt_row gt_right">29.501</td>
+<td class="gt_row gt_right">17.871</td></tr>
     <tr><td class="gt_row gt_right gt_stub">beta.z3</td>
-<td class="gt_row gt_right">42.296261</td>
-<td class="gt_row gt_right">21.473338</td></tr>
+<td class="gt_row gt_right">45.377</td>
+<td class="gt_row gt_right">18.971</td>
+<td class="gt_row gt_right">50.247</td>
+<td class="gt_row gt_right">24.544</td>
+<td class="gt_row gt_right">49.449</td>
+<td class="gt_row gt_right">23.207</td></tr>
     <tr><td class="gt_row gt_right gt_stub">Beta for beta.x</td>
-<td class="gt_row gt_right">3.098605</td>
-<td class="gt_row gt_right">1.401834</td></tr>
+<td class="gt_row gt_right">4.404</td>
+<td class="gt_row gt_right">0.524</td>
+<td class="gt_row gt_right">5.354</td>
+<td class="gt_row gt_right">2.422</td>
+<td class="gt_row gt_right">4.864</td>
+<td class="gt_row gt_right">2.206</td></tr>
     <tr class="gt_group_heading_row">
-      <td colspan="3" class="gt_group_heading">Imputation model</td>
+      <td colspan="7" class="gt_group_heading">Imputation model</td>
     </tr>
     <tr class="gt_row_group_first"><td class="gt_row gt_right gt_stub">alpha.0</td>
-<td class="gt_row gt_right">1.828934</td>
-<td class="gt_row gt_right">1.509489</td></tr>
+<td class="gt_row gt_right">1.841</td>
+<td class="gt_row gt_right">1.549</td>
+<td class="gt_row gt_right">NA</td>
+<td class="gt_row gt_right">NA</td>
+<td class="gt_row gt_right">NA</td>
+<td class="gt_row gt_right">NA</td></tr>
     <tr><td class="gt_row gt_right gt_stub">alpha.z2</td>
-<td class="gt_row gt_right">-2.970462</td>
-<td class="gt_row gt_right">2.354992</td></tr>
+<td class="gt_row gt_right">-2.983</td>
+<td class="gt_row gt_right">2.422</td>
+<td class="gt_row gt_right">NA</td>
+<td class="gt_row gt_right">NA</td>
+<td class="gt_row gt_right">NA</td>
+<td class="gt_row gt_right">NA</td></tr>
     <tr><td class="gt_row gt_right gt_stub">alpha.z3</td>
-<td class="gt_row gt_right">-3.849004</td>
-<td class="gt_row gt_right">2.497979</td></tr>
+<td class="gt_row gt_right">-3.956</td>
+<td class="gt_row gt_right">2.559</td>
+<td class="gt_row gt_right">NA</td>
+<td class="gt_row gt_right">NA</td>
+<td class="gt_row gt_right">NA</td>
+<td class="gt_row gt_right">NA</td></tr>
   </tbody>
   
   
@@ -860,6 +958,7 @@ chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
 </div>
 </div>
 </div>
+<p>https://stefvanbuuren.name/RECAPworkshop/Practicals/RECAP_Practical_II.html</p>
 
 
 </section>

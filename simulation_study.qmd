@@ -34,7 +34,7 @@ simulate_data <- function(n){
   y <- 1 + 2*x + 2*z + rnorm(n)
   # Classical error:
   u_c <- rnorm(n)
-  w_c <- x + u_c # I think maybe this is incorrect, shouldn't we be using w_b here?
+  w_c <- w_b + u_c # I think maybe this is incorrect, shouldn't we be using w_b here?
   # Missingness:
   m_pred <- -1.5 - 0.5*z # This gives a mean probability of missing of ca 0.2.
   m_prob <- exp(m_pred)/(1 + exp(m_pred))
