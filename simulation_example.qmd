@@ -374,9 +374,12 @@ hyper <- model_sim$summary.hyperpar[1:5]
 hyper
 ```
 
-The fixed effects can then be accessed through `model$summary.fixed`, whereas the posterior mean and sd for the coefficient of $\boldsymbol{x}$ can be accessed through `model$summary.hyperpar`. [todo: what are the two precisions? The precision for the MOI and the imputation model?]
+The fixed effects can then be accessed through `model$summary.fixed`, whereas the posterior mean and sd for the coefficient of $\boldsymbol{x}$ can be accessed through `model$summary.hyperpar`.
 
 ```{r}
+#| echo: false
+#| fig.showtext: true
+
 library(tidyverse)
 library(showtext)
 
@@ -421,7 +424,7 @@ theme_model_summary <- theme_minimal(base_size = 18, base_family = "Open Sans") 
   legend.title = element_blank(),
   legend.text = element_text(size = 10),
   panel.background = element_rect(fill = col_bgr, color = col_bgr),
-  plot.background = element_rect(fill = col_bgr, color = "grey75", size = 1),
+  #plot.background = element_rect(fill = col_bgr, color = "grey75", size = 1),
   legend.position = "none",
   strip.placement = "outside",
   strip.text = element_text(color = col_text),
@@ -433,17 +436,21 @@ theme_model_summary <- theme_minimal(base_size = 18, base_family = "Open Sans") 
 )
 
 ggplot(post_estimates, aes(y = model)) +
-  geom_linerange(aes(xmin = x0_025quant, xmax = x0_975quant, color = model), size = 1) +
+  geom_linerange(aes(xmin = mean-sd, xmax = mean+sd, color = model), size = 1) +
   geom_point(aes(x = mean, color = model), size = 3) +
-  xlim(c(0.5, 2.5)) +
-  scale_color_manual(values = darken(ggthemes::canva_palettes$"Subtle and versatile"[c(3, 1)], 0.4), 
-                     labels = c("ME model", "True value"),
+  #xlim(c(0.7, 2.3)) +
+  scale_color_manual(values = colorspace::darken(ggthemes::canva_palettes$"Subtle and versatile"[c(3, 1)], 0.4), 
+                     #labels = c("ME model", "True value"),
                      guide = guide_legend(override.aes = list(size = 2, alpha = 1))) +
   facet_wrap(vars(coef_pretty), nrow = 2, switch = "x",
              labeller = label_parsed, scales = "free_x"
              ) +
   labs(x = "Posterior mean") +
+  coord_cartesian(clip = "off") +
   theme_model_summary
+```
+```{r}
+ggsave("../PhDEmma/PaperA_ME_and_missing_data/figures/simulation_ex_figure.png", width = 7, height = 5)
 ```
 
 

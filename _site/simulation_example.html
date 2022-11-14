@@ -273,7 +273,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Classical error:</span></span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>u_c <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>w_c <span class="ot">&lt;-</span> x <span class="sc">+</span> u_c  <span class="co"># I think maybe this is incorrect, shouldn't we be using w_b here?</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>w_c <span class="ot">&lt;-</span> w_b <span class="sc">+</span> u_c  <span class="co"># I think maybe this is incorrect, shouldn't we be using w_b here?</span></span>
 <span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Missingness:</span></span>
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>m_pred <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">1.5</span> <span class="sc">-</span> <span class="fl">0.5</span><span class="sc">*</span>z <span class="co"># This gives a mean probability of missing of ca 0.2.</span></span>
@@ -575,27 +575,81 @@ z_n \\
 <h2 class="anchored" data-anchor-id="results">Results</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of fixed effects:</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>model_sim<span class="sc">$</span>summary.fixed[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>fixed <span class="ot">&lt;-</span> model_sim<span class="sc">$</span>summary.fixed[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>fixed </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>             mean         sd
-beta.0  0.7924124 0.12138266
-beta.z  1.6778856 0.17253157
-alpha.0 1.0075174 0.06260394
-alpha.z 1.9828563 0.06274263</code></pre>
+<pre><code>             mean         sd 0.025quant  0.5quant 0.975quant
+beta.0  -1.150442 0.31657333 -1.8019089 -1.125478 -0.5950122
+beta.z  -2.196309 0.54326264 -3.2863731 -2.132223 -1.2934611
+alpha.0  1.014096 0.05036967  0.9153049  1.014097  1.1128854
+alpha.z  2.008098 0.05047994  1.9090907  2.008099  2.1071037</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of random effects:</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>model_sim<span class="sc">$</span>summary.hyperpar[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>hyper <span class="ot">&lt;-</span> model_sim<span class="sc">$</span>summary.hyperpar[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>hyper</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                                                mean         sd
-Precision for the Gaussian observations    7.9373959 3.03129428
-Precision for the Gaussian observations[4] 0.5263154 0.04196907
-Beta for beta.x                            2.1623550 0.07410072</code></pre>
+<pre><code>                                               mean        sd 0.025quant
+Precision for the Gaussian observations    3.885156 2.2426586   1.220886
+Precision for the Gaussian observations[4] 1.935656 0.2582410   1.507416
+Beta for beta.x                            4.100973 0.2511381   3.640867
+                                           0.5quant 0.975quant
+Precision for the Gaussian observations    3.350412   9.725614
+Precision for the Gaussian observations[4] 1.907570   2.519711
+Beta for beta.x                            4.088352   4.626499</code></pre>
 </div>
 </div>
-<p>The fixed effects can then be accessed through <code>model$summary.fixed</code>, whereas the posterior mean and sd for the coefficient of <span class="math inline">\(\boldsymbol{x}\)</span> can be accessed through <code>model$summary.hyperpar</code>. [todo: what are the two precisions? The precision for the MOI and the imputation model?]</p>
+<p>The fixed effects can then be accessed through <code>model$summary.fixed</code>, whereas the posterior mean and sd for the coefficient of <span class="math inline">\(\boldsymbol{x}\)</span> can be accessed through <code>model$summary.hyperpar</code>.</p>
+<div class="cell" data-fig.showtext="true">
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+✔ ggplot2 3.3.6      ✔ purrr   0.3.5 
+✔ tibble  3.1.8      ✔ dplyr   1.0.10
+✔ tidyr   1.2.1      ✔ stringr 1.4.1 
+✔ readr   2.1.3      ✔ forcats 0.5.2 
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ purrr::accumulate() masks foreach::accumulate()
+✖ tidyr::expand()     masks Matrix::expand()
+✖ dplyr::filter()     masks stats::filter()
+✖ dplyr::lag()        masks stats::lag()
+✖ tidyr::pack()       masks Matrix::pack()
+✖ tidyr::unpack()     masks Matrix::unpack()
+✖ purrr::when()       masks foreach::when()
+Loading required package: sysfonts
+
+Loading required package: showtextdb</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Outer names are only allowed for unnamed scalar atomic inputs</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: 'switch' is deprecated.
+Use 'strip.position' instead.
+See help("Deprecated")</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 1 rows containing missing values (geom_segment).
+Removed 1 rows containing missing values (geom_segment).
+Removed 1 rows containing missing values (geom_segment).
+Removed 1 rows containing missing values (geom_segment).
+Removed 1 rows containing missing values (geom_segment).</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="simulation_example_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the INLA-model to the package so it can be summarized in the paper.</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(model_sim, <span class="at">file =</span> <span class="st">"results/model_simulation.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"../PhDEmma/PaperA_ME_and_missing_data/figures/simulation_ex_figure.png"</span>, <span class="at">width =</span> <span class="dv">7</span>, <span class="at">height =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 1 rows containing missing values (geom_segment).
+Removed 1 rows containing missing values (geom_segment).
+Removed 1 rows containing missing values (geom_segment).
+Removed 1 rows containing missing values (geom_segment).
+Removed 1 rows containing missing values (geom_segment).</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the INLA-model to the package so it can be summarized in the paper.</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(model_sim, <span class="at">file =</span> <span class="st">"results/model_simulation.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

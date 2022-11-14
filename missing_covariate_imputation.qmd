@@ -12,11 +12,13 @@ In this example, we use the `nhanes2` data set from the `mice` R-package to illu
 ```{r}
 #| label: setup
 #| message: false
-library(mice)    # Just used for the nhanes2 data set
-library(INLA)    # INLA modelling
-library(dplyr)   # Data wrangling of the results
-library(gt)      # Tables
-
+library(mice)       # Just used for the nhanes2 data set
+library(INLA)       # INLA modelling
+library(dplyr)      # Data wrangling of the results
+library(gt)         # Tables
+library(tidyverse)  # Data wrangling and plotting
+library(showtext)   # Font
+library(colorspace) # Color adjustments
 ```
 
 ## Loading and preparing the data
@@ -73,6 +75,7 @@ prec.x <- 1
 ```{r}
 Y <- matrix(NA, 3*n, 3)
 
+
 Y[1:n, 1] <- chl             # Regression model of interest response
 Y[n+(1:n), 2] <- bmi         # Error model response
 Y[2*n+(1:n), 3] <- rep(0, n) # Exposure model response
@@ -116,7 +119,7 @@ formula = Y ~ - 1 + beta.0 + beta.z2 + beta.z3 +
 Since we are not assuming any measurement error here, we need to "turn off" the error model for the observations where the observation is not missing. 
 ```{r}
 # Scale the measurement error precision according to whether observations are missing or not (1 if missing, large if not missing)
-M <- ifelse(is.na(bmi), 1, 10^12)
+M <- ifelse(is.na(bmi), 10^12, 10^12)
 # Scaling the precision to be large for the error model (since we only have correctly observed or missing data, we want high precision for the correctly observed data and for the missing data it doesn't matter)
 Scale <- c(rep(1, n), M, rep(1, n))
 ```
@@ -150,10 +153,12 @@ model_missing <- inla(formula, data = dd, scale = Scale,
                                    alpha.z2 = prior.alpha[2],
                                    alpha.z3 = prior.alpha[2])),
                      verbose=F)
+summary(model_missing)
 ```
 
 
 ```{r}
+#| purl: false
 # Save results:
 saveRDS(model_missing, file = "results/model_missing.rds")
 ```
@@ -161,6 +166,8 @@ saveRDS(model_missing, file = "results/model_missing.rds")
 ### Fitting a complete case model
 
 ```{r}
+#| label: naive model
+#| purl: false
 # Where is bmi missing? 
 missing_bmi <- is.na(bmi)
 
@@ -195,6 +202,8 @@ model_naive <- inla(formula,
                                    beta.z3 = prior.beta[2],  
                                    beta.x = prior.beta[2])),
 )
+
+summary(model_naive)
 ```
 
 
@@ -205,6 +214,7 @@ The posterior means and standard deviations are presented in the table below.
 
 ```{r}
 #| echo: false
+#| purl: false
 
 return_estimates <- function(inla.object){
   fixed <- data.frame(inla.object$summary.fixed)
@@ -231,7 +241,7 @@ return_estimates <- function(inla.object){
 ```{r}
 #| echo: false
 #| eval: false
-
+#| purl: false
 return_estimates(model_missing) %>% 
   select(coefficient.name, mean, sd, model) %>% 
   arrange(desc(model)) %>% # Arrange so the MOI coefs are at the top
@@ -242,6 +252,7 @@ return_estimates(model_missing) %>%
 
 ```{r}
 #| echo: false
+#| purl: false
 inla_mcmc_results <- tibble::tribble(
   ~coefficient.name, ~model,              ~inla_mcmc.mean, ~inla_mcmc.sd,
   "beta.0",          "Model of interest", 43.469, 62.603,
@@ -272,4 +283,86 @@ return_estimates(model_missing) %>%
 
 
 https://stefvanbuuren.name/RECAPworkshop/Practicals/RECAP_Practical_II.html 
+
+
+
+
+```{r}
+#| label: visualize results
+#| purl: false
+#| fig.showtext: true
+
+me_plot <- return_estimates(model_missing) %>% 
+  select(coefficient.name, mean, sd, model) 
+naive_plot <- naive_results %>% rename(sd = naive.sd, mean = naive.mean)
+inla_mcmc_plot <- inla_mcmc_results %>% rename(sd = inla_mcmc.sd, mean = inla_mcmc.mean)
+
+all_models_for_plot <- bind_rows("me" = me_plot, 
+                                 "naive" = naive_plot, 
+                                 "inla_mcmc" = inla_mcmc_plot, 
+                                 .id = "model") %>% 
+  mutate(coef_name = recode_factor(coefficient.name, "Beta for beta.x" = "beta.x")) %>%
+  tidyr::separate(coef_name, c("sub_model", "coef_name")) %>% 
+  mutate(coef_pretty = paste0(sub_model, "[", coef_name, "]")) %>% 
+  mutate(model = recode(model, "me" = "ME model", "naive" = "Complete case analysis", "inla_mcmc" = "Goméz-Rubio & Rue (2018)")) %>% 
+  mutate(coef_pretty = fct_relevel(coef_pretty, levels = c("beta[0]", "beta[z2]", "beta[z3]", "beta[x]", "alpha[0]", "alpha[z2]", "alpha[z3]")))
+
+
+# Colors
+col_bgr <- "white" #"#fbf9f4"
+col_text <- "#191919"
+
+# Loading fonts
+f1 <- "Open Sans"
+f2 <- "Open Sans"
+font_add_google(name = f1, family = f1)
+font_add_google(name = f2, family = f2)
+
+# Plot theme
+theme_model_summary <- theme_minimal(base_size = 18, base_family = "Open Sans") + 
+  theme(
+  axis.title.y = element_blank(),
+  axis.title.x = element_text(size = 12),
+  axis.text = element_text(size = 10, color = col_text),
+  #axis.text.x = element_blank(),
+  axis.ticks = element_blank(),
+  legend.title = element_blank(),
+  legend.text = element_text(size = 10),
+  panel.background = element_rect(fill = col_bgr, color = col_bgr),
+  #plot.background = element_rect(fill = col_bgr, color = "grey75", size = 1),
+  legend.position = "none",
+  strip.placement = "outside",
+  strip.text = element_text(color = col_text),
+  panel.grid.major.y = element_blank(),
+  panel.grid.minor = element_blank(),
+  plot.title.position = "plot",
+  axis.line.x = element_line(size = 1, color = "grey65"),
+  plot.margin = margin(rep(15, 4))
+)
+
+ggplot(all_models_for_plot, aes(y = model)) +
+  geom_linerange(aes(xmin = mean-sd, xmax = mean+sd, color = model), size = 1) +
+  geom_point(aes(x = mean, color = model), size = 3) +
+  #scale_x_continuous(limits = c(-30, 90), breaks = seq(-30, 90, by = 30)) +
+  scale_color_manual(values = darken(ggthemes::canva_palettes$"Subtle and versatile"[c(3, 1, 4)], 0.4), 
+                     guide = guide_legend(override.aes = list(size = 2, alpha = 1))) +
+  facet_wrap(vars(coef_pretty), nrow = 2, switch = "x",
+             labeller = label_parsed, scales = "free_x"
+             ) +
+  labs(x = "Posterior mean") +
+  coord_cartesian(clip = "off") +
+  theme_model_summary
+```
+
+```{r}
+#| purl: false
+
+ggsave("../PhDEmma/PaperA_ME_and_missing_data/figures/missing_figure.png", width = 7, height = 5)
+```
+
+```{r}
+#| eval: false
+#| purl: false
+knitr::purl("missing_covariate_imputation.qmd")
+```
 

@@ -30,7 +30,14 @@ All the data sets that are used in the paper can be downloaded manually from [li
 
 The code was written and run in R with the following software versions:
 
-```{r, results='asis', echo=FALSE}
+```{r}
+inla.version()
+```
+
+
+```{r, , echo=FALSE}
+#| results: asis
+#| echo: false
 sessioninfo::session_info(pkgs = c("INLA", "inlabru")) |> 
   details::details(
     summary = 'Current session info',
