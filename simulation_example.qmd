@@ -14,6 +14,13 @@ library(INLA)
 $$
 \def\na{\texttt{NA}}
 $$
+```{r}
+#| echo: false
+#| purl: false
+#| message: false
+knitr::purl("R/simulation_example.R")
+```
+
 
 We here provide a detailed guide to the data simulation and measurement error model used in the simulation study in the paper. This vignette goes through the model in great detail, but only one data set is generated. In the example [Simulation study](simulation_study.qmd) the simulation is run 100 times to ensure that the result are not just due to random variation.
 
@@ -459,3 +466,5 @@ ggsave("../PhDEmma/PaperA_ME_and_missing_data/figures/simulation_ex_figure.png",
 # Save the INLA-model to the package so it can be summarized in the paper.
 saveRDS(model_sim, file = "results/model_simulation.rds")
 ```
+
+

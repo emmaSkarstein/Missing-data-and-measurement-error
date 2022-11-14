@@ -4,6 +4,12 @@ execute:
   freeze: auto
 ---
 
+```{r}
+#| eval: false
+#| purl: false
+#| message: false
+knitr::purl("R/missing_covariate_imputation.qmd")
+```
 
 In this example, we use the `nhanes2` data set from the `mice` R-package to illustrate how to do missing covariate imputation in INLA by using a measurement error model.
 
@@ -360,9 +366,5 @@ ggplot(all_models_for_plot, aes(y = model)) +
 ggsave("../PhDEmma/PaperA_ME_and_missing_data/figures/missing_figure.png", width = 7, height = 5)
 ```
 
-```{r}
-#| eval: false
-#| purl: false
-knitr::purl("missing_covariate_imputation.qmd")
-```
+
 

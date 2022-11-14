@@ -250,6 +250,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><span class="math display">\[
 \def\na{\texttt{NA}}
 \]</span></p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>
+
+processing file: R/simulation_example.R</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |......................................................................| 100%</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>output file: simulation_example.R</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "simulation_example.R"</code></pre>
+</div>
+</div>
 <p>We here provide a detailed guide to the data simulation and measurement error model used in the simulation study in the paper. This vignette goes through the model in great detail, but only one data set is generated. In the example <a href="./simulation_study.html">Simulation study</a> the simulation is run 100 times to ensure that the result are not just due to random variation.</p>
 <p>For this example, we simulate a linear regression model with a mismeasured covariate <span class="math inline">\(\boldsymbol{x}\)</span>, observed as <span class="math inline">\(\boldsymbol{w}\)</span>, as well as a covariate without measurement error, <span class="math inline">\(\boldsymbol{z}\)</span>. The covariate <span class="math inline">\(\boldsymbol{x}\)</span> is constructed to have both Berkson and classical measurement error, and it is also missing (completely at random) approximately 20% of the observations.</p>
 <p>Some text from the paper: and the respective likelihood functions for each of the sub-models are passed to the function through the argument. To ensure that the shared term across models is understood to be the same in each sub-model, which in our case is the variable <span class="math inline">\(\boldsymbol{r}\)</span>, we use the feature. The feature can be used to directly copy a term that is shared across the sub-models, or the copied effect can be scaled by a parameter. In this case that parameter is simply a constant vector whose terms are either 1 or -1, with the scaling of 1 corresponding to the term in the main model of interest, and the scaling of -1 corresponding to the imputation model, thus ensuring that <span class="math inline">\(\boldsymbol{x}\)</span> is on the right hand side of the equation, as described in equation <span class="math inline">\(\eqref{eq:trick}\)</span>.</p>
@@ -257,32 +277,32 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 class="anchored" data-anchor-id="data-generation">Data generation</h2>
 <p>The data is generated in the following code.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2022</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Covariate without error:</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Berkson error:</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>w_b <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="at">mean =</span> <span class="dv">1</span> <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>z, <span class="at">sd =</span> <span class="dv">1</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>u_b <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> w_b <span class="sc">+</span> u_b</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Response:</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>x <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>z <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Classical error:</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>u_c <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>w_c <span class="ot">&lt;-</span> w_b <span class="sc">+</span> u_c  <span class="co"># I think maybe this is incorrect, shouldn't we be using w_b here?</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Missingness:</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>m_pred <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">1.5</span> <span class="sc">-</span> <span class="fl">0.5</span><span class="sc">*</span>z <span class="co"># This gives a mean probability of missing of ca 0.2.</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>m_prob <span class="ot">&lt;-</span> <span class="fu">exp</span>(m_pred)<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(m_pred))</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>m_index <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n, <span class="dv">1</span>, <span class="at">prob =</span> m_prob) <span class="co"># MAR</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co"># m_index &lt;- sample(1:n, 0.2*n, replace = FALSE) # MCAR</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>w_c[m_index] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>simulated_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">y =</span> y, <span class="at">w =</span> w_c, <span class="at">z =</span> z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2022</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Covariate without error:</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Berkson error:</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>w_b <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="at">mean =</span> <span class="dv">1</span> <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>z, <span class="at">sd =</span> <span class="dv">1</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>u_b <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> w_b <span class="sc">+</span> u_b</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Response:</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>x <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>z <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Classical error:</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>u_c <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>w_c <span class="ot">&lt;-</span> w_b <span class="sc">+</span> u_c  <span class="co"># I think maybe this is incorrect, shouldn't we be using w_b here?</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Missingness:</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>m_pred <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">1.5</span> <span class="sc">-</span> <span class="fl">0.5</span><span class="sc">*</span>z <span class="co"># This gives a mean probability of missing of ca 0.2.</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>m_prob <span class="ot">&lt;-</span> <span class="fu">exp</span>(m_pred)<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(m_pred))</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>m_index <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n, <span class="dv">1</span>, <span class="at">prob =</span> m_prob) <span class="co"># MAR</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co"># m_index &lt;- sample(1:n, 0.2*n, replace = FALSE) # MCAR</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>w_c[m_index] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>simulated_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">y =</span> y, <span class="at">w =</span> w_c, <span class="at">z =</span> z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The simulated “observed” data then consists of three columns:</p>
 <p><span class="math display">\[
@@ -295,8 +315,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><span class="math inline">\(z_1, \dots, z_n\)</span>: A continuous covariate.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(simulated_data)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(simulated_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(simulated_data)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(simulated_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="model" class="level2">
@@ -326,23 +346,23 @@ x_i = \alpha_0 + \alpha_z z + \varepsilon_x \ , \quad \varepsilon_x \sim N(0, \t
 </ul>
 <p>We specify the priors in the code:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for model of interest coefficients</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>prior.beta <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">1000</span>) <span class="co"># N(0, 10^3)</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for exposure model coefficients</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>prior.alpha <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">10000</span>) <span class="co"># N(0, 10^4)</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for y, measurement error and true x-value precision</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>prior.prec.y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>prior.prec.u_b <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>prior.prec.u_c <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>prior.prec.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial values</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>prec.y <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>prec.u_b <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>prec.u_c <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>prec.x <span class="ot">&lt;-</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for model of interest coefficients</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>prior.beta <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">1000</span>) <span class="co"># N(0, 10^3)</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for exposure model coefficients</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>prior.alpha <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">10000</span>) <span class="co"># N(0, 10^4)</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for y, measurement error and true x-value precision</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>prior.prec.y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>prior.prec.u_b <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>prior.prec.u_c <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>prior.prec.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial values</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>prec.y <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>prec.u_b <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>prec.u_c <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>prec.x <span class="ot">&lt;-</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The hierarchical model described in the above section is fit in INLA as a joint model using the <span class="math inline">\(\texttt{copy}\)</span> feature. We first specify the models in the following matrices and vectors:</p>
 <p><span class="math display">\[
@@ -485,37 +505,37 @@ z_n \\
 \]</span></p>
 <p>We specify these matrices in our code:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="dv">4</span><span class="sc">*</span>n, <span class="dv">4</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span>] <span class="ot">&lt;-</span> y               <span class="co"># Regression model of interest response</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>Y[n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n)   <span class="co"># Berkson error model response</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">2</span><span class="sc">*</span>n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">3</span>] <span class="ot">&lt;-</span> w         <span class="co"># Classical error model response</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">3</span><span class="sc">*</span>n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n) <span class="co"># Imputation model response</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>beta<span class="fl">.0</span> <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>beta.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>beta.z <span class="ot">&lt;-</span> <span class="fu">c</span>(z, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>id.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="dv">1</span><span class="sc">:</span>n, <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="dv">1</span><span class="sc">:</span>n)</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>weight.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span>, n))</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>beta.r <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span><span class="sc">:</span>n, <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>weight.r <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">4</span><span class="sc">*</span>n))</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>alpha<span class="fl">.0</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n), <span class="fu">rep</span>(<span class="dv">1</span>, n))</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>alpha.z <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n), z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="dv">4</span><span class="sc">*</span>n, <span class="dv">4</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span>] <span class="ot">&lt;-</span> y               <span class="co"># Regression model of interest response</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>Y[n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n)   <span class="co"># Berkson error model response</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">2</span><span class="sc">*</span>n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">3</span>] <span class="ot">&lt;-</span> w         <span class="co"># Classical error model response</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">3</span><span class="sc">*</span>n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n) <span class="co"># Imputation model response</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>beta<span class="fl">.0</span> <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>beta.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>beta.z <span class="ot">&lt;-</span> <span class="fu">c</span>(z, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>id.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="dv">1</span><span class="sc">:</span>n, <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="dv">1</span><span class="sc">:</span>n)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>weight.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span>, n))</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>beta.r <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span><span class="sc">:</span>n, <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>weight.r <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">4</span><span class="sc">*</span>n))</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>alpha<span class="fl">.0</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n), <span class="fu">rep</span>(<span class="dv">1</span>, n))</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>alpha.z <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n), z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dd <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Y =</span> Y,</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.0 =</span> beta<span class="fl">.0</span>,</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.x =</span> beta.x,</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.z =</span> beta.z,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">id.x =</span> id.x, </span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">weight.x =</span> weight.x,</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.r =</span> beta.r,</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">weight.r =</span> weight.r,</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha.0 =</span> alpha<span class="fl">.0</span>,</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha.z =</span> alpha.z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dd <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Y =</span> Y,</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.0 =</span> beta<span class="fl">.0</span>,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.x =</span> beta.x,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.z =</span> beta.z,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">id.x =</span> id.x, </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">weight.x =</span> weight.x,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.r =</span> beta.r,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">weight.r =</span> weight.r,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha.0 =</span> alpha<span class="fl">.0</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha.z =</span> alpha.z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Next, we set up the INLA formula. There are four fixed effects (<span class="math inline">\(\beta_0\)</span>, <span class="math inline">\(\beta_z\)</span>, <span class="math inline">\(\alpha_0\)</span>, <span class="math inline">\(\alpha_z\)</span>) and three random effects. Two of the random effects are necessary to ensure that the values of <span class="math inline">\(\boldsymbol{r}\)</span> are the same in the exposure model and error model are assigned the same values as in the regression model, where <span class="math inline">\(\beta_x \boldsymbol{r}\)</span> is the product of two unknown quantities. The third random effect term is for encoding the Berkson error model.</p>
 <ul>
@@ -524,16 +544,16 @@ z_n \\
 <li><code>f(beta.r, weight.r, ...)</code>:</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>formula <span class="ot">=</span> Y <span class="sc">~</span> <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> beta<span class="fl">.0</span> <span class="sc">+</span> beta.z <span class="sc">+</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(beta.x, <span class="at">copy =</span> <span class="st">"id.x"</span>,  </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">beta =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.beta, <span class="at">fixed =</span> <span class="cn">FALSE</span>))) <span class="sc">+</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(id.x, weight.x, <span class="at">model =</span> <span class="st">"iid"</span>, <span class="at">values =</span> <span class="dv">1</span><span class="sc">:</span>n, </span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>))) <span class="sc">+</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(beta.r, weight.r, <span class="at">model=</span><span class="st">"iid"</span>, <span class="at">values =</span> <span class="dv">1</span><span class="sc">:</span>n, </span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>))) <span class="sc">+</span> </span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">#  f(u.b.tilde, model = "iid", values = 1:n,</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">#    hyper = list(prec = list(initial = log(1), fixed=TRUE))) +</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  alpha<span class="fl">.0</span> <span class="sc">+</span> alpha.z</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>formula <span class="ot">=</span> Y <span class="sc">~</span> <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> beta<span class="fl">.0</span> <span class="sc">+</span> beta.z <span class="sc">+</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(beta.x, <span class="at">copy =</span> <span class="st">"id.x"</span>,  </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">beta =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.beta, <span class="at">fixed =</span> <span class="cn">FALSE</span>))) <span class="sc">+</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(id.x, weight.x, <span class="at">model =</span> <span class="st">"iid"</span>, <span class="at">values =</span> <span class="dv">1</span><span class="sc">:</span>n, </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>))) <span class="sc">+</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(beta.r, weight.r, <span class="at">model=</span><span class="st">"iid"</span>, <span class="at">values =</span> <span class="dv">1</span><span class="sc">:</span>n, </span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>))) <span class="sc">+</span> </span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co">#  f(u.b.tilde, model = "iid", values = 1:n,</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co">#    hyper = list(prec = list(initial = log(1), fixed=TRUE))) +</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  alpha<span class="fl">.0</span> <span class="sc">+</span> alpha.z</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We explicitly remove the intercept using <code>-1</code> since there is no common intercept in the joint model, and the model specific intercepts <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\alpha_0\)</span> are specified instead.</p>
 <p>Next comes the call of the <code>inla</code> function. We explain further some of the terms:</p>
@@ -543,59 +563,59 @@ z_n \\
 <li><code>control.fixed</code>: Prior specification for the fixed effects.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>model_sim <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula, <span class="at">data =</span> dd, <span class="at">scale =</span> scale.vec,</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">family =</span> <span class="fu">c</span>(<span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>),</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">control.family =</span> <span class="fu">list</span>(</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.y),</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">param =</span> prior.prec.y,</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_b),</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">param =</span> prior.prec.u_b,</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">fixed =</span> <span class="cn">TRUE</span>))),</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_c),</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">param =</span> prior.prec.u_c,</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">fixed =</span> <span class="cn">TRUE</span>))),</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x),</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">param =</span> prior.prec.x,</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">fixed =</span> <span class="cn">FALSE</span>)))</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>                  ),</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>                  <span class="at">control.fixed =</span> <span class="fu">list</span>(</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>                    <span class="at">mean =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">1</span>],</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>                                <span class="at">beta.z =</span> prior.beta[<span class="dv">1</span>],</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>                                <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">1</span>],</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>                                <span class="at">alpha.z =</span> prior.alpha[<span class="dv">1</span>]),</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>                    <span class="at">prec =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">2</span>],</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>                                <span class="at">beta.z =</span> prior.beta[<span class="dv">2</span>],</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>                                <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">2</span>],</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>                                <span class="at">alpha.z =</span> prior.alpha[<span class="dv">2</span>]))</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>               )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>model_sim <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula, <span class="at">data =</span> dd, <span class="at">scale =</span> scale.vec,</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">family =</span> <span class="fu">c</span>(<span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>),</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">control.family =</span> <span class="fu">list</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.y),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">param =</span> prior.prec.y,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_b),</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">param =</span> prior.prec.u_b,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">fixed =</span> <span class="cn">TRUE</span>))),</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_c),</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">param =</span> prior.prec.u_c,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">fixed =</span> <span class="cn">TRUE</span>))),</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x),</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">param =</span> prior.prec.x,</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">fixed =</span> <span class="cn">FALSE</span>)))</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>                  ),</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>                  <span class="at">control.fixed =</span> <span class="fu">list</span>(</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>                    <span class="at">mean =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>                                <span class="at">beta.z =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>                                <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>                                <span class="at">alpha.z =</span> prior.alpha[<span class="dv">1</span>]),</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>                    <span class="at">prec =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>                                <span class="at">beta.z =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>                                <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>                                <span class="at">alpha.z =</span> prior.alpha[<span class="dv">2</span>]))</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>               )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="results" class="level2">
 <h2 class="anchored" data-anchor-id="results">Results</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of fixed effects:</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>fixed <span class="ot">&lt;-</span> model_sim<span class="sc">$</span>summary.fixed[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>fixed </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of fixed effects:</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>fixed <span class="ot">&lt;-</span> model_sim<span class="sc">$</span>summary.fixed[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>fixed </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>             mean         sd 0.025quant  0.5quant 0.975quant
-beta.0  -1.150442 0.31657333 -1.8019089 -1.125478 -0.5950122
-beta.z  -2.196309 0.54326264 -3.2863731 -2.132223 -1.2934611
-alpha.0  1.014096 0.05036967  0.9153049  1.014097  1.1128854
-alpha.z  2.008098 0.05047994  1.9090907  2.008099  2.1071037</code></pre>
+beta.0  -1.164187 0.31785941  -1.816871 -1.144270 -0.6002086
+beta.z  -2.223271 0.54507878  -3.316543 -2.179607 -1.3018740
+alpha.0  1.014098 0.05033982   0.915365  1.014098  1.1128282
+alpha.z  2.008099 0.05045003   1.909151  2.008100  2.1070461</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of random effects:</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>hyper <span class="ot">&lt;-</span> model_sim<span class="sc">$</span>summary.hyperpar[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>hyper</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of random effects:</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>hyper <span class="ot">&lt;-</span> model_sim<span class="sc">$</span>summary.hyperpar[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>hyper</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                                               mean        sd 0.025quant
-Precision for the Gaussian observations    3.885156 2.2426586   1.220886
-Precision for the Gaussian observations[4] 1.935656 0.2582410   1.507416
-Beta for beta.x                            4.100973 0.2511381   3.640867
+Precision for the Gaussian observations    3.865299 2.1767003   1.186280
+Precision for the Gaussian observations[4] 1.944933 0.2552689   1.510519
+Beta for beta.x                            4.111898 0.2526958   3.634683
                                            0.5quant 0.975quant
-Precision for the Gaussian observations    3.350412   9.725614
-Precision for the Gaussian observations[4] 1.907570   2.519711
-Beta for beta.x                            4.088352   4.626499</code></pre>
+Precision for the Gaussian observations    3.370532   9.483246
+Precision for the Gaussian observations[4] 1.921009   2.513559
+Beta for beta.x                            4.104142   4.629517</code></pre>
 </div>
 </div>
 <p>The fixed effects can then be accessed through <code>model$summary.fixed</code>, whereas the posterior mean and sd for the coefficient of <span class="math inline">\(\boldsymbol{x}\)</span> can be accessed through <code>model$summary.hyperpar</code>.</p>
@@ -634,11 +654,11 @@ Removed 1 rows containing missing values (geom_segment).
 Removed 1 rows containing missing values (geom_segment).</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="simulation_example_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+<p><img src="simulation_example_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"../PhDEmma/PaperA_ME_and_missing_data/figures/simulation_ex_figure.png"</span>, <span class="at">width =</span> <span class="dv">7</span>, <span class="at">height =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"../PhDEmma/PaperA_ME_and_missing_data/figures/simulation_ex_figure.png"</span>, <span class="at">width =</span> <span class="dv">7</span>, <span class="at">height =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Removed 1 rows containing missing values (geom_segment).
 Removed 1 rows containing missing values (geom_segment).
@@ -648,8 +668,8 @@ Removed 1 rows containing missing values (geom_segment).</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the INLA-model to the package so it can be summarized in the paper.</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(model_sim, <span class="at">file =</span> <span class="st">"results/model_simulation.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the INLA-model to the package so it can be summarized in the paper.</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(model_sim, <span class="at">file =</span> <span class="st">"results/model_simulation.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

@@ -9,6 +9,12 @@ execute:
 #| label: setup
 ```
 
+```{r}
+#| echo: false
+#| purl: false
+#| message: false
+knitr::purl("R/missing_and_mismeasured_covariate.R")
+```
 
 # Packages
 

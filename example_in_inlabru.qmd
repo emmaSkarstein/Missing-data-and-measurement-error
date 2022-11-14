@@ -9,6 +9,14 @@ execute:
 library(INLA)
 library(inlabru)
 ```
+
+```{r}
+#| echo: false
+#| purl: false
+#| message: false
+knitr::purl("R/example_in_inlabru.R")
+```
+
 We here show how to fit the measurement error and missing data model in `inlabru`. The `inlabru` code is written by Sara Martino, and commented by Emma Skarstein.
 
 ## Loading the data
