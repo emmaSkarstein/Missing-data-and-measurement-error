@@ -1,18 +1,20 @@
-## ----setup-----------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 library(INLA)
 library(inlabru)
 
 
-## --------------------------------------------------------------------------------------------
-knitr::purl(input = "example_in_inlabru.qmd", output = "R/example_in_inlabru.R")
+
+## ----r------------------------------------------------------------------------
+# Not sure if this is necessary with inlabru (TODO: check)
+inla.setOption(num.threads = "1:1")
 
 
-## --------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 data <- read.csv("data/simulated_data.csv")
 n <- nrow(data)
 
 
-## ----echo = TRUE-----------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 # Priors for model of interest coefficients
 prior.beta = c(0, 1/1000) # N(0, 10^3)
 
@@ -32,10 +34,10 @@ prec.u_c <- 1
 prec.x <- 1
 
 
-## --------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 data1 = data.frame(y = data$y, z = data$z, weight = 1, r = 1:n)
-data2 = data.frame(w = data$w,  weight = 1, r = 1:n)
-data3 = data.frame(zero = 0, z = data$z,  weight = -1, r = 1:n)
+data2 = data.frame(w = data$w, weight = 1, r = 1:n)
+data3 = data.frame(zero = 0, z = data$z, weight = -1, r = 1:n)
 
 
 cmp = ~ Intercept(1, model = "linear", prec.linear = prior.beta[2]) +
@@ -75,7 +77,7 @@ lik3  = like(formula = zero ~ alpha_0 + alpha_z + r_eff,
 # formula = y ~ .,
 # formula = w ~ .,
 # formula = zero ~ .,
-# does exactly the same.
+# does exactly the same in this case.
 
 
 bru_options_set(bru_verbose = 1)
@@ -89,7 +91,7 @@ fit = bru(components = cmp,
 fit$summary.fixed
 
 
-## --------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 # no copy -----------------------------------------------------------------
 
 cmp2 = ~ Intercept(1, model = "linear", prec.linear = prior.beta[2]) +

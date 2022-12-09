@@ -1,0 +1,28 @@
+---
+title: "Bloodpressure data"
+---
+
+Repeated systolic blood pressure measurements with measurement error.
+
+A dataset containing a repeated blood pressure measurement along with some other variables for participants in the Third National Health and Nutrition Survey (NHANES III), merged with data from the US National Death Index by Ruth H. Keogh and Jonathan Bartlett.
+
+## Load the data
+```{r}
+bloodpressure <- read.csv("data/bloodpressure.csv")
+```
+
+## Format
+A data frame with 6519 rows and 8 variables:
+
+- `sbp1`: systolic blood pressure (standardized), first measurement
+- `sbp2`: systolic blood pressure (standardized), second measurement
+- `sex`: Sex (0 = ?, 1 = ?)
+- `age`: Age (standardized)
+- `smoke`: Smoking status (0 = no, 1 = yes)
+- `diabetes`: diabetes status (0 = no, 1 = yes)
+- `d`: censoring status (0 = censored, 1 = observed death due to cardiovascular disease)
+- `t`: time until death due to cardiovascular disease occurs
+
+
+## Source
+<https://github.com/ruthkeogh/meas_error_handbook>

@@ -13,11 +13,18 @@ This website contains scripts, tutorials and data to reproduce all analysis and 
 ## Examples 
 These include scripts to run the code for analysis, including comments and explanations.
 
-- Simulation example
-- Simulation study
-- Missing value imputation using INLA
-- Missing and mismeasured covariates
-- Examples in ‘inlabru’
+For a step-by-step introduction with detailed explanations, see [Simulation example](Simulation_example.qmd). This is a single sun of the simulation study shown in the paper, and the full code for the study can be found in [Simulation study](simulation_study.qmd). The data and model used in these examples reflect the most general case where we have a covariate with classical and Berkson measurement error, as well as missing data. For many users `inlabru` might be more intuitive than plain INLA, and so we have also included the same model implemented in `inlabru` in [Example in `inlabru`](example_in_inlabru.qmd).
+
+The remaining examples are variations on the above model using different data sets, see the table below for an overview of the different types of ME in the different examples.
+
+Example | Classical ME | Berkson ME | Missing data  
+---|-------------|-------------|-------------
+[Missing covariate imputation](missing_covariate_imputation.qmd) | | | x 
+[Missing and mismeasured covariate](missing_and_mismeasured_covariate.qmd) | x | | x 
+[Simulation study](simulation_study.qmd) | x | x | x 
+[Simulation example](simulation_example.qmd) | x | x | x 
+[Example in `inlabru`](example_in_inlabru.qmd) | x | x | x 
+
 
 ## Datasets
 All the data sets that are used in the paper can be downloaded manually from [link to github repo], or like this:
@@ -29,13 +36,19 @@ All the data sets that are used in the paper can be downloaded manually from [li
 ## Session info
 
 The code was written and run in R with the following software versions:
+```{r}
+#| echo: false
+#| message: false
+library(INLA)
+```
 
 ```{r}
+#| results: asis
 inla.version()
 ```
 
 
-```{r, , echo=FALSE}
+```{r}
 #| results: asis
 #| echo: false
 sessioninfo::session_info(pkgs = c("INLA", "inlabru")) |> 

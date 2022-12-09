@@ -1,7 +1,4 @@
-## --------------------------------------------------------------------------------------------
-
-
-## --------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------
 library(survival)
 library(flexsurv)
 library(boot)
@@ -10,13 +7,17 @@ library(rjags)
 library(INLA)
 
 
-## --------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------
+inla.setOption(num.threads = "1:1")
+
+
+## ---------------------------------------------------------------------------------------------------------------
 # Load data   ==================================================================
 mydata <- read.csv("data/bloodpressure.csv")
 head(mydata)
 
 
-## --------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------
 # Create complete-case data set  ===============================================
 
 # For the naive analysis, only the observations that have both sbp1 measurement
@@ -44,7 +45,7 @@ view_relevant <- function(INLA_res, model_name){
 }
 
 
-## --------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------
 # Note: JAGS and INLA use the same Weibull parameterization
 # (provided "variant" = 0 in INLA)
 
@@ -58,12 +59,12 @@ model_naive <- inla(formula.naive,
 summary(model_naive)
 
 
-## ---- echo = FALSE, eval = FALSE-------------------------------------------------------------
+## ---- echo = FALSE, eval = FALSE--------------------------------------------------------------------------------
 ## # Save for package:
 ## usethis::use_data(model_naive, overwrite = TRUE)
 
 
-## --------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------
 # Estimating sigma_u
 W <- ccaData[,1:2]
 W_mean <- rowMeans(ccaData[,1:2], na.rm = TRUE)
@@ -82,7 +83,7 @@ sigma_uu_alt <- (sum((ccaData$sbp1-W_mean)^2) +
 
 
 
-## --------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------
 # Priors for measurement error variance and true x-value
 prior.prec.u <- c(0.5, 0.5) # Gamma(0.5, 0.5) (same as Keogh&Bartlett)
 prior.prec.x <- c(0.5, 0.5) # Gamma(0.5, 0.5) (same as K&B)
@@ -106,7 +107,7 @@ prior.exp <- 0.01 # Exp(0.001) (INLA sets prior on theta, r~Exp(0.1*theta))
 exp.init <- 1.4
 
 
-## --------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------
 # Specifying Y object
 surv.time <- c(ccaData$t, rep(NA, 2*n))
 event <- c(ccaData$d, rep(NA, 2*n))
@@ -195,12 +196,12 @@ summary(model_bloodpressure0)
 view_relevant(model_bloodpressure0, model_name = "Single measurement")
 
 
-## ---- echo = FALSE, eval = FALSE-------------------------------------------------------------
+## ---- echo = FALSE, eval = FALSE--------------------------------------------------------------------------------
 ## # Save for package:
 ## usethis::use_data(model_bloodpressure0, overwrite = TRUE)
 
 
-## --------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------
 # Specifying Y object
 surv.time <- c(ccaData$t, rep(NA, 3*n))
 event <- c(ccaData$d, rep(NA, 3*n))
@@ -299,12 +300,12 @@ summary(model_bloodpressure1)
 view_relevant(model_bloodpressure1, "Repeated measurement")
 
 
-## ---- echo = FALSE, eval = FALSE-------------------------------------------------------------
+## ---- echo = FALSE, eval = FALSE--------------------------------------------------------------------------------
 ## # Save for package:
 ## usethis::use_data(model_bloodpressure1, overwrite = TRUE)
 
 
-## --------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------
 data2 <- subset(mydata, is.na(smoke) == FALSE)
 n <- nrow(data2)
 
@@ -405,19 +406,19 @@ summary(model_bloodpressure)
 view_relevant(model_bloodpressure, "Repeated measurement")
 
 
-## ---- echo = FALSE, eval = FALSE-------------------------------------------------------------
+## ---- echo = FALSE, eval = FALSE--------------------------------------------------------------------------------
 ## # Save for package:
 ## usethis::use_data(model_bloodpressure, overwrite = TRUE)
 
 
-## ---- eval = FALSE---------------------------------------------------------------------------
+## ---- eval = FALSE----------------------------------------------------------------------------------------------
 ## res.naive <- readRDS("PaperA_ME_and_missing_data/data/KB_inla_res0.rds")
 ## res.singlemes <- readRDS("PaperA_ME_and_missing_data/data/KB_inla_res1a.rds")
 ## res.repmeas <- readRDS("PaperA_ME_and_missing_data/data/KB_inla_res1b.rds")
 ## res.complbp <- readRDS("PaperA_ME_and_missing_data/data/KB_inla_res2.rds")
 
 
-## ---- eval = FALSE---------------------------------------------------------------------------
+## ---- eval = FALSE----------------------------------------------------------------------------------------------
 ## # Corresponds to Naive?
 ## view_relevant(res.naive, "Naive model")
 ## # No corresponding model in KB

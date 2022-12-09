@@ -2,19 +2,26 @@
 title: "Example in `inlabru`"
 execute: 
   freeze: true
+knitr:
+  opts_chunk: 
+    message: false
 ---
 
 
-```{r setup}
+```{r}
 library(INLA)
 library(inlabru)
 ```
 
 ```{r}
-#| echo: false
 #| purl: false
-#| message: false
-knitr::purl("R/example_in_inlabru.R")
+#| include: false
+knitr::purl(input = "example_in_inlabru.qmd", output = "R/example_in_inlabru.R")
+```
+```{r}
+#| echo: false
+# Not sure if this is necessary with inlabru (TODO: check)
+inla.setOption(num.threads = "1:1")
 ```
 
 We here show how to fit the measurement error and missing data model in `inlabru`. The `inlabru` code is written by Sara Martino, and commented by Emma Skarstein.
@@ -30,7 +37,7 @@ n <- nrow(data)
 ## Priors
 We use the exact same priors as in the original simulation study.
 
-```{r echo = TRUE}
+```{r}
 # Priors for model of interest coefficients
 prior.beta = c(0, 1/1000) # N(0, 10^3)
 
@@ -55,8 +62,8 @@ This is a direct translation of the INLA code.
 
 ```{r}
 data1 = data.frame(y = data$y, z = data$z, weight = 1, r = 1:n)
-data2 = data.frame(w = data$w,  weight = 1, r = 1:n)
-data3 = data.frame(zero = 0, z = data$z,  weight = -1, r = 1:n)
+data2 = data.frame(w = data$w, weight = 1, r = 1:n)
+data3 = data.frame(zero = 0, z = data$z, weight = -1, r = 1:n)
 
 
 cmp = ~ Intercept(1, model = "linear", prec.linear = prior.beta[2]) +
@@ -96,7 +103,7 @@ lik3  = like(formula = zero ~ alpha_0 + alpha_z + r_eff,
 # formula = y ~ .,
 # formula = w ~ .,
 # formula = zero ~ .,
-# does exactly the same.
+# does exactly the same in this case.
 
 
 bru_options_set(bru_verbose = 1)

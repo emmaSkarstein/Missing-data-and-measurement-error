@@ -12,13 +12,17 @@ website:
     contents:
       - section: "Datasets"
         contents:
-          - loading_data.qmd
-      - section: "Examples"
+          - data_bloodpressure.qmd
+          - data_nhanes.qmd
+          - data_simulated.qmd
+      - section: "Examples from the paper"
         contents:
           - missing_covariate_imputation.qmd
           - missing_and_mismeasured_covariate.qmd
-          - simulation_example.qmd
           - simulation_study.qmd
+      - section: "Additional examples"
+        contents: 
+          - simulation_example.qmd
           - example_in_inlabru.qmd
 
 format:

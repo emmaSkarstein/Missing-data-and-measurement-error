@@ -1,17 +1,20 @@
 ---
 title: "Missing covariate imputation"
 execute: 
-  freeze: auto
+  freeze: true
+knitr:
+  opts_chunk: 
+    message: false
 ---
 
 ```{r}
-#| eval: false
 #| purl: false
-#| message: false
-knitr::purl("R/missing_covariate_imputation.qmd")
+#| include: false
+#knitr::purl("R/missing_covariate_imputation.R")
 ```
 
 In this example, we use the `nhanes2` data set from the `mice` R-package to illustrate how to do missing covariate imputation in INLA by using a measurement error model.
+As noted in the paper, the `nhanes2` data set is really small, it only has 25 observations and 9 of them are missing, so this is not really a good application of this. However, we chose to use this as it is a data set that is commonly used in other missing data applications in INLA, and so we reasoned that using the same data set would make it easier to compare the implementations.
 
 ## Loading packages
 
@@ -25,6 +28,11 @@ library(gt)         # Tables
 library(tidyverse)  # Data wrangling and plotting
 library(showtext)   # Font
 library(colorspace) # Color adjustments
+library(MCMCpack)   # dinvgamma()
+```
+
+```{r}
+inla.setOption(num.threads = "1:1")
 ```
 
 ## Loading and preparing the data
@@ -51,28 +59,39 @@ bmi <- scale(nhanes2$bmi, scale = FALSE)[,1]
 We want to fit the model
 
 $$
-chl \sim \beta_0 + \beta_1 age_2 + \beta_2 age_3 + \beta_3 bmi
+chl \sim \beta_0 + \beta_{age2} age_2 + \beta_{age3} age_3 + \beta_{bmi} bmi
 $$
-TODO: Coefficient names are not consistent
 
 ### Specifying priors
 
 ```{r}
 # Priors for model of interest coefficients
-prior.beta = c(0, 1/1000) # N(0, 10^3)
+prior.beta = c(0, 1e-6) # Gaussian, c(mean, precision)
 
 # Priors for exposure model coefficients
-prior.alpha <- c(0, 1/10000) # N(0, 10^4) 
+prior.alpha <- c(0, 1e-6) # Gaussian, c(mean, precision)
 
 # Priors for y, measurement error and true x-value precision
-prior.prec.y <- c(0.5, 0.5) # Gamma(0.5, 0.5)
-prior.prec.u_c <- c(0.5, 0.5) # Gamma(0.5, 0.5)
-prior.prec.x <- c(0.5, 0.5) # Gamma(0.5, 0.5) 
+# Start by getting a reasonable prior guess for the standard error of the regression and exp. models
+summary(lm(chl~bmi+age2+age3))$sigma
+summary(lm(bmi~age2+age3))$sigma
+
+# Use those values to create reasonable priors:
+prior.prec.y <- c(2.5-1,(2.5)*29.1^2) # Gamma
+prior.prec.u_c <- c(0.5, 0.5) # Gamma
+prior.prec.x <- c(2.5-1,(2.5)*4.2^2) # Gamma
+
+# We can visualize these priors:
+#curve(dinvgamma(x, 2.5-1,(2.5)*29.1^2), 0, 2000)
+#abline(v=29.1^2)
+
+#curve(dinvgamma(x,2.5-1,(2.5)*4.1^2), 0, 50)
+#abline(v=4.2^2)
 
 # Initial values
-prec.y <- 1
+prec.y <- 1/29.1^2
 prec.u_c <- 1
-prec.x <- 1
+prec.x <- 1/4.2^2
 ```
 
 
@@ -87,37 +106,37 @@ Y[n+(1:n), 2] <- bmi         # Error model response
 Y[2*n+(1:n), 3] <- rep(0, n) # Exposure model response
 
 beta.0 <- c(rep(1, n), rep(NA, n), rep(NA, n))
-beta.x <- c(1:n, rep(NA, n), rep(NA, n))
-beta.z2 <- c(age2, rep(NA, n), rep(NA, n))
-beta.z3 <- c(age3, rep(NA, n), rep(NA, n))
+beta.bmi <- c(1:n, rep(NA, n), rep(NA, n))
+beta.age2 <- c(age2, rep(NA, n), rep(NA, n))
+beta.age3 <- c(age3, rep(NA, n), rep(NA, n))
 
 id.x <- c(rep(NA, n), 1:n, 1:n) 
 weight.x <- c(rep(1, n), rep(1, n), rep(-1, n))
 
 alpha.0 <- c(rep(NA, n), rep(NA, n), rep(1, n))
-alpha.z2 <- c(rep(NA, n), rep(NA, n), age2)
-alpha.z3 <- c(rep(NA, n), rep(NA, n), age3)
+alpha.age2 <- c(rep(NA, n), rep(NA, n), age2)
+alpha.age3 <- c(rep(NA, n), rep(NA, n), age3)
 
 dd <- data.frame(Y = Y, 
                  beta.0 = beta.0,
-                 beta.x = beta.x,
-                 beta.z2 = beta.z2,
-                 beta.z3 = beta.z3,
+                 beta.bmi = beta.bmi,
+                 beta.age2 = beta.age2,
+                 beta.age3 = beta.age3,
                  id.x = id.x,
                  weight.x = weight.x,
                  alpha.0 = alpha.0,
-                 alpha.z2 = alpha.z2,
-                 alpha.z3 = alpha.z3)
+                 alpha.age2 = alpha.age2,
+                 alpha.age3 = alpha.age3)
 ```
 
 ### INLA formula
 ```{r}
-formula = Y ~ - 1 + beta.0 + beta.z2 + beta.z3 + 
-  f(beta.x, copy="id.x", 
+formula = Y ~ - 1 + beta.0 + beta.age2 + beta.age3 + 
+  f(beta.bmi, copy="id.x", 
     hyper = list(beta = list(param = prior.beta, fixed=FALSE))) +
   f(id.x, weight.x, model="iid", values = 1:n, 
     hyper = list(prec = list(initial = -15, fixed=TRUE))) +
-  alpha.0 + alpha.z2 + alpha.z3
+  alpha.0 + alpha.age2 + alpha.age3
 ```
 
 ### Scaling of ME precision
@@ -147,19 +166,18 @@ model_missing <- inla(formula, data = dd, scale = Scale,
                      ),
                      control.fixed = list(
                        mean = list(beta.0 = prior.beta[1], 
-                                   beta.z2 = prior.beta[1], 
-                                   beta.z3 = prior.beta[1],  
+                                   beta.age2 = prior.beta[1], 
+                                   beta.age3 = prior.beta[1],  
                                    alpha.0 = prior.alpha[1], 
-                                   alpha.z2 = prior.alpha[1],
-                                   alpha.z3 = prior.alpha[1]), 
+                                   alpha.age2 = prior.alpha[1],
+                                   alpha.age3 = prior.alpha[1]), 
                        prec = list(beta.0 = prior.beta[2], 
-                                   beta.z2 = prior.beta[2], 
-                                   beta.z3 = prior.beta[2],  
+                                   beta.age2 = prior.beta[2], 
+                                   beta.age3 = prior.beta[2],  
                                    alpha.0 = prior.alpha[2], 
-                                   alpha.z2 = prior.alpha[2],
-                                   alpha.z3 = prior.alpha[2])),
+                                   alpha.age2 = prior.alpha[2],
+                                   alpha.age3 = prior.alpha[2])),
                      verbose=F)
-summary(model_missing)
 ```
 
 
@@ -179,44 +197,39 @@ missing_bmi <- is.na(bmi)
 
 dd_naive <- data.frame(Y = chl, 
                        beta.0 = rep(1, length(bmi)),
-                       beta.x = bmi, 
-                       beta.z2 = age2, 
-                       beta.z3 = age3)[!missing_bmi, ]
+                       beta.bmi = bmi, 
+                       beta.age2 = age2, 
+                       beta.age3 = age3)[!missing_bmi, ]
 
-
-# Priors for model of interest coefficients
-prior.beta <- c(0, 1/1000) # N(0, 10^3)
 
 # Formula
-formula <- Y ~ - 1 + beta.0 + beta.z2 + beta.z3 + beta.x
+formula <- Y ~ - 1 + beta.0 + beta.age2 + beta.age3 + beta.bmi
 
 # Fit model
 model_naive <- inla(formula,
               data = dd_naive,
               family = c("gaussian"),
               control.family = list(
-                list(hyper = list(prec = list(initial = log(1), 
-                                              param = c(0.5, 0.5), # Gamma(0.5, 0.5) 
+                list(hyper = list(prec = list(initial = prec.y, 
+                                              param = prior.prec.y, 
                                               fixed = FALSE)))),
               control.fixed = list(
                        mean = list(beta.0 = prior.beta[1], 
-                                   beta.z2 = prior.beta[1], 
-                                   beta.z3 = prior.beta[1],
-                                   beta.x = prior.beta[1]), 
+                                   beta.age2 = prior.beta[1], 
+                                   beta.age3 = prior.beta[1],
+                                   beta.bmi = prior.beta[1]), 
                        prec = list(beta.0 = prior.beta[2], 
-                                   beta.z2 = prior.beta[2], 
-                                   beta.z3 = prior.beta[2],  
-                                   beta.x = prior.beta[2])),
+                                   beta.age2 = prior.beta[2], 
+                                   beta.age3 = prior.beta[2],  
+                                   beta.bmi = prior.beta[2])),
 )
-
-summary(model_naive)
 ```
 
 
 
 ## Results
 
-The posterior means and standard deviations are presented in the table below.
+The posterior means and standard deviations are presented in the table below. Note that the data set is quite small (25 observations where 9 are missing), and so the differing result should not be interpreted too seriously.
 
 ```{r}
 #| echo: false
@@ -249,7 +262,7 @@ return_estimates <- function(inla.object){
 #| eval: false
 #| purl: false
 return_estimates(model_missing) %>% 
-  select(coefficient.name, mean, sd, model) %>% 
+  dplyr::select(coefficient.name, mean, sd, model) %>% 
   arrange(desc(model)) %>% # Arrange so the MOI coefs are at the top
   group_by(model) %>% # Group by model type
   gt(rowname_col = "coefficient.name")
@@ -262,18 +275,18 @@ return_estimates(model_missing) %>%
 inla_mcmc_results <- tibble::tribble(
   ~coefficient.name, ~model,              ~inla_mcmc.mean, ~inla_mcmc.sd,
   "beta.0",          "Model of interest", 43.469, 62.603,
-  "Beta for beta.x", "Model of interest", 4.864, 2.206, 
-  "beta.z2",         "Model of interest", 29.501, 17.871, 
-  "beta.z3",         "Model of interest", 49.449, 23.207
+  "Beta for beta.bmi", "Model of interest", 4.864, 2.206, 
+  "beta.age2",         "Model of interest", 29.501, 17.871, 
+  "beta.age3",         "Model of interest", 49.449, 23.207
 )
 
 naive_results <- return_estimates(model_naive) |> 
-  select(coefficient.name, mean, sd, model) %>% 
+  dplyr::select(coefficient.name, mean, sd, model) %>% 
   rename(naive.mean = mean, naive.sd = sd)
-naive_results$coefficient.name[4] <- "Beta for beta.x"
+naive_results$coefficient.name[4] <- "Beta for beta.bmi"
 
 return_estimates(model_missing) %>% 
-  select(coefficient.name, mean, sd, model) %>% 
+  dplyr::select(coefficient.name, mean, sd, model) %>% 
   rename(me_adjusted.mean = mean, me_adjusted.sd = sd) %>%
   full_join(naive_results, by = c("coefficient.name", "model")) %>% 
   full_join(inla_mcmc_results, by = c("coefficient.name", "model")) %>% 
@@ -284,12 +297,12 @@ return_estimates(model_missing) %>%
   tab_spanner_delim(
     delim = "."
   )
-
 ```
 
-
-https://stefvanbuuren.name/RECAPworkshop/Practicals/RECAP_Practical_II.html 
-
+```{r}
+#| echo: false
+# https://stefvanbuuren.name/RECAPworkshop/Practicals/RECAP_Practical_II.html 
+```
 
 
 
@@ -297,9 +310,11 @@ https://stefvanbuuren.name/RECAPworkshop/Practicals/RECAP_Practical_II.html
 #| label: visualize results
 #| purl: false
 #| fig.showtext: true
+#| warning: false
+#| echo: false
 
 me_plot <- return_estimates(model_missing) %>% 
-  select(coefficient.name, mean, sd, model) 
+  dplyr::select(coefficient.name, mean, sd, model) 
 naive_plot <- naive_results %>% rename(sd = naive.sd, mean = naive.mean)
 inla_mcmc_plot <- inla_mcmc_results %>% rename(sd = inla_mcmc.sd, mean = inla_mcmc.mean)
 
@@ -307,11 +322,11 @@ all_models_for_plot <- bind_rows("me" = me_plot,
                                  "naive" = naive_plot, 
                                  "inla_mcmc" = inla_mcmc_plot, 
                                  .id = "model") %>% 
-  mutate(coef_name = recode_factor(coefficient.name, "Beta for beta.x" = "beta.x")) %>%
+  mutate(coef_name = recode_factor(coefficient.name, "Beta for beta.bmi" = "beta.bmi")) %>%
   tidyr::separate(coef_name, c("sub_model", "coef_name")) %>% 
   mutate(coef_pretty = paste0(sub_model, "[", coef_name, "]")) %>% 
   mutate(model = recode(model, "me" = "ME model", "naive" = "Complete case analysis", "inla_mcmc" = "Goméz-Rubio & Rue (2018)")) %>% 
-  mutate(coef_pretty = fct_relevel(coef_pretty, levels = c("beta[0]", "beta[z2]", "beta[z3]", "beta[x]", "alpha[0]", "alpha[z2]", "alpha[z3]")))
+  mutate(coef_pretty = fct_relevel(coef_pretty, levels = c("beta[0]", "beta[age2]", "beta[age3]", "beta[bmi]", "alpha[0]", "alpha[age2]", "alpha[age3]")))
 
 
 # Colors
@@ -349,10 +364,12 @@ theme_model_summary <- theme_minimal(base_size = 18, base_family = "Open Sans") 
 ggplot(all_models_for_plot, aes(y = model)) +
   geom_linerange(aes(xmin = mean-sd, xmax = mean+sd, color = model), size = 1) +
   geom_point(aes(x = mean, color = model), size = 3) +
+  geom_text(aes(x = mean, y = model, label = round(mean, 2)), 
+            vjust = -1, family = "Open Sans") +
   #scale_x_continuous(limits = c(-30, 90), breaks = seq(-30, 90, by = 30)) +
   scale_color_manual(values = darken(ggthemes::canva_palettes$"Subtle and versatile"[c(3, 1, 4)], 0.4), 
                      guide = guide_legend(override.aes = list(size = 2, alpha = 1))) +
-  facet_wrap(vars(coef_pretty), nrow = 2, switch = "x",
+  facet_wrap(vars(coef_pretty), nrow = 2,
              labeller = label_parsed, scales = "free_x"
              ) +
   labs(x = "Posterior mean") +
@@ -362,9 +379,14 @@ ggplot(all_models_for_plot, aes(y = model)) +
 
 ```{r}
 #| purl: false
-
+#| echo: false
 ggsave("../PhDEmma/PaperA_ME_and_missing_data/figures/missing_figure.png", width = 7, height = 5)
 ```
 
+### Model summary
+
+```{r}
+summary(model_missing)
+```
 
 

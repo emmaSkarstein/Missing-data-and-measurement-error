@@ -1,0 +1,24 @@
+---
+title: "NHANES example"
+---
+
+A small data set with missing values.
+
+
+## Load the data
+```{r}
+#| message: false
+library(mice)
+data(nhanes2)
+```
+
+## Format
+A data frame with 25 rows and 4 variables:
+
+- `age`: Age group (1=20-39, 2=40-59, 3=60+)
+- `bmi`: Age group (1=20-39, 2=40-59, 3=60+)
+- `hyp`: Hypertensive (1=no,2=yes)
+- `chl`: Total serum cholesterol (mg/dL)
+
+## Source
+The {mice} package, originally from Schafer, J.L. (1997). *Analysis of Incomplete Multivariate Data*. London: Chapman & Hall. Table 6.14.

@@ -1,0 +1,18 @@
+---
+title: "Simulated data"
+---
+
+A dataset containing three simulated variables, generated in the example "Simulation: Berkson and classical measurement error alongside missing data".
+
+### Load the data
+```{r}
+simulated_data <- read.csv("data/simulated_data.csv")
+```
+
+### Format
+A data frame with 1000 rows and 3 variables:
+
+- `y`: response variable, continuous
+- `w`: covariate with classical and Berkson measurement error, and missing data, continuous
+- `z`: covariate with no error or missingness, continuous
+

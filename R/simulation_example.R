@@ -3,7 +3,11 @@ library(INLA)
 
 
 ## -----------------------------------------------------------------------------
-set.seed(2022)
+inla.setOption(num.threads = "1:1")
+
+
+## -----------------------------------------------------------------------------
+set.seed(202)
 n <- 1000
 
 # Covariate without error:
@@ -11,24 +15,32 @@ z <- rnorm(n, mean = 0, sd = 1)
 
 # Berkson error:
 w_b <- rnorm(n, mean = 1 + 2*z, sd = 1)
-u_b <- rnorm(n)
+u_b <- rnorm(n, sd = 1)
 x <- w_b + u_b
 
 # Response:
 y <- 1 + 2*x + 2*z + rnorm(n)
 
 # Classical error:
-u_c <- rnorm(n)
-w_c <- w_b + u_c  # I think maybe this is incorrect, shouldn't we be using w_b here?
+u_c <- rnorm(n, sd = 1)
+w_c <- w_b + u_c  # Should be using w_b here
+
+lm(y~x+z)
+summary(lm(y~w_c+z))
 
 # Missingness:
 m_pred <- -1.5 - 0.5*z # This gives a mean probability of missing of ca 0.2.
 m_prob <- exp(m_pred)/(1 + exp(m_pred))
+
 m_index <- rbinom(n, 1, prob = m_prob) # MAR
 # m_index <- sample(1:n, 0.2*n, replace = FALSE) # MCAR
-w_c[m_index] <- NA
+#w_c[m_index] <- NA
 
-simulated_data <- data.frame(y = y, w = w_c, z = z)
+#w <- scale(w_c, center = TRUE,scale=FALSE)
+#z <- scale(z, center = TRUE,scale=FALSE)
+
+#w = w_c
+simulated_data <- data.frame(y = y, w = w, z = z)
 
 
 ## -----------------------------------------------------------------------------
@@ -59,20 +71,20 @@ prec.x <- 1
 ## -----------------------------------------------------------------------------
 Y <- matrix(NA, 4*n, 4)
 
-Y[1:n, 1] <- y               # Regression model of interest response
-Y[n+(1:n), 2] <- rep(0, n)   # Berkson error model response
-Y[2*n+(1:n), 3] <- w         # Classical error model response
-Y[3*n+(1:n), 4] <- rep(0, n) # Imputation model response
+Y[1:n, 1] <- y                 # Regression model of interest response
+Y[n+(1:n), 2] <- rep(0, n)            # Berkson error model response
+Y[2*n+(1:n), 3] <- w #rep(0, n)   # Classical error model response
+Y[3*n+(1:n), 4] <- rep(0, n)   # Imputation model response
 
 beta.0 <- c(rep(1, n), rep(NA, 3*n))
 beta.x <- c(1:n, rep(NA, 3*n))
 beta.z <- c(z, rep(NA, 3*n))
 
-id.x <- c(rep(NA, n), 1:n, rep(NA, n), 1:n)
-weight.x <- c(rep(1, n), rep(-1, n), rep(1, n), rep(-1, n))
+id.x <- c(rep(NA, n), 1:n, rep(NA, n), rep(NA, n))
+weight.x <- c(rep(NA, n), rep(1, n), rep(NA, n), rep(NA, n))
 
-beta.r <- c(rep(NA, n), 1:n, 1:n, rep(NA, n))
-weight.r <- c(rep(1, 4*n))
+id.r <- c(rep(NA, n), 1:n, 1:n, 1:n)
+weight.r <- c(rep(NA, n), rep(-1, n), rep(1, n), rep(-1, n))
 
 alpha.0 = c(rep(NA, 3*n), rep(1, n))
 alpha.z = c(rep(NA, 3*n), z)
@@ -85,7 +97,7 @@ dd <- data.frame(Y = Y,
                  beta.z = beta.z,
                  id.x = id.x, 
                  weight.x = weight.x,
-                 beta.r = beta.r,
+                 id.r = id.r,
                  weight.r = weight.r,
                  alpha.0 = alpha.0,
                  alpha.z = alpha.z)
@@ -97,10 +109,8 @@ formula = Y ~ - 1 + beta.0 + beta.z +
     hyper = list(beta = list(param = prior.beta, fixed = FALSE))) +
   f(id.x, weight.x, model = "iid", values = 1:n, 
     hyper = list(prec = list(initial = -15, fixed = TRUE))) +
-  f(beta.r, weight.r, model="iid", values = 1:n, 
+  f(id.r, weight.r, model="iid", values = 1:n, 
     hyper = list(prec = list(initial = -15, fixed = TRUE))) + 
-#  f(u.b.tilde, model = "iid", values = 1:n,
-#    hyper = list(prec = list(initial = log(1), fixed=TRUE))) +
   alpha.0 + alpha.z
 
 
@@ -132,15 +142,16 @@ model_sim <- inla(formula, data = dd, scale = scale.vec,
                                 alpha.z = prior.alpha[2]))
                )
 
+summary(model_sim)
 
 ## -----------------------------------------------------------------------------
 # Summary of fixed effects:
 fixed <- model_sim$summary.fixed[1:5]
-fixed 
+fixed[c("mean", "0.025quant", "0.975quant")]
 
 # Summary of random effects:
 hyper <- model_sim$summary.hyperpar[1:5]
-hyper
+hyper[c("mean", "0.025quant", "0.975quant")]
 
 
 ## -----------------------------------------------------------------------------
@@ -202,11 +213,14 @@ theme_model_summary <- theme_minimal(base_size = 18, base_family = "Open Sans") 
 ggplot(post_estimates, aes(y = model)) +
   geom_linerange(aes(xmin = mean-sd, xmax = mean+sd, color = model), size = 1) +
   geom_point(aes(x = mean, color = model), size = 3) +
+  geom_text(aes(x = mean, y = model, label = round(mean, 2)), 
+            vjust = -1, family = "Open Sans") +
   #xlim(c(0.7, 2.3)) +
-  scale_color_manual(values = colorspace::darken(ggthemes::canva_palettes$"Subtle and versatile"[c(3, 1)], 0.4), 
+  scale_color_manual(values = colorspace::darken(
+    ggthemes::canva_palettes$"Subtle and versatile"[c(3, 1)], 0.4), 
                      #labels = c("ME model", "True value"),
-                     guide = guide_legend(override.aes = list(size = 2, alpha = 1))) +
-  facet_wrap(vars(coef_pretty), nrow = 2, switch = "x",
+    guide = guide_legend(override.aes = list(size = 2, alpha = 1))) +
+  facet_wrap(vars(coef_pretty), nrow = 2, #switch = "x",
              labeller = label_parsed, scales = "free_x"
              ) +
   labs(x = "Posterior mean") +
@@ -214,10 +228,10 @@ ggplot(post_estimates, aes(y = model)) +
   theme_model_summary
 
 ## -----------------------------------------------------------------------------
-ggsave("../PhDEmma/PaperA_ME_and_missing_data/figures/simulation_ex_figure.png", width = 7, height = 5)
+#ggsave("../PhDEmma/PaperA_ME_and_missing_data/figures/simulation_ex_figure.png", width = 7, height = 5)
 
 
 ## -----------------------------------------------------------------------------
-# Save the INLA-model to the package so it can be summarized in the paper.
-saveRDS(model_sim, file = "results/model_simulation.rds")
+# Save the INLA-model so it can be summarized in the paper.
+#saveRDS(model_sim, file = "results/model_simulation.rds")
 

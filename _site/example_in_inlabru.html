@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.0.36">
+<meta name="generator" content="quarto-1.1.189">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -11,10 +11,15 @@
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-span.underline{text-decoration: underline;}
-div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -53,7 +58,7 @@ code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code span.at { color: #7d9029; } /* Attribute */
 code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
+code span.bu { color: #008000; } /* BuiltIn */
 code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4070a0; } /* Char */
 code span.cn { color: #880000; } /* Constant */
@@ -66,7 +71,7 @@ code span.er { color: #ff0000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #40a070; } /* Float */
 code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
+code span.im { color: #008000; font-weight: bold; } /* Import */
 code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #007020; font-weight: bold; } /* Keyword */
 code span.op { color: #666666; } /* Operator */
@@ -128,9 +133,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
-      <a class="navbar-brand" href="./index.html">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">Missing data and measurement error</span>
-  </a>
+    </a>
+  </div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
@@ -170,14 +177,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./loading_data.html" class="sidebar-item-text sidebar-link">Datasets</a>
+  <a href="./data_bloodpressure.html" class="sidebar-item-text sidebar-link">Bloodpressure data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_nhanes.html" class="sidebar-item-text sidebar-link">NHANES example</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_simulated.html" class="sidebar-item-text sidebar-link">Simulated data</a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Examples</a>
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Examples from the paper</a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -195,12 +212,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./simulation_example.html" class="sidebar-item-text sidebar-link">Simulation example</a>
+  <a href="./simulation_study.html" class="sidebar-item-text sidebar-link">Simulation study</a>
   </div>
 </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Additional examples</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./simulation_study.html" class="sidebar-item-text sidebar-link">Simulation study</a>
+  <a href="./simulation_example.html" class="sidebar-item-text sidebar-link">Simulation example</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -215,7 +242,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </nav>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc">
+        <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
   <ul>
@@ -246,547 +273,183 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </header>
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(INLA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: Matrix</code></pre>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(INLA)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(inlabru)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: foreach</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: parallel</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: sp</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>This is INLA_22.05.03 built 2022-05-03 08:04:26 UTC.
- - See www.r-inla.org/contact-us for how to get help.
- - To enable PARDISO sparse library; see inla.pardiso()</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(inlabru)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+
 </div>
 <p>We here show how to fit the measurement error and missing data model in <code>inlabru</code>. The <code>inlabru</code> code is written by Sara Martino, and commented by Emma Skarstein.</p>
-<section id="loading-the-data" class="level1">
-<h1>Loading the data</h1>
+<section id="loading-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="loading-the-data">Loading the data</h2>
 <p>For this demonstration we will use the simulated data from the “Simulation example” vignette. Just to refresh: this is a situation where we have one covariate (<span class="math inline">\(\boldsymbol{x}\)</span>) that has both classical error, Berkson error and missing data. We also observe another covariate (<span class="math inline">\(\boldsymbol{z}\)</span>) that has no error.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/simulated_data.csv"</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/simulated_data.csv"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="priors" class="level1">
-<h1>Priors</h1>
+<section id="priors" class="level2">
+<h2 class="anchored" data-anchor-id="priors">Priors</h2>
 <p>We use the exact same priors as in the original simulation study.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for model of interest coefficients</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>prior.beta <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">1000</span>) <span class="co"># N(0, 10^3)</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for exposure model coefficients</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>prior.alpha <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">10000</span>) <span class="co"># N(0, 10^4) </span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for y, measurement error and true x-value precision</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>prior.prec.y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>prior.prec.u_b <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>prior.prec.u_c <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>prior.prec.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5) </span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial values</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>prec.y <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>prec.u_b <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>prec.u_c <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>prec.x <span class="ot">&lt;-</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for model of interest coefficients</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>prior.beta <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">1000</span>) <span class="co"># N(0, 10^3)</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for exposure model coefficients</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>prior.alpha <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">10000</span>) <span class="co"># N(0, 10^4) </span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for y, measurement error and true x-value precision</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>prior.prec.y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>prior.prec.u_b <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>prior.prec.u_c <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>prior.prec.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5) </span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial values</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>prec.y <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>prec.u_b <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>prec.u_c <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>prec.x <span class="ot">&lt;-</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="first-version-using-the-copy-option" class="level1">
-<h1>First version – using the <code>copy</code> option</h1>
+<section id="first-version-using-the-copy-option" class="level2">
+<h2 class="anchored" data-anchor-id="first-version-using-the-copy-option">First version – using the <code>copy</code> option</h2>
 <p>This is a direct translation of the INLA code.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>data1 <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">y =</span> data<span class="sc">$</span>y, <span class="at">z =</span> data<span class="sc">$</span>z, <span class="at">weight =</span> <span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>data2 <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">w =</span> data<span class="sc">$</span>w,  <span class="at">weight =</span> <span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>data3 <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">zero =</span> <span class="dv">0</span>, <span class="at">z =</span> data<span class="sc">$</span>z,  <span class="at">weight =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>cmp <span class="ot">=</span> <span class="er">~</span> <span class="fu">Intercept</span>(<span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">beta_z</span>(<span class="at">main =</span> z, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">u_b</span>(<span class="at">main =</span> r, <span class="at">model =</span> <span class="st">"iid"</span>,  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(<span class="dv">1</span>), <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">r_eff</span>(r, weight, <span class="at">model =</span> <span class="st">"iid"</span>,  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">r_eff_copy</span>(r, <span class="at">copy=</span><span class="st">"r_eff"</span>, </span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">beta =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.beta, <span class="at">fixed=</span><span class="cn">FALSE</span>))) <span class="sc">+</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alpha_0</span>(<span class="at">main =</span> <span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.alpha[<span class="dv">2</span>]) <span class="sc">+</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alpha_z</span>(<span class="at">main =</span> z, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.alpha[<span class="dv">2</span>])</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>lik1 <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> y <span class="sc">~</span> Intercept <span class="sc">+</span> beta_z <span class="sc">+</span> u_b <span class="sc">+</span> r_eff_copy,</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>            <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"Intercept"</span>,<span class="st">"beta_z"</span>,<span class="st">"u_b"</span>,<span class="st">"r_eff_copy"</span>),</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>            <span class="at">control.family =</span> <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.y), </span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">param =</span> prior.prec.y, </span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> data1)</span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>lik2 <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> w <span class="sc">~</span> r_eff,</span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>            <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"r_eff"</span>),</span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>            <span class="at">control.family =</span>  <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_c), </span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">param =</span> prior.prec.u_c, </span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">fixed =</span> <span class="cn">TRUE</span>))),</span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>            <span class="at">data  =</span> data2)</span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>lik3  <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> zero <span class="sc">~</span> alpha_0 <span class="sc">+</span> alpha_z <span class="sc">+</span> r_eff,</span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>             <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"alpha_0"</span>, <span class="st">"alpha_z"</span>,<span class="st">"r_eff"</span>),</span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>             <span class="at">control.family =</span>   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x), </span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>                                                              <span class="at">param =</span> prior.prec.x, </span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>                                                              <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> data3)</span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: </span></span>
-<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = y ~ .,</span></span>
-<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = w ~ .,</span></span>
-<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = zero ~ .,</span></span>
-<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a><span class="co"># does exactly the same.</span></span>
-<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a><span class="fu">bru_options_set</span>(<span class="at">bru_verbose =</span> <span class="dv">1</span>)</span>
-<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">bru</span>(<span class="at">components =</span> cmp,</span>
-<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a>          lik1,</span>
-<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>          lik2,</span>
-<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a>          lik3,</span>
-<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>          <span class="at">options =</span> <span class="fu">list</span>(<span class="at">verbose =</span> F,</span>
-<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>                         <span class="at">bru_max_iter =</span> <span class="dv">20</span>,</span>
-<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>                         <span class="at">inla.mode  =</span> <span class="st">"experimental"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 1 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 2 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 154% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 3 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 158% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 4 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 156% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 5 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 158% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 6 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 156% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 7 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 157% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 8 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 154% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 9 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 155% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 10 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 153% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 11 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 154% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 12 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 154% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 13 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 155% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 14 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 151% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 15 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 152% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 16 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 150% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 17 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 151% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 18 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 150% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 19 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 145% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Maximum iterations reached, running final INLA integration.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 20 [max:20]</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span>summary.fixed</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>data1 <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">y =</span> data<span class="sc">$</span>y, <span class="at">z =</span> data<span class="sc">$</span>z, <span class="at">weight =</span> <span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>data2 <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">w =</span> data<span class="sc">$</span>w, <span class="at">weight =</span> <span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>data3 <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">zero =</span> <span class="dv">0</span>, <span class="at">z =</span> data<span class="sc">$</span>z, <span class="at">weight =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>cmp <span class="ot">=</span> <span class="er">~</span> <span class="fu">Intercept</span>(<span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">beta_z</span>(<span class="at">main =</span> z, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">u_b</span>(<span class="at">main =</span> r, <span class="at">model =</span> <span class="st">"iid"</span>,  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(<span class="dv">1</span>), <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">r_eff</span>(r, weight, <span class="at">model =</span> <span class="st">"iid"</span>,  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">r_eff_copy</span>(r, <span class="at">copy=</span><span class="st">"r_eff"</span>, </span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">beta =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.beta, <span class="at">fixed=</span><span class="cn">FALSE</span>))) <span class="sc">+</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alpha_0</span>(<span class="at">main =</span> <span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.alpha[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alpha_z</span>(<span class="at">main =</span> z, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.alpha[<span class="dv">2</span>])</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>lik1 <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> y <span class="sc">~</span> Intercept <span class="sc">+</span> beta_z <span class="sc">+</span> u_b <span class="sc">+</span> r_eff_copy,</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>            <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"Intercept"</span>,<span class="st">"beta_z"</span>,<span class="st">"u_b"</span>,<span class="st">"r_eff_copy"</span>),</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>            <span class="at">control.family =</span> <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.y), </span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">param =</span> prior.prec.y, </span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> data1)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>lik2 <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> w <span class="sc">~</span> r_eff,</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>            <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"r_eff"</span>),</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>            <span class="at">control.family =</span>  <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_c), </span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">param =</span> prior.prec.u_c, </span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">fixed =</span> <span class="cn">TRUE</span>))),</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>            <span class="at">data  =</span> data2)</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>lik3  <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> zero <span class="sc">~</span> alpha_0 <span class="sc">+</span> alpha_z <span class="sc">+</span> r_eff,</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>             <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"alpha_0"</span>, <span class="st">"alpha_z"</span>,<span class="st">"r_eff"</span>),</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>             <span class="at">control.family =</span>   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x), </span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>                                                              <span class="at">param =</span> prior.prec.x, </span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>                                                              <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> data3)</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: </span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = y ~ .,</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = w ~ .,</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = zero ~ .,</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="co"># does exactly the same in this case.</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="fu">bru_options_set</span>(<span class="at">bru_verbose =</span> <span class="dv">1</span>)</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">bru</span>(<span class="at">components =</span> cmp,</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>          lik1,</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>          lik2,</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>          lik3,</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>          <span class="at">options =</span> <span class="fu">list</span>(<span class="at">verbose =</span> F,</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>                         <span class="at">bru_max_iter =</span> <span class="dv">20</span>,</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>                         <span class="at">inla.mode  =</span> <span class="st">"experimental"</span>))</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span>summary.fixed</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>               mean         sd 0.025quant  0.5quant 0.975quant mode
-Intercept 1.0833013 0.06574591  0.9537734 1.0838473  1.2097886   NA
-beta_z    0.9647166 0.05696265  0.8520621 0.9651042  1.0752416   NA
-alpha_0   1.0495269 0.05879511  0.9342711 1.0495000  1.1649354   NA
-alpha_z   0.6010181 0.05984694  0.4836521 0.6010078  0.7184423   NA
+Intercept 1.0844538 0.06583119  0.9548932 1.0849422  1.2111409   NA
+beta_z    0.9653624 0.05702401  0.8526197 0.9657400  1.0760255   NA
+alpha_0   1.0494502 0.05879469  0.9341947 1.0494236  1.1648569   NA
+alpha_z   0.6009887 0.05984758  0.4836213 0.6009785  0.7184136   NA
                    kld
-Intercept 4.535895e-08
-beta_z    5.684490e-09
-alpha_0   2.087570e-11
-alpha_z   3.332226e-12</code></pre>
+Intercept 4.559748e-08
+beta_z    5.565781e-09
+alpha_0   2.047453e-11
+alpha_z   3.339904e-12</code></pre>
 </div>
 </div>
 </section>
-<section id="second-version-no-copy-option" class="level1">
-<h1>Second version – no <code>copy</code> option</h1>
+<section id="second-version-no-copy-option" class="level2">
+<h2 class="anchored" data-anchor-id="second-version-no-copy-option">Second version – no <code>copy</code> option</h2>
 <p>This takes advantage of special <code>inlabru</code> features.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># no copy -----------------------------------------------------------------</span></span>
-<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>cmp2 <span class="ot">=</span> <span class="er">~</span> <span class="fu">Intercept</span>(<span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
-<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">beta_z</span>(<span class="at">main =</span> z, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
-<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">u_b</span>(<span class="at">main =</span> r, <span class="at">model =</span> <span class="st">"iid"</span>,  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(<span class="dv">1</span>), <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
-<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">r_eff</span>(r, weight, <span class="at">model =</span> <span class="st">"iid"</span>,  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
-<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">#  r_eff_copy(r, copy="r_eff", </span></span>
-<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#             hyper = list(beta = list(param = prior.beta, fixed=FALSE))) +</span></span>
-<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">beta_u</span>(<span class="at">main =</span> <span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> <span class="fl">0.001</span>) <span class="sc">+</span></span>
-<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alpha_0</span>(<span class="at">main =</span> <span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.alpha[<span class="dv">2</span>]) <span class="sc">+</span></span>
-<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alpha_z</span>(<span class="at">main =</span> z, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.alpha[<span class="dv">2</span>])</span>
-<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-14"><a href="#cb52-14" aria-hidden="true" tabindex="-1"></a>lik1 <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> y <span class="sc">~</span> Intercept <span class="sc">+</span> beta_z <span class="sc">+</span> u_b <span class="sc">+</span> beta_u <span class="sc">*</span> r_eff ,</span>
-<span id="cb52-15"><a href="#cb52-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
-<span id="cb52-16"><a href="#cb52-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> data1,</span>
-<span id="cb52-17"><a href="#cb52-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"Intercept"</span>,<span class="st">"beta_z"</span>,<span class="st">"u_b"</span>,<span class="st">"beta_u"</span>, <span class="st">"r_eff"</span>),</span>
-<span id="cb52-18"><a href="#cb52-18" aria-hidden="true" tabindex="-1"></a>            <span class="at">control.family =</span> <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.y), </span>
-<span id="cb52-19"><a href="#cb52-19" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">param =</span> prior.prec.y, </span>
-<span id="cb52-20"><a href="#cb52-20" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">fixed =</span> <span class="cn">FALSE</span>))))</span>
-<span id="cb52-21"><a href="#cb52-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-22"><a href="#cb52-22" aria-hidden="true" tabindex="-1"></a>lik2 <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> w <span class="sc">~</span> .,</span>
-<span id="cb52-23"><a href="#cb52-23" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
-<span id="cb52-24"><a href="#cb52-24" aria-hidden="true" tabindex="-1"></a>            <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"r_eff"</span>),</span>
-<span id="cb52-25"><a href="#cb52-25" aria-hidden="true" tabindex="-1"></a>            <span class="at">control.family =</span>  <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_c), </span>
-<span id="cb52-26"><a href="#cb52-26" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">param =</span> prior.prec.u_c, </span>
-<span id="cb52-27"><a href="#cb52-27" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">fixed =</span> <span class="cn">TRUE</span>))),</span>
-<span id="cb52-28"><a href="#cb52-28" aria-hidden="true" tabindex="-1"></a>            <span class="at">data  =</span> data2)</span>
-<span id="cb52-29"><a href="#cb52-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-30"><a href="#cb52-30" aria-hidden="true" tabindex="-1"></a>lik3  <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> zero <span class="sc">~</span> . ,</span>
-<span id="cb52-31"><a href="#cb52-31" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> data3,</span>
-<span id="cb52-32"><a href="#cb52-32" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
-<span id="cb52-33"><a href="#cb52-33" aria-hidden="true" tabindex="-1"></a>             <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"alpha_0"</span>, <span class="st">"alpha_z"</span>,<span class="st">"r_eff"</span>),</span>
-<span id="cb52-34"><a href="#cb52-34" aria-hidden="true" tabindex="-1"></a>             <span class="at">control.family =</span>   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x), </span>
-<span id="cb52-35"><a href="#cb52-35" aria-hidden="true" tabindex="-1"></a>                                                              <span class="at">param =</span> prior.prec.x, </span>
-<span id="cb52-36"><a href="#cb52-36" aria-hidden="true" tabindex="-1"></a>                                                              <span class="at">fixed =</span> <span class="cn">FALSE</span>))))</span>
-<span id="cb52-37"><a href="#cb52-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-38"><a href="#cb52-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-39"><a href="#cb52-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-40"><a href="#cb52-40" aria-hidden="true" tabindex="-1"></a><span class="fu">bru_options_set</span>(<span class="at">bru_verbose =</span> <span class="dv">1</span>)</span>
-<span id="cb52-41"><a href="#cb52-41" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">=</span> <span class="fu">bru</span>(<span class="at">components =</span> cmp2,</span>
-<span id="cb52-42"><a href="#cb52-42" aria-hidden="true" tabindex="-1"></a>           lik1,</span>
-<span id="cb52-43"><a href="#cb52-43" aria-hidden="true" tabindex="-1"></a>           lik2,</span>
-<span id="cb52-44"><a href="#cb52-44" aria-hidden="true" tabindex="-1"></a>           lik3,</span>
-<span id="cb52-45"><a href="#cb52-45" aria-hidden="true" tabindex="-1"></a>           <span class="at">options =</span> <span class="fu">list</span>(<span class="at">verbose =</span> F,</span>
-<span id="cb52-46"><a href="#cb52-46" aria-hidden="true" tabindex="-1"></a>                          <span class="at">bru_max_iter =</span> <span class="dv">20</span>,</span>
-<span id="cb52-47"><a href="#cb52-47" aria-hidden="true" tabindex="-1"></a>                          <span class="at">inla.mode  =</span> <span class="st">"experimental"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 1 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 2 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 2300% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 3 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 580% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 4 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 3980% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 5 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 3360% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 6 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 3520% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 7 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 2970% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 8 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 2680% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 9 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 2560% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 10 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 2350% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 11 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 2000% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 12 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 1540% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 13 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 986% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 14 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 295% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 15 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 103% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 16 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 91.6% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 17 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 46.4% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 18 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 54.3% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 19 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 35.7% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Maximum iterations reached, running final INLA integration.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 20 [max:20]</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">=</span> <span class="fu">bru_rerun</span>(fit2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 1 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 2 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 73.2% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 3 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 113% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 4 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 85.9% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 5 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 14.5% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 6 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 22.1% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 7 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 9.56% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 8 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 22.9% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 9 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 18.8% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 10 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 16.4% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 11 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 21.5% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 12 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 70.9% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 13 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 124% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 14 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 99% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 15 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 42.3% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 16 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 33% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 17 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 24.4% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 18 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 8.55% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 19 [max:20]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Max deviation from previous: 21.3% of SD [stop if: &lt;1%]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Maximum iterations reached, running final INLA integration.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>iinla: Iteration 20 [max:20]</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb132"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb132-1"><a href="#cb132-1" aria-hidden="true" tabindex="-1"></a>fit2<span class="sc">$</span>summary.fixed</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># no copy -----------------------------------------------------------------</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>cmp2 <span class="ot">=</span> <span class="er">~</span> <span class="fu">Intercept</span>(<span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">beta_z</span>(<span class="at">main =</span> z, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">u_b</span>(<span class="at">main =</span> r, <span class="at">model =</span> <span class="st">"iid"</span>,  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(<span class="dv">1</span>), <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">r_eff</span>(r, weight, <span class="at">model =</span> <span class="st">"iid"</span>,  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">#  r_eff_copy(r, copy="r_eff", </span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#             hyper = list(beta = list(param = prior.beta, fixed=FALSE))) +</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">beta_u</span>(<span class="at">main =</span> <span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> <span class="fl">0.001</span>) <span class="sc">+</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alpha_0</span>(<span class="at">main =</span> <span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.alpha[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alpha_z</span>(<span class="at">main =</span> z, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.alpha[<span class="dv">2</span>])</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>lik1 <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> y <span class="sc">~</span> Intercept <span class="sc">+</span> beta_z <span class="sc">+</span> u_b <span class="sc">+</span> beta_u <span class="sc">*</span> r_eff ,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> data1,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"Intercept"</span>,<span class="st">"beta_z"</span>,<span class="st">"u_b"</span>,<span class="st">"beta_u"</span>, <span class="st">"r_eff"</span>),</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>            <span class="at">control.family =</span> <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.y), </span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">param =</span> prior.prec.y, </span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">fixed =</span> <span class="cn">FALSE</span>))))</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>lik2 <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> w <span class="sc">~</span> .,</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>            <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"r_eff"</span>),</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>            <span class="at">control.family =</span>  <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_c), </span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">param =</span> prior.prec.u_c, </span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">fixed =</span> <span class="cn">TRUE</span>))),</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>            <span class="at">data  =</span> data2)</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>lik3  <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> zero <span class="sc">~</span> . ,</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> data3,</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>             <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"alpha_0"</span>, <span class="st">"alpha_z"</span>,<span class="st">"r_eff"</span>),</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>             <span class="at">control.family =</span>   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x), </span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>                                                              <span class="at">param =</span> prior.prec.x, </span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>                                                              <span class="at">fixed =</span> <span class="cn">FALSE</span>))))</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="fu">bru_options_set</span>(<span class="at">bru_verbose =</span> <span class="dv">1</span>)</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">=</span> <span class="fu">bru</span>(<span class="at">components =</span> cmp2,</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>           lik1,</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>           lik2,</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>           lik3,</span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>           <span class="at">options =</span> <span class="fu">list</span>(<span class="at">verbose =</span> F,</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>                          <span class="at">bru_max_iter =</span> <span class="dv">20</span>,</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>                          <span class="at">inla.mode  =</span> <span class="st">"experimental"</span>))</span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">=</span> <span class="fu">bru_rerun</span>(fit2)</span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>fit2<span class="sc">$</span>summary.fixed</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                  mean          sd   0.025quant     0.5quant   0.975quant mode
-Intercept -171.6129153 15.50757943 -201.9385182 -171.6443755 -141.1082990   NA
-beta_z     -98.7917362 10.34318515 -119.0387045  -98.8052890  -78.4677928   NA
-beta_u     178.1225745 15.16896988  148.2571723  178.1623897  207.7610651   NA
-alpha_0      0.9753461  0.03485346    0.9069934    0.9753460    1.0436994   NA
-alpha_z      0.5633709  0.03549413    0.4937615    0.5633708    0.6329804   NA
+<pre><code>                  mean          sd   0.025quant     0.5quant  0.975quant mode
+Intercept -174.3816562 15.27641082 -204.2366497 -174.4196676 -144.310585   NA
+beta_z    -100.3913107 10.18986746 -120.3301060 -100.4076801  -80.359610   NA
+beta_u     180.9530608 14.90210786  151.5860951  181.0010596  210.046805   NA
+alpha_0      0.9753335  0.03486506    0.9069580    0.9753334    1.043710   NA
+alpha_z      0.5633629  0.03551273    0.4937171    0.5633629    0.633009   NA
                    kld
-Intercept 4.409125e-10
-beta_z    2.104046e-10
-beta_u    7.122753e-10
-alpha_0   5.522452e-11
-alpha_z   5.527574e-11</code></pre>
+Intercept 6.328316e-10
+beta_z    2.874525e-10
+beta_u    1.039360e-09
+alpha_0   5.521059e-11
+alpha_z   5.528389e-11</code></pre>
 </div>
 </div>
 
@@ -863,7 +526,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   for (var i=0; i<noterefs.length; i++) {
     const ref = noterefs[i];
     tippyHover(ref, function() {
-      let href = ref.getAttribute('href');
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
