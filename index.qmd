@@ -1,6 +1,8 @@
 ---
-title: 'Supplementary material and reproducible research files for article "*A Joint Bayesian Framework for Measurement Error and Missing Data using Integrated Nested Laplace Approximations*"'
+title: 'Supplementary material and reproducible research files for article "*A joint Bayesian framework for missing data and measurement error using integrated nested Laplace approximations*"'
 ---
+
+(Note: The article is not yet published.)
 
 Authors: Skarstein, E., Martino, S., Muff, S.
 
@@ -27,10 +29,15 @@ Example | Classical ME | Berkson ME | Missing data
 
 
 ## Datasets
-All the data sets that are used in the paper can be downloaded manually from [link to github repo], or like this:
+All the data sets that are used in the paper can be downloaded manually from [the GitHub repository](https://github.com/emmaSkarstein/Missing-data-and-measurement-error), or like this:
 
 ```{r}
-# Code to download data
+library(RCurl)
+url_bloodpressure <- getURL("https://raw.githubusercontent.com/emmaSkarstein/Missing-data-and-measurement-error/master/data/bloodpressure.csv")
+bloodpressure <- read.csv(text = url_bloodpressure)
+
+url_simulated_data <- getURL("https://raw.githubusercontent.com/emmaSkarstein/Missing-data-and-measurement-error/master/data/simulated_data.csv")
+simulated_data <- read.csv(text = url_simulated_data)
 ```
 
 ## Session info

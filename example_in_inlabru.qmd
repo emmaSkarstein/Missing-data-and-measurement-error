@@ -25,6 +25,7 @@ inla.setOption(num.threads = "1:1")
 ```
 
 We here show how to fit the measurement error and missing data model in `inlabru`. The `inlabru` code is written by Sara Martino, and commented by Emma Skarstein.
+TODO: the model is still using the random effect formulation and the exposure model uses x, this needs to be updated.
 
 ## Loading the data
 For this demonstration we will use the simulated data from the "Simulation example" vignette. Just to refresh: this is a situation where we have one covariate ($\boldsymbol{x}$) that has both classical  error, Berkson error and missing data. We also observe another covariate ($\boldsymbol{z}$) that has no error.

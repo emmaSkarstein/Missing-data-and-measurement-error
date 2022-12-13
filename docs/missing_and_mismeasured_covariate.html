@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.189">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Missing data and measurement error - Missing and mismeasured covariate</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Missing data and measurement error</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html">
+  </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Missing and mismeasured covariate</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Datasets</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_bloodpressure.html" class="sidebar-item-text sidebar-link">Bloodpressure data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_nhanes.html" class="sidebar-item-text sidebar-link">NHANES example</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_simulated.html" class="sidebar-item-text sidebar-link">Simulated data</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Examples from the paper</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./missing_covariate_imputation.html" class="sidebar-item-text sidebar-link">Missing covariate imputation</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./missing_and_mismeasured_covariate.html" class="sidebar-item-text sidebar-link active">Missing and mismeasured covariate</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./simulation_study.html" class="sidebar-item-text sidebar-link">Simulation study</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Additional examples</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./simulation_example.html" class="sidebar-item-text sidebar-link">Simulation example</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./example_in_inlabru.html" class="sidebar-item-text sidebar-link">Example in <code>inlabru</code></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#packages" id="toc-packages" class="nav-link active" data-scroll-target="#packages">Packages</a></li>
+  <li><a href="#function-for-looking-at-relevant-posterior-estimates" id="toc-function-for-looking-at-relevant-posterior-estimates" class="nav-link" data-scroll-target="#function-for-looking-at-relevant-posterior-estimates">Function for looking at relevant posterior estimates</a></li>
+  <li><a href="#setting-up-the-data" id="toc-setting-up-the-data" class="nav-link" data-scroll-target="#setting-up-the-data">Setting up the data</a></li>
+  <li><a href="#complete-case-bayesian-analysis-using-inla" id="toc-complete-case-bayesian-analysis-using-inla" class="nav-link" data-scroll-target="#complete-case-bayesian-analysis-using-inla">Complete case Bayesian analysis using INLA</a></li>
+  <li><a href="#measurement-error-models-in-inla" id="toc-measurement-error-models-in-inla" class="nav-link" data-scroll-target="#measurement-error-models-in-inla">Measurement error models in INLA</a>
+  <ul class="collapse">
+  <li><a href="#specifying-priors-used-in-both-me-models" id="toc-specifying-priors-used-in-both-me-models" class="nav-link" data-scroll-target="#specifying-priors-used-in-both-me-models">Specifying priors (used in both ME models)</a></li>
+  <li><a href="#me-model-ignoring-missing-observations" id="toc-me-model-ignoring-missing-observations" class="nav-link" data-scroll-target="#me-model-ignoring-missing-observations">ME model ignoring missing observations</a></li>
+  <li><a href="#me-model-with-missingness-in-sbp1-and-sbp2" id="toc-me-model-with-missingness-in-sbp1-and-sbp2" class="nav-link" data-scroll-target="#me-model-with-missingness-in-sbp1-and-sbp2">ME model with missingness in SBP1 and SBP2</a></li>
+  </ul></li>
+  <li><a href="#looking-at-all-the-models" id="toc-looking-at-all-the-models" class="nav-link" data-scroll-target="#looking-at-all-the-models">Looking at all the models</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Missing and mismeasured covariate</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<p>The data for this example is originally from the Third National Health and Nutrition Survey (NHANES III), but we use the data as pre-processed and provided by Bartlett and Keogh (2018) TODO: include source. They linked the NHANES III data to data from the US National Death Index, with information about the mortality status of each participant in 2011. Following Bartlett and Keogh (2018), we consider a Weibull survival model with continuous covariates systolic blood (SBP) pressure and age, and binary covariates diabetes status, sex and smoking status. The response is time until death by cardiovascular disease. Deaths by other causes are treated as censorings.</p>
+<p>Measurements of SBP are known to vary substantially within the same patient, and it is therefore measured twice for some participants, enabling us to estimate the variance of the error. However, for some participants there is only one measurement, and for others the SBP is completely missing. Note that the smoking status is also missing for around half of the participants, but since we only consider continuous ME, all observations with missingness in the (binary) smoking status are removed for this illustrative example, resulting in <span class="math inline">\(n = 3433\)</span> observations.</p>
+<p>To read more about how the Weibull hazard model is used in INLA in general, the <a href="https://inla.r-inla-download.org/r-inla.org/doc/likelihood/weibull.pdf">documentation</a> is very helpful.</p>
+<section id="packages" class="level2">
+<h2 class="anchored" data-anchor-id="packages">Packages</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival)   <span class="co"># Survival modelling</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(INLA)       <span class="co"># Modelling</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)  <span class="co"># Data wrangling and visualisation</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">inla.setOption</span>(<span class="at">num.threads =</span> <span class="st">"1:1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="function-for-looking-at-relevant-posterior-estimates" class="level2">
+<h2 class="anchored" data-anchor-id="function-for-looking-at-relevant-posterior-estimates">Function for looking at relevant posterior estimates</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>view_relevant <span class="ot">&lt;-</span> <span class="cf">function</span>(INLA_res, model_name){</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  fixed <span class="ot">&lt;-</span> INLA_res<span class="sc">$</span>summary.fixed[<span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"0.025quant"</span>, <span class="st">"0.975quant"</span>)]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  hyper <span class="ot">&lt;-</span> INLA_res<span class="sc">$</span>summary.hyperpar[<span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"0.025quant"</span>, <span class="st">"0.975quant"</span>)]</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  relevant <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"beta.age"</span>, <span class="st">"beta.diabetes"</span>, <span class="st">"beta.sex"</span>, <span class="st">"beta.smoke"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(model_name, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  beta.x <span class="ot">&lt;-</span> hyper[<span class="fu">nrow</span>(hyper), ]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>(beta.x) <span class="ot">&lt;-</span> <span class="st">"beta.sbp"</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rbind</span>(beta.x, fixed[relevant, ])</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="setting-up-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="setting-up-the-data">Setting up the data</h2>
+<p>We load the data, and take a look at the first observations.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>full_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/bloodpressure.csv"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(full_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  X sbp1 sbp2 sex  age smoke diabetes d         t
+1 1   NA   NA   0 -0.3    NA        0 0 20.833336
+2 2  1.8   NA   0  1.2    NA        1 0  3.250000
+3 3  0.5   NA   0 -0.4    NA        1 0 20.416664
+4 4   NA   NA   1  0.0     1        0 0  4.083336
+5 5  0.5   NA   1 -0.7     1        0 0 12.000000
+6 6 -0.1   NA   1 -1.0     1        0 0 21.166664</code></pre>
+</div>
+</div>
+<p>As mentioned, we only consider measurement error and missing data in continuous covariates, so we remove the observations that have no recorded smoking status.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> full_data <span class="sc">%&gt;%</span> <span class="fu">drop_na</span>(smoke)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   X sbp1 sbp2 sex  age smoke diabetes d         t
+1  4   NA   NA   1  0.0     1        0 0  4.083336
+2  5  0.5   NA   1 -0.7     1        0 0 12.000000
+3  6 -0.1   NA   1 -1.0     1        0 0 21.166664
+4 10  1.9   NA   1  2.0     0        0 0  3.250000
+5 13  1.1  0.3   1  0.2     0        0 0 13.666664
+6 14   NA   NA   0  0.7     0        0 1  5.833336</code></pre>
+</div>
+</div>
+</section>
+<section id="complete-case-bayesian-analysis-using-inla" class="level2">
+<h2 class="anchored" data-anchor-id="complete-case-bayesian-analysis-using-inla">Complete case Bayesian analysis using INLA</h2>
+<p>As a baseline model to compare to the later models, we do a complete case analysis. For this naive analysis, only the observations that have a recorded <code>sbp1</code> measurement are used.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ccdata <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">drop_na</span>(sbp1)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(ccdata)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ccdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   X sbp1 sbp2 sex  age smoke diabetes d        t
+1  5  0.5   NA   1 -0.7     1        0 0 12.00000
+2  6 -0.1   NA   1 -1.0     1        0 0 21.16666
+3 10  1.9   NA   1  2.0     0        0 0  3.25000
+4 13  1.1  0.3   1  0.2     0        0 0 13.66666
+5 15  0.8   NA   1  1.4     0        0 0  2.75000
+6 16 -0.6   NA   1 -0.1     0        0 0  2.50000</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: JAGS and INLA use the same Weibull parameterization</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># (provided "variant" = 0 in INLA)</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>formula.naive <span class="ot">&lt;-</span> <span class="fu">inla.surv</span>(t<span class="sc">/</span><span class="dv">10</span>, d) <span class="sc">~</span> sbp1 <span class="sc">+</span> sex <span class="sc">+</span> age <span class="sc">+</span> smoke <span class="sc">+</span> diabetes</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>model_naive <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula.naive,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">family =</span><span class="st">"weibullsurv"</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> ccdata,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                    <span class="at">control.family =</span> <span class="fu">list</span>(<span class="fu">list</span>(<span class="at">variant =</span> <span class="dv">0</span>)))</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Naive model"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Naive model</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>model_naive<span class="sc">$</span>summary.fixed[<span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"0.025quant"</span>, <span class="st">"0.975quant"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  mean  0.025quant 0.975quant
+(Intercept) -2.3611508 -2.55027441 -2.1786506
+sbp1         0.0852421  0.01318898  0.1560199
+sex          0.4872863  0.30313969  0.6759058
+age          0.8762591  0.76273395  0.9894474
+smoke        0.2621554  0.06417933  0.4554144
+diabetes     0.5032389  0.27969458  0.7178608</code></pre>
+</div>
+</div>
+</section>
+<section id="measurement-error-models-in-inla" class="level2">
+<h2 class="anchored" data-anchor-id="measurement-error-models-in-inla">Measurement error models in INLA</h2>
+<p>Next, we fit two measurement error models, first using only the complete cases for SBP1 (i.e, the same data set as for the previous complete case analysis), and next a measurement error model that uses all the SBP measurements, and thus both adjusts for the measurement error and the missingness.</p>
+<section id="specifying-priors-used-in-both-me-models" class="level3">
+<h3 class="anchored" data-anchor-id="specifying-priors-used-in-both-me-models">Specifying priors (used in both ME models)</h3>
+<p>The priors are set up the same way as in Keogh and Bartlett (2018).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for measurement error variance and true x-value</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>prior.prec.u <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5) (same as Keogh&amp;Bartlett)</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>prior.prec.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5) (same as K&amp;B)</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co">#prec.u = 1/sigma_uu</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>prec.u <span class="ot">&lt;-</span> <span class="fl">2.8</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>prec.x <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co">#curve(dgamma(x, shape = 0.5, rate = 0.5))</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for exposure model coefficients</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>prior.alpha <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">10000</span>) <span class="co"># N(0, 10^4) (same as K&amp;B)</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for model of interest coefficients</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>prior.beta <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">1000</span>) <span class="co"># This has a Gaussian prior</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="co"># (K&amp;B specify prior -beta/r ~ N(0,10^6). Since r has prior Exp(0.001),</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co"># the expected value of r is 1000, and so if we fix this,</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="co"># we can use prior beta ~ N(0, 1000).)</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Prior for shape parameter of the Weibull survival model</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>prior.exp <span class="ot">&lt;-</span> <span class="fl">0.01</span> <span class="co"># Gamma(1, 0.001) ~ Exp(0.001) (INLA sets prior on theta, r~Exp(0.1*theta))</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>exp.init <span class="ot">&lt;-</span> <span class="fl">1.4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="me-model-ignoring-missing-observations" class="level3">
+<h3 class="anchored" data-anchor-id="me-model-ignoring-missing-observations">ME model ignoring missing observations</h3>
+<p>First we fit a model to account for the measurement error, using only the complete cases for SBP1.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(ccdata)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Specifying Y object</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>surv.time <span class="ot">&lt;-</span> <span class="fu">c</span>(ccdata<span class="sc">$</span>t, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>event <span class="ot">&lt;-</span> <span class="fu">c</span>(ccdata<span class="sc">$</span>d, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>Y.surv <span class="ot">&lt;-</span> <span class="fu">inla.surv</span>(surv.time<span class="sc">/</span><span class="dv">10</span>, event)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>Y.expos.sbp <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="dv">0</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">2</span><span class="sc">*</span>n))</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>Y.err.sbp <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">2</span><span class="sc">*</span>n), ccdata<span class="sc">$</span>sbp1, ccdata<span class="sc">$</span>sbp2) <span class="co"># Use all available data</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">list</span>(Y.surv, Y.expos.sbp, Y.err.sbp)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>beta<span class="fl">.0</span> <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>beta.sbp <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>beta.sex <span class="ot">&lt;-</span> <span class="fu">c</span>(ccdata<span class="sc">$</span>sex, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>beta.age <span class="ot">&lt;-</span> <span class="fu">c</span>(ccdata<span class="sc">$</span>age, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>beta.smoke <span class="ot">&lt;-</span> <span class="fu">c</span>(ccdata<span class="sc">$</span>smoke, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>beta.diabetes <span class="ot">&lt;-</span> <span class="fu">c</span>(ccdata<span class="sc">$</span>diabetes, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Insert NAs in last model where w is NA</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>tt <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span>n</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>tt[<span class="fu">is.na</span>(ccdata<span class="sc">$</span>sbp2)] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>beta.sbp.copy <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span><span class="sc">:</span>n, tt)</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>weight.sbp <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">2</span><span class="sc">*</span>n))</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>alpha<span class="fl">.0</span> <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">2</span><span class="sc">*</span>n))</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>alpha.sex <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), ccdata<span class="sc">$</span>sex, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">2</span><span class="sc">*</span>n))</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>alpha.age <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), ccdata<span class="sc">$</span>age, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">2</span><span class="sc">*</span>n))</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>alpha.smoke <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), ccdata<span class="sc">$</span>smoke, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">2</span><span class="sc">*</span>n))</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>alpha.diabetes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), ccdata<span class="sc">$</span>diabetes, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">2</span><span class="sc">*</span>n))</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>Scale <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">4</span><span class="sc">*</span>n) )</span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>mat1 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">Y =</span> Y,</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>           <span class="at">beta.0 =</span> beta<span class="fl">.0</span>,</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>           <span class="at">beta.sbp =</span> beta.sbp,</span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>           <span class="at">beta.sex =</span> beta.sex,</span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>           <span class="at">beta.age =</span> beta.age,</span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>           <span class="at">beta.smoke =</span> beta.smoke,</span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>           <span class="at">beta.diabetes =</span> beta.diabetes,</span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>           <span class="at">beta.sbp.copy =</span> beta.sbp.copy,</span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>           <span class="at">weight.sbp =</span> weight.sbp,</span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>           <span class="at">alpha.0 =</span> alpha<span class="fl">.0</span>,</span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a>           <span class="at">alpha.sex =</span> alpha.sex,</span>
+<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a>           <span class="at">alpha.age =</span> alpha.age,</span>
+<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a>           <span class="at">alpha.smoke =</span> alpha.smoke,</span>
+<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a>           <span class="at">alpha.diabetes =</span> alpha.diabetes,</span>
+<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a>           <span class="at">Scale =</span> Scale)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The formula is set up as described in <a href="./simulation_example.html">Simulation example</a> (except that there we also had a term for the Berkson ME, which we don’t have here).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># INLA formula with copy option</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>formula1 <span class="ot">&lt;-</span> Y <span class="sc">~</span> beta<span class="fl">.0</span> <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(beta.sbp.copy, weight.sbp, <span class="at">model=</span><span class="st">"iid"</span>, <span class="at">values =</span> <span class="dv">1</span><span class="sc">:</span>n,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(beta.sbp, <span class="at">copy=</span><span class="st">"beta.sbp.copy"</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">beta =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.beta, <span class="at">fixed=</span><span class="cn">FALSE</span>))) <span class="sc">+</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  beta.sex <span class="sc">+</span> beta.age <span class="sc">+</span> beta.smoke <span class="sc">+</span> beta.diabetes <span class="sc">+</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  alpha<span class="fl">.0</span> <span class="sc">+</span> alpha.sex <span class="sc">+</span> alpha.age <span class="sc">+</span> alpha.smoke <span class="sc">+</span> alpha.diabetes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The model is then fit.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula1, <span class="at">data =</span> mat1,</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">family =</span> <span class="fu">c</span>(<span class="st">"weibull.surv"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>),</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.family =</span> <span class="fu">list</span>(</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">alpha =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.exp,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">initial =</span> <span class="fu">log</span>(exp.init),</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x),</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">param =</span> prior.prec.x,</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u),</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">param =</span> prior.prec.u,</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">fixed =</span> <span class="cn">FALSE</span>)))</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>                 ),</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.predictor=</span><span class="fu">list</span>(<span class="at">link=</span><span class="dv">3</span>),</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">scale =</span> Scale,</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.fixed =</span> <span class="fu">list</span>(</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>                   <span class="at">mean =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.sex =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.age =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.smoke =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.diabetes =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.sex =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.age =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.smoke =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.diabetes =</span> prior.alpha[<span class="dv">1</span>]),</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>                   <span class="at">prec =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.sex =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.age =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.smoke =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.diabetes =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.sex =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.age =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.smoke =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.diabetes =</span> prior.alpha[<span class="dv">2</span>])))</span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a><span class="fu">view_relevant</span>(model1, <span class="st">"Repeated measurement"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Repeated measurement </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                   mean 0.025quant 0.975quant
+beta.sbp      0.1121153 0.01386680  0.2082771
+beta.age      0.8716486 0.75627658  0.9866010
+beta.diabetes 0.5019704 0.27834125  0.7167173
+beta.sex      0.4903540 0.30615108  0.6789968
+beta.smoke    0.2631645 0.06519664  0.4564406</code></pre>
+</div>
+</div>
+</section>
+<section id="me-model-with-missingness-in-sbp1-and-sbp2" class="level3">
+<h3 class="anchored" data-anchor-id="me-model-with-missingness-in-sbp1-and-sbp2">ME model with missingness in SBP1 and SBP2</h3>
+<p>Our full measurement error model account for both the measurement error in the blood pressure measurement, as well as the missingness.</p>
+<p>We begin by setting up the matrices that define the model structure. Note that we transform the survival time to avoid numerical issues.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(data)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Specifying Y object</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>surv.time <span class="ot">&lt;-</span> <span class="fu">c</span>(data<span class="sc">$</span>t, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>event <span class="ot">&lt;-</span> <span class="fu">c</span>(data<span class="sc">$</span>d, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>Y.surv <span class="ot">&lt;-</span> <span class="fu">inla.surv</span>(surv.time<span class="sc">/</span><span class="dv">10</span>, event)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>Y.expos.sbp <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="dv">0</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">2</span><span class="sc">*</span>n))</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>Y.err.sbp <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">2</span><span class="sc">*</span>n), data<span class="sc">$</span>sbp1, data<span class="sc">$</span>sbp2) <span class="co"># Use all available data</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">list</span>(Y.surv, Y.expos.sbp, Y.err.sbp)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>beta<span class="fl">.0</span> <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>beta.sbp <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>beta.sex <span class="ot">&lt;-</span> <span class="fu">c</span>(data<span class="sc">$</span>sex, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>beta.age <span class="ot">&lt;-</span> <span class="fu">c</span>(data<span class="sc">$</span>age, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>beta.smoke <span class="ot">&lt;-</span> <span class="fu">c</span>(data<span class="sc">$</span>smoke, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>beta.diabetes <span class="ot">&lt;-</span> <span class="fu">c</span>(data<span class="sc">$</span>diabetes, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n))</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Insert NAs in last model where w is NA</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>tt <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span>n</span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>tt[<span class="fu">is.na</span>(data<span class="sc">$</span>sbp2)] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>beta.sbp.copy <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span><span class="sc">:</span>n, tt)</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>weight.sbp <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">2</span><span class="sc">*</span>n))</span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>alpha<span class="fl">.0</span> <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">2</span><span class="sc">*</span>n))</span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>alpha.sex <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), data<span class="sc">$</span>sex, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">2</span><span class="sc">*</span>n))</span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>alpha.age <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), data<span class="sc">$</span>age, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">2</span><span class="sc">*</span>n))</span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>alpha.smoke <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), data<span class="sc">$</span>smoke, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">2</span><span class="sc">*</span>n))</span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>alpha.diabetes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), data<span class="sc">$</span>diabetes, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">2</span><span class="sc">*</span>n))</span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>Scale <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">4</span><span class="sc">*</span>n) )</span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>mat2 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">Y =</span> Y,</span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>           <span class="at">beta.0 =</span> beta<span class="fl">.0</span>,</span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>           <span class="at">beta.sbp =</span> beta.sbp,</span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>           <span class="at">beta.sex =</span> beta.sex,</span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>           <span class="at">beta.age =</span> beta.age,</span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a>           <span class="at">beta.smoke =</span> beta.smoke,</span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a>           <span class="at">beta.diabetes =</span> beta.diabetes,</span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a>           <span class="at">beta.sbp.copy =</span> beta.sbp.copy,</span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a>           <span class="at">weight.sbp =</span> weight.sbp,</span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>           <span class="at">alpha.0 =</span> alpha<span class="fl">.0</span>,</span>
+<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a>           <span class="at">alpha.sex =</span> alpha.sex,</span>
+<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a>           <span class="at">alpha.age =</span> alpha.age,</span>
+<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a>           <span class="at">alpha.smoke =</span> alpha.smoke,</span>
+<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a>           <span class="at">alpha.diabetes =</span> alpha.diabetes,</span>
+<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a>           <span class="at">Scale =</span> Scale)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The formula is the same as above.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># INLA formula with copy option</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>formula2 <span class="ot">&lt;-</span> Y <span class="sc">~</span> beta<span class="fl">.0</span> <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(beta.sbp.copy, weight.sbp, <span class="at">model=</span><span class="st">"iid"</span>, <span class="at">values =</span> <span class="dv">1</span><span class="sc">:</span>n,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(beta.sbp, <span class="at">copy=</span><span class="st">"beta.sbp.copy"</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">beta =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.beta, <span class="at">fixed=</span><span class="cn">FALSE</span>))) <span class="sc">+</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  beta.sex <span class="sc">+</span> beta.age <span class="sc">+</span> beta.smoke <span class="sc">+</span> beta.diabetes <span class="sc">+</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  alpha<span class="fl">.0</span> <span class="sc">+</span> alpha.sex <span class="sc">+</span> alpha.age <span class="sc">+</span> alpha.smoke <span class="sc">+</span> alpha.diabetes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The model is then fit.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>model_bloodpressure <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula2, <span class="at">data =</span> mat2,</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">family =</span> <span class="fu">c</span>(<span class="st">"weibull.surv"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>),</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.family =</span> <span class="fu">list</span>(</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">alpha =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.exp,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">initial =</span> <span class="fu">log</span>(exp.init),</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x),</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">param =</span> prior.prec.x,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u),</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">param =</span> prior.prec.u,</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">fixed =</span> <span class="cn">FALSE</span>)))</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>                 ),</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.predictor=</span><span class="fu">list</span>(<span class="at">link=</span><span class="dv">3</span>),</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">scale =</span> Scale,</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.fixed =</span> <span class="fu">list</span>(</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>                   <span class="at">mean =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.sex =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.age =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.smoke =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.diabetes =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.sex =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.age =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.smoke =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.diabetes =</span> prior.alpha[<span class="dv">1</span>]),</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>                   <span class="at">prec =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.sex =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.age =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.smoke =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.diabetes =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.sex =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.age =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.smoke =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.diabetes =</span> prior.alpha[<span class="dv">2</span>])))</span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a><span class="fu">view_relevant</span>(model_bloodpressure, <span class="st">"Repeated measurement"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Repeated measurement </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                   mean 0.025quant 0.975quant
+beta.sbp      0.1143296 0.01809562  0.2098860
+beta.age      0.9062324 0.80813899  1.0039959
+beta.diabetes 0.5949565 0.40939702  0.7746122
+beta.sex      0.4443801 0.29083679  0.6006210
+beta.smoke    0.2717879 0.10401999  0.4363125</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="looking-at-all-the-models" class="level2">
+<h2 class="anchored" data-anchor-id="looking-at-all-the-models">Looking at all the models</h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Naive model</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  mean  0.025quant 0.975quant
+(Intercept) -2.3611508 -2.55027441 -2.1786506
+sbp1         0.0852421  0.01318898  0.1560199
+sex          0.4872863  0.30313969  0.6759058
+age          0.8762591  0.76273395  0.9894474
+smoke        0.2621554  0.06417933  0.4554144
+diabetes     0.5032389  0.27969458  0.7178608</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Adjusts for ME, but only complete cases for SBP1 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                   mean 0.025quant 0.975quant
+beta.sbp      0.1121153 0.01386680  0.2082771
+beta.age      0.8716486 0.75627658  0.9866010
+beta.diabetes 0.5019704 0.27834125  0.7167173
+beta.sex      0.4903540 0.30615108  0.6789968
+beta.smoke    0.2631645 0.06519664  0.4564406</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Missingness in both SBP measurements (only complete cases of smoking) </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                   mean 0.025quant 0.975quant
+beta.sbp      0.1143296 0.01809562  0.2098860
+beta.age      0.9062324 0.80813899  1.0039959
+beta.diabetes 0.5949565 0.40939702  0.7746122
+beta.sex      0.4443801 0.29083679  0.6006210
+beta.smoke    0.2717879 0.10401999  0.4363125</code></pre>
+</div>
+</div>
+<div class="cell">
+
+</div>
+<div class="cell" data-fig.showtext="true">
+<div class="cell-output-display">
+<p><img src="missing_and_mismeasured_covariate_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+<div class="cell">
+
+</div>
+<p>If we compare this to the results from Keogh and Bartlett (2021) (see Figure 2 in their paper), our “Complete case naive” corresponds to their “Naive”, and our “ME adjusted complete case” corresponds to their “Bayes^c”. Our “ME adjusted and imputation does not quite correspond to their”Bayes^d”, since they also include an imputation model for smoking in their final model, which we do not. The results for the two models that are comparable are almost identical.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
