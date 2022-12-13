@@ -12,10 +12,11 @@ knitr:
 ```{r}
 #| purl: false
 #| include: false
-knitr::purl("R/missing_and_mismeasured_covariate.R")
+knitr::purl(input = "missing_and_mismeasured_covariate.qmd",
+            output = "R/missing_and_mismeasured_covariate.R")
 ```
 
-The data for this example is originally from the Third National Health and Nutrition Survey (NHANES III), but we use the data as pre-processed and provided by Bartlett and Keogh (2018) TODO: include source. They linked the NHANES III data to data from the US National Death Index, with information about the mortality status of each participant in 2011. Following Bartlett and Keogh (2018), we consider a Weibull survival model with continuous covariates systolic blood (SBP) pressure and age, and binary covariates diabetes status, sex and smoking status. The response is time until death by cardiovascular disease. Deaths by other causes are treated as censorings. 
+The data for this example is originally from the Third National Health and Nutrition Survey (NHANES III), but we use the data as pre-processed and provided by Bartlett and Keogh (2018) TODO: include source. They linked the NHANES III data to data from the US National Death Index, with information about the mortality status of each participant in 2011. Following Bartlett and Keogh (2018), we consider a Weibull survival model with continuous covariates systolic blood pressure (SBP) and age, and binary covariates diabetes status, sex and smoking status. The response is time until death by cardiovascular disease. Deaths by other causes are treated as censorings. 
 
 Measurements of SBP are known to vary substantially within the same patient, and it is therefore measured twice for some participants, enabling us to estimate the variance of the error. However, for some participants there is only one measurement, and for others the SBP is completely missing. Note that the smoking status is also missing for around half of the participants, but since we only consider continuous ME, all observations with missingness in the (binary) smoking status are removed for this illustrative example, resulting in $n = 3433$ observations. 
 
@@ -24,7 +25,6 @@ To read more about how the Weibull hazard model is used in INLA in general, the 
 ## Packages
 
 ```{r}
-#| label: packages
 #| message: false
 library(survival)   # Survival modelling
 library(INLA)       # Modelling
@@ -55,7 +55,6 @@ view_relevant <- function(INLA_res, model_name){
 We load the data, and take a look at the first observations.
 
 ```{r}
-#| label: load data
 full_data <- read.csv("data/bloodpressure.csv")
 head(full_data)
 ```
@@ -63,7 +62,6 @@ head(full_data)
 As mentioned, we only consider measurement error and missing data in continuous covariates, so we remove the observations that have no recorded smoking status.
 
 ```{r}
-#| label: remove missing smoking
 data <- full_data %>% drop_na(smoke)
 head(data)
 ```
@@ -74,7 +72,6 @@ head(data)
 As a baseline model to compare to the later models, we do a complete case analysis. For this naive analysis, only the observations that have a recorded `sbp1` measurement are used.
 
 ```{r}
-#| label: create complete case data
 ccdata <- data %>% drop_na(sbp1)
 n <- nrow(ccdata)
 head(ccdata)
@@ -87,9 +84,9 @@ head(ccdata)
 formula.naive <- inla.surv(t/10, d) ~ sbp1 + sex + age + smoke + diabetes
 
 model_naive <- inla(formula.naive,
-                     family ="weibullsurv",
-                     data = ccdata,
-                     control.family = list(list(variant = 0)))
+                    family ="weibullsurv",
+                    data = ccdata,
+                    control.family = list(list(variant = 0)))
 
 cat("Naive model")
 model_naive$summary.fixed[c("mean", "0.025quant", "0.975quant")]
@@ -98,7 +95,7 @@ model_naive$summary.fixed[c("mean", "0.025quant", "0.975quant")]
 
 ## Measurement error models in INLA
 
-Next, we fit two different models in INLA, first an imputation model, and next a measurement error model that both adjusts for the measurement error and the missingness. 
+Next, we fit two measurement error models, first using only the complete cases for SBP1 (i.e, the same data set as for the previous complete case analysis), and next a measurement error model that uses all the SBP measurements, and thus both adjusts for the measurement error and the missingness. 
 
 ### Specifying priors (used in both ME models)
 The priors are set up the same way as in Keogh and Bartlett (2018).
@@ -128,11 +125,116 @@ exp.init <- 1.4
 ```
 
 
-### Missing covariate imputation model
-How should this be done?
+### ME model ignoring missing observations
+
+First we fit a model to account for the measurement error, using only the complete cases for SBP1. 
+
+```{r}
+n <- nrow(ccdata)
+
+# Specifying Y object
+surv.time <- c(ccdata$t, rep(NA, 3*n))
+event <- c(ccdata$d, rep(NA, 3*n))
+Y.surv <- inla.surv(surv.time/10, event)
+Y.expos.sbp <- c(rep(NA, n), rep(0, n), rep(NA, 2*n))
+Y.err.sbp <- c(rep(NA, 2*n), ccdata$sbp1, ccdata$sbp2) # Use all available data
+Y <- list(Y.surv, Y.expos.sbp, Y.err.sbp)
+
+beta.0 <- c(rep(1, n), rep(NA, 3*n))
+beta.sbp <- c(1:n, rep(NA, 3*n))
+beta.sex <- c(ccdata$sex, rep(NA, 3*n))
+beta.age <- c(ccdata$age, rep(NA, 3*n))
+beta.smoke <- c(ccdata$smoke, rep(NA, 3*n))
+beta.diabetes <- c(ccdata$diabetes, rep(NA, 3*n))
+
+# Insert NAs in last model where w is NA
+tt <- 1:n
+tt[is.na(ccdata$sbp2)] <- NA
+beta.sbp.copy <- c(rep(NA, n), 1:n, 1:n, tt)
+weight.sbp <- c(rep(NA, n), rep(-1, n), rep(1, 2*n))
+
+alpha.0 <- c(rep(NA, n), rep(1, n), rep(NA, 2*n))
+alpha.sex <- c(rep(NA, n), ccdata$sex, rep(NA, 2*n))
+alpha.age <- c(rep(NA, n), ccdata$age, rep(NA, 2*n))
+alpha.smoke <- c(rep(NA, n), ccdata$smoke, rep(NA, 2*n))
+alpha.diabetes <- c(rep(NA, n), ccdata$diabetes, rep(NA, 2*n))
+
+Scale <- c(rep(1, 4*n) )
+
+mat1 <- list(Y = Y,
+           beta.0 = beta.0,
+           beta.sbp = beta.sbp,
+           beta.sex = beta.sex,
+           beta.age = beta.age,
+           beta.smoke = beta.smoke,
+           beta.diabetes = beta.diabetes,
+           beta.sbp.copy = beta.sbp.copy,
+           weight.sbp = weight.sbp,
+           alpha.0 = alpha.0,
+           alpha.sex = alpha.sex,
+           alpha.age = alpha.age,
+           alpha.smoke = alpha.smoke,
+           alpha.diabetes = alpha.diabetes,
+           Scale = Scale)
+```
+
+The formula is set up as described in [Simulation example](Simulation_example.qmd) (except that there we also had a term for the Berkson ME, which we don't have here).
+
+```{r}
+# INLA formula with copy option
+formula1 <- Y ~ beta.0 - 1 +
+  f(beta.sbp.copy, weight.sbp, model="iid", values = 1:n,
+    hyper = list(prec = list(initial = -15, fixed=TRUE))) +
+  f(beta.sbp, copy="beta.sbp.copy",
+    hyper = list(beta = list(param = prior.beta, fixed=FALSE))) +
+  beta.sex + beta.age + beta.smoke + beta.diabetes +
+  alpha.0 + alpha.sex + alpha.age + alpha.smoke + alpha.diabetes
+```
+
+The model is then fit.
+```{r}
+model1 <- inla(formula1, data = mat1,
+                 family = c("weibull.surv", "gaussian", "gaussian"),
+                 control.family = list(
+                   list(hyper = list(alpha = list(param = prior.exp,
+                                                  initial = log(exp.init),
+                                                  fixed = FALSE))),
+                   list(hyper = list(prec = list(initial = log(prec.x),
+                                                 param = prior.prec.x,
+                                                 fixed = FALSE))),
+                   list(hyper = list(prec = list(initial = log(prec.u),
+                                                 param = prior.prec.u,
+                                                 fixed = FALSE)))
+                 ),
+                 control.predictor=list(link=3),
+                 scale = Scale,
+                 control.fixed = list(
+                   mean = list(beta.0 = prior.beta[1],
+                               beta.sex = prior.beta[1],
+                               beta.age = prior.beta[1],
+                               beta.smoke = prior.beta[1],
+                               beta.diabetes = prior.beta[1],
+                               alpha.0 = prior.alpha[1],
+                               alpha.sex = prior.alpha[1],
+                               alpha.age = prior.alpha[1],
+                               alpha.smoke = prior.alpha[1],
+                               alpha.diabetes = prior.alpha[1]),
+                   prec = list(beta.0 = prior.beta[2],
+                               beta.sex = prior.beta[2],
+                               beta.age = prior.beta[2],
+                               beta.smoke = prior.beta[2],
+                               beta.diabetes = prior.beta[2],
+                               alpha.0 = prior.alpha[2],
+                               alpha.sex = prior.alpha[2],
+                               alpha.age = prior.alpha[2],
+                               alpha.smoke = prior.alpha[2],
+                               alpha.diabetes = prior.alpha[2])))
+
+view_relevant(model1, "Repeated measurement")
+```
 
 ### ME model with missingness in SBP1 and SBP2
-Our full measurement error model accoundt for both the measurement error in the blood pressure measurement, as well as the missingness. 
+Our full measurement error model account for both the measurement error in the blood pressure measurement, as well as the missingness. 
 
 We begin by setting up the matrices that define the model structure. Note that we transform the survival time to avoid numerical issues. 
 ```{r}
@@ -167,7 +269,7 @@ alpha.diabetes <- c(rep(NA, n), data$diabetes, rep(NA, 2*n))
 
 Scale <- c(rep(1, 4*n) )
 
-dd <- list(Y = Y,
+mat2 <- list(Y = Y,
            beta.0 = beta.0,
            beta.sbp = beta.sbp,
            beta.sex = beta.sex,
@@ -184,11 +286,11 @@ dd <- list(Y = Y,
            Scale = Scale)
 ```
 
-The formula is set up as described in [Simulation example](Simulation_example.qmd) (except that there we also had a term for the Berkson ME, which we don't have here).
+The formula is the same as above.
 
 ```{r}
 # INLA formula with copy option
-formula = Y ~ beta.0 - 1 +
+formula2 <- Y ~ beta.0 - 1 +
   f(beta.sbp.copy, weight.sbp, model="iid", values = 1:n,
     hyper = list(prec = list(initial = -15, fixed=TRUE))) +
   f(beta.sbp, copy="beta.sbp.copy",
@@ -199,7 +301,7 @@ formula = Y ~ beta.0 - 1 +
 
 The model is then fit.
 ```{r}
-model_bloodpressure <- inla(formula, data = dd,
+model_bloodpressure <- inla(formula2, data = mat2,
                  family = c("weibull.surv", "gaussian", "gaussian"),
                  control.family = list(
                    list(hyper = list(alpha = list(param = prior.exp,
@@ -249,9 +351,13 @@ cat("Naive model")
 naive <- model_naive$summary.fixed[c("mean", "0.025quant", "0.975quant")]
 naive
 
-# Would correspond to Bayes^d if we had exposure model for smoking
-me_adjusted <- view_relevant(model_bloodpressure, "Missingness in both SBP measurements (only complete cases of smoking)")
+# Corresponds to Bayes^c
+me_adjusted <- view_relevant(model1, "Adjusts for ME, but only complete cases for SBP1")
 me_adjusted
+
+# Would correspond to Bayes^d if we had exposure model for smoking
+missing_adjusted <- view_relevant(model_bloodpressure, "Missingness in both SBP measurements (only complete cases of smoking)")
+missing_adjusted
 ```
 
 
@@ -266,7 +372,9 @@ naive <- naive %>%
 
 me_adjusted <- me_adjusted %>% mutate(coef_name = rownames(.))
 
-kb <- tibble::tribble(
+missing_adjusted <- missing_adjusted %>% mutate(coef_name = rownames(.))
+
+kb_d <- tibble::tribble(
   ~"mean", ~"0.025quant", ~"0.975quant", ~"coef_name",
   0.121, 0.055, 0.186, "beta.sbp", 
   0.47, 0.36, 0.57, "beta.sex",
@@ -275,16 +383,29 @@ kb <- tibble::tribble(
   0.68, 0.55, 0.82, "beta.diabetes"
 )
 
-all_models <- bind_rows("Complete case" = naive, "ME adjusted" = me_adjusted, "Keogh and Bartlett (2021)" = kb, .id = "model") %>% 
+kb_c <- tibble::tribble(
+  ~"mean", ~"0.025quant", ~"0.975quant", ~"coef_name",
+  0.114, 0.015, 0.211, "beta.sbp", 
+  0.49, 0.30, 0.68, "beta.sex",
+  0.87, 0.75, 0.98, "beta.age",
+  0.26, 0.07, 0.45, "beta.smoke", 
+  0.50, 0.27, 0.72, "beta.diabetes"
+)
+
+all_models <- bind_rows("Complete case naive" = naive, 
+                        "ME adjusted complete case" = me_adjusted, 
+                        "ME adjusted and imputation" = missing_adjusted, 
+                        .id = "model") %>% 
   tidyr::separate(coef_name, c("sub_model", "coef_name")) %>% 
-  mutate(coef_pretty = paste0(sub_model, "[", coef_name, "]")) %>% 
+  mutate(coef_pretty = paste0("beta[", coef_name, "]")) %>% 
   rename(quant_0.025 = "0.025quant", quant_0.975 = "0.975quant") %>% 
-  mutate(model = fct_relevel(model, levels = c("Complete case", "ME adjusted", "Keogh and Bartlett (2021)")))
+  mutate(model = fct_relevel(model, levels = c("ME adjusted and imputation",
+                                               "ME adjusted complete case",
+                                               "Complete case naive")))
 ```
 
 
 ```{r}
-#| label: visualize results
 #| purl: false
 #| fig.showtext: true
 #| fig-width: 10
@@ -298,22 +419,23 @@ library(showtext)
 # Colors
 col_bgr <- "white" #"#fbf9f4"
 col_text <- "#191919"
-color_pal <- c("#BB5566", "#DDAA33", "#004488")
+color_pal <- c("#004488", "#DDAA33", "#BB5566")
 
 # Loading fonts
 f1 <- "Open Sans"
 font_add_google(name = f1, family = f1)
 
+font_size <- 20
 # Plot theme
-theme_model_summary <- theme_minimal(base_size = 18, base_family = f1) + 
+theme_model_summary <- theme_minimal(base_size = font_size, base_family = f1) + 
   theme(
   axis.title.y = element_blank(),
-  axis.title.x = element_text(size = 12, color = col_text, family = f1),
-  axis.text = element_text(size = 10, color = col_text, family = f1),
-  #axis.text.x = element_blank(),
+  axis.title.x = element_text(size = 0.7*font_size, color = col_text, family = f1),
+  axis.text.y = element_text(size = 0.6*font_size, color = col_text, family = f1),
+  axis.text.x = element_text(size = 0.4*font_size, color = col_text, family = f1,
+                             margin = margin(0, 0, 1, 0)),
   axis.ticks = element_blank(),
   legend.title = element_blank(),
-  legend.text = element_text(size = 10),
   panel.background = element_rect(fill = col_bgr, color = col_bgr),
   plot.background = element_rect(fill = col_bgr, color = col_bgr),
   legend.position = "none",
@@ -340,7 +462,7 @@ ggplot(all_models, aes(y = model)) +
   geom_text(aes(x = mean, 
                 y = model, 
                 label = round(mean, digits = 3)), 
-            vjust = -1, family = f1) +
+            vjust = -1, family = f1, size = 4) +
   # Color for point and line
   scale_color_manual(values = color_pal, 
                      guide = guide_legend(override.aes = list(size = 2, 
@@ -359,5 +481,8 @@ ggplot(all_models, aes(y = model)) +
 ```{r}
 #| echo: false
 #| warning: false
-ggsave("figures/bloodpressure_figure.png", width = 10, height = 3)
+ggsave("figures/bloodpressure_figure.png", height = 4, width = 10)
 ```
+
+If we compare this to the results from Keogh and Bartlett (2021) (see Figure 2 in their paper), our "Complete case naive" corresponds to their "Naive", and our "ME adjusted complete case" corresponds to their "Bayes^c". Our "ME adjusted and imputation does not quite correspond to their "Bayes^d", since they also include an imputation model for smoking in their final model, which we do not. 
+The results for the two models that are comparable are almost identical. 

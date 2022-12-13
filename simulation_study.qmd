@@ -10,7 +10,8 @@ knitr:
 ```{r}
 #| purl: false
 #| include: false
-knitr::purl(input = "simulation_study.qmd", output = "R/simulation_study.R")
+knitr::purl(input = "simulation_study.qmd", 
+            output = "R/simulation_study.R")
 ```
 
 ```{r}
@@ -32,7 +33,6 @@ In the vignette [Simulation example](Simulation_example.qmd), we simulate a sing
 ### Function for simulating data
 
 ```{r}
-#| label: function for data simulation
 simulate_data <- function(n){
   # Covariate without error:
   z <- rnorm(n, mean = 0, sd = 1)
@@ -64,7 +64,6 @@ simulate_data <- function(n){
 ### Functions for setting up the model matrices
 
 ```{r}
-#| label: functions for model matrices
 # Make matrix for ME model
 make_matrix_ME <- function(data){
   n <- nrow(data)
@@ -137,7 +136,6 @@ make_matrix_true <- function(data){
 
 ### Function for fitting the ME model
 ```{r}
-#| label: function for fitting ME model
 # Fit ME model
 fit_model_ME <- function(data_matrix) {
   # Priors for model of interest coefficients
@@ -207,7 +205,6 @@ fit_model_ME <- function(data_matrix) {
 The same function can be used to fit the naive model (`y ~ w + z`) and the best-case model (`y ~ x + z`) since they simply differ in the variable that is inputted (`w` versus `x`).
 
 ```{r}
-#| label: function for fitting true/naive model
 fit_model_naive_true <- function(data_matrix){
   # Priors for model of interest coefficients
   prior.beta <- c(0, 1/1000) # N(0, 10^3)
@@ -252,7 +249,6 @@ We simulate 100 data sets and fit the model that accounts for measurement error 
 Note that this chunk may take a while to run.
 
 ```{r}
-#| label: running the simulation 
 # Number of iterations
 niter <- 100
 
@@ -298,7 +294,6 @@ for(i in 1:niter){
 ## Results
 
 ```{r}
-#| label: preparing results
 #| echo: false
 #| fig.showtext: true
 library(ggplot2)
@@ -321,7 +316,6 @@ saveRDS(joint_results, file = "results/simulation_results.rds")
 ```
 
 ```{r}
-#| label: visualize results
 #| purl: false
 #| fig.showtext: true
 #| fig-width: 10
@@ -349,7 +343,8 @@ showtext_opts(dpi = 300)
 theme_titles <- theme_minimal(base_size = 18, base_family = f1) + 
   theme(
   axis.title.x = element_blank(),
-  axis.title.y = element_text(size = 12, color = col_text, family = f1),
+  axis.title.y = element_text(size = 12, color = col_text, family = f1, 
+                              margin = margin(0, 10, 0, 0)),
   axis.text = element_text(size = 10, color = col_text),
   axis.text.x = element_blank(),
   axis.ticks = element_blank(),
@@ -364,7 +359,7 @@ theme_titles <- theme_minimal(base_size = 18, base_family = f1) +
   panel.grid.minor.x = element_blank(),
   plot.title.position = "plot",
   axis.text.y = element_text(family = f1),
-  axis.line.x = element_line(size = 1, color = "grey65"),
+  axis.line.x.top = element_line(size = 1, color = "grey65"),
   plot.margin = margin(rep(15, 4))
 )
 
@@ -392,16 +387,18 @@ ggplot(simulation_results, aes(x = 1, y = value, groups = model)) +
                position = position_dodge(width = 0.75),
                size = 4.3, fontface = "bold", family = f1) +
   # Facet by coefficient
-  facet_wrap(~ variable, switch = "x",
+  facet_wrap(~ variable,
              labeller = label_parsed) +
   # Don't remove points outside the plot
   coord_cartesian(clip = "off") +
   # Color of lines and points
   scale_color_manual(values = color_pal) +
+  # Make second x-axis so we get grey line on top
+  scale_x_continuous(sec.axis = sec_axis(trans = ~.)) +
   ylab("Posterior mean") +
   theme_titles
 
 ggsave("figures/simulation_boxplot.png", 
-       width = 10, height = 6.67)
+       width = 10, height = 4)
 ```
 

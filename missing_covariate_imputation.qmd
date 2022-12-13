@@ -10,7 +10,8 @@ knitr:
 ```{r}
 #| purl: false
 #| include: false
-#knitr::purl("R/missing_covariate_imputation.R")
+knitr::purl(input = "missing_covariate_imputation.qmd", 
+            output = "R/missing_covariate_imputation.R")
 ```
 
 In this example, we use the `nhanes2` data set from the `mice` R-package to illustrate how to do missing covariate imputation in INLA by using a measurement error model.
@@ -19,7 +20,6 @@ As noted in the paper, the `nhanes2` data set is really small, it only has 25 ob
 ## Loading packages
 
 ```{r}
-#| label: setup
 #| message: false
 library(mice)       # Just used for the nhanes2 data set
 library(INLA)       # INLA modelling
@@ -141,12 +141,9 @@ formula = Y ~ - 1 + beta.0 + beta.age2 + beta.age3 +
 
 ### Scaling of ME precision
 
-Since we are not assuming any measurement error here, we need to "turn off" the error model for the observations where the observation is not missing. 
+Since we are not assuming any measurement error here, we need to "turn off" the error model by scaling the error precision to be very large (it makes no difference if we scale the precision only for the observed values or for the observed and missing values).
 ```{r}
-# Scale the measurement error precision according to whether observations are missing or not (1 if missing, large if not missing)
-M <- ifelse(is.na(bmi), 10^12, 10^12)
-# Scaling the precision to be large for the error model (since we only have correctly observed or missing data, we want high precision for the correctly observed data and for the missing data it doesn't matter)
-Scale <- c(rep(1, n), M, rep(1, n))
+Scale <- c(rep(1, n), rep(10^12, n), rep(1, n))
 ```
 
 ### Fitting the model
@@ -190,7 +187,6 @@ saveRDS(model_missing, file = "results/model_missing.rds")
 ### Fitting a complete case model
 
 ```{r}
-#| label: naive model
 #| purl: false
 # Where is bmi missing? 
 missing_bmi <- is.na(bmi)
@@ -234,7 +230,6 @@ The posterior means and standard deviations are presented in the table below. No
 ```{r}
 #| echo: false
 #| purl: false
-
 return_estimates <- function(inla.object){
   fixed <- data.frame(inla.object$summary.fixed)
   fixed <- fixed[, names(fixed) != "kld"]
@@ -307,12 +302,10 @@ return_estimates(model_missing) %>%
 
 
 ```{r}
-#| label: visualize results
 #| purl: false
 #| fig.showtext: true
 #| warning: false
 #| echo: false
-
 me_plot <- return_estimates(model_missing) %>% 
   dplyr::select(coefficient.name, mean, sd, model) 
 naive_plot <- naive_results %>% rename(sd = naive.sd, mean = naive.mean)

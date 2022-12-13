@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 
-<meta charset="utf-8">
-<meta name="generator" content="quarto-1.1.189">
+<head>
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta charset="utf-8" />
+<meta name="generator" content="quarto-1.1.189" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
 
 
-<title>Missing data and measurement error - NHANES example</title>
+<title>Missing data and measurement error – NHANES example</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -85,23 +87,7 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
-
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<!-- htmldependencies:E3FAD763 -->
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -123,27 +109,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 }</script>
 
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css" />
 </head>
 
-<body class="nav-sidebar docked nav-fixed">
+<body>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="/index.html">
     <span class="navbar-title">Missing data and measurement error</span>
     </a>
   </div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+  aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation"
+  onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html">
+    <a class="nav-link" href="/index.html">
   </a>
   </li>  
 </ul>
@@ -151,10 +139,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
     </nav>
-  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <nav class="quarto-secondary-nav" 
+        data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" 
+        aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation"
+        onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }"
+  >
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">NHANES example</h1>
-      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+      <h1 class="quarto-secondary-nav-title"></h1>
+      <button type="button" 
+        class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
     </div>
@@ -176,17 +169,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./data_bloodpressure.html" class="sidebar-item-text sidebar-link">Bloodpressure data</a>
+  <a href="/data_bloodpressure.html" class="sidebar-item-text sidebar-link">Bloodpressure data</a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./data_nhanes.html" class="sidebar-item-text sidebar-link active">NHANES example</a>
+  <a href="/data_nhanes.html" class="sidebar-item-text sidebar-link active">NHANES example</a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./data_simulated.html" class="sidebar-item-text sidebar-link">Simulated data with measurement error and missing values</a>
+  <a href="/data_simulated.html" class="sidebar-item-text sidebar-link">Simulated data</a>
   </div>
 </li>
       </ul>
@@ -201,17 +194,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./missing_covariate_imputation.html" class="sidebar-item-text sidebar-link">Missing covariate imputation</a>
+  <a href="/missing_covariate_imputation.html" class="sidebar-item-text sidebar-link">Missing covariate imputation</a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./missing_and_mismeasured_covariate.html" class="sidebar-item-text sidebar-link">Missing and mismeasured covariate</a>
+  <a href="/missing_and_mismeasured_covariate.html" class="sidebar-item-text sidebar-link">Missing and mismeasured covariate</a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./simulation_study.html" class="sidebar-item-text sidebar-link">Simulation study</a>
+  <a href="/simulation_study.html" class="sidebar-item-text sidebar-link">Simulation study</a>
   </div>
 </li>
       </ul>
@@ -226,12 +219,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./simulation_example.html" class="sidebar-item-text sidebar-link">Simulation example</a>
+  <a href="/simulation_example.html" class="sidebar-item-text sidebar-link">Simulation example</a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./example_in_inlabru.html" class="sidebar-item-text sidebar-link">Example in <code>inlabru</code></a>
+  <a href="/example_in_inlabru.html" class="sidebar-item-text sidebar-link">Example in `inlabru`</a>
   </div>
 </li>
       </ul>
@@ -241,22 +234,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </nav>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#load-the-data" id="toc-load-the-data" class="nav-link active" data-scroll-target="#load-the-data">Load the data</a></li>
-  <li><a href="#format" id="toc-format" class="nav-link" data-scroll-target="#format">Format</a></li>
-  <li><a href="#source" id="toc-source" class="nav-link" data-scroll-target="#source">Source</a></li>
-  </ul>
-</nav>
+        <div id="quarto-toc-target"></div>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">NHANES example</h1>
+<h1 class="title">NHANES example</h1>
 </div>
 
 
@@ -269,17 +254,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   
 
 </header>
-
+<nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#load-the-data" id="toc-load-the-data">Load the data</a></li>
+  <li><a href="#format" id="toc-format">Format</a></li>
+  <li><a href="#source" id="toc-source">Source</a></li>
+  </ul>
+</nav>
 <p>A small data set with missing values.</p>
 <section id="load-the-data" class="level2">
-<h2 class="anchored" data-anchor-id="load-the-data">Load the data</h2>
+<h2>Load the data</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mice)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(nhanes2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mice)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(nhanes2)</span></code></pre></div>
 </div>
 </section>
 <section id="format" class="level2">
-<h2 class="anchored" data-anchor-id="format">Format</h2>
+<h2>Format</h2>
 <p>A data frame with 25 rows and 4 variables:</p>
 <ul>
 <li><code>age</code>: Age group (1=20-39, 2=40-59, 3=60+)</li>
@@ -289,14 +282,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 </section>
 <section id="source" class="level2">
-<h2 class="anchored" data-anchor-id="source">Source</h2>
+<h2>Source</h2>
 <p>The {mice} package, originally from Schafer, J.L. (1997). <em>Analysis of Incomplete Multivariate Data</em>. London: Chapman &amp; Hall. Table 6.14.</p>
-
-
+<div id="quarto-navigation-envelope" class="hidden">
+<p><span class="hidden" data-render-id="quarto-int-sidebar-title">Missing data and measurement error</span> <span class="hidden" data-render-id="quarto-int-navbar-title">Missing data and measurement error</span> <span class="hidden" data-render-id="quarto-int-next">Simulated data</span> <span class="hidden" data-render-id="quarto-int-prev">Bloodpressure data</span> <span class="hidden" data-render-id="quarto-int-sidebar:quarto-sidebar-section-1">Datasets</span> <span class="hidden" data-render-id="quarto-int-sidebar:/data_bloodpressure.html">Bloodpressure data</span> <span class="hidden" data-render-id="quarto-int-sidebar:/data_nhanes.html">NHANES example</span> <span class="hidden" data-render-id="quarto-int-sidebar:/data_simulated.html">Simulated data</span> <span class="hidden" data-render-id="quarto-int-sidebar:quarto-sidebar-section-2">Examples from the paper</span> <span class="hidden" data-render-id="quarto-int-sidebar:/missing_covariate_imputation.html">Missing covariate imputation</span> <span class="hidden" data-render-id="quarto-int-sidebar:/missing_and_mismeasured_covariate.html">Missing and mismeasured covariate</span> <span class="hidden" data-render-id="quarto-int-sidebar:/simulation_study.html">Simulation study</span> <span class="hidden" data-render-id="quarto-int-sidebar:quarto-sidebar-section-3">Additional examples</span> <span class="hidden" data-render-id="quarto-int-sidebar:/simulation_example.html">Simulation example</span> <span class="hidden" data-render-id="quarto-int-sidebar:/example_in_inlabru.html">Example in <code>inlabru</code></span> <span class="hidden" data-render-id="quarto-int-navbar:"></span></p>
+</div>
+<div id="quarto-meta-markdown" class="hidden">
+<p><span class="hidden" data-render-id="quarto-metatitle">Missing data and measurement error - NHANES example</span> <span class="hidden" data-render-id="quarto-twittercardtitle">Missing data and measurement error - NHANES example</span> <span class="hidden" data-render-id="quarto-ogcardtitle">Missing data and measurement error - NHANES example</span> <span class="hidden" data-render-id="quarto-metasitename">Missing data and measurement error</span></p>
+</div>
 </section>
 
 </main> <!-- /main -->
-<script id="quarto-html-after-body" type="application/javascript">
+<script id = "quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
     const mode = bsSheetEl.getAttribute("data-mode");
@@ -396,6 +393,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 </div> <!-- /content -->
 
+</body>
 
-
-</body></html>
+</html>

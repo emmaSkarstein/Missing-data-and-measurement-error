@@ -14,11 +14,11 @@ $$
 ```{r}
 #| purl: false
 #| include: false
-#knitr::purl(input = "simulation_example.qmd", output = "R/simulation_example.R")
+knitr::purl(input = "simulation_example.qmd", 
+            output = "R/simulation_example.R")
 ```
 
 ```{r}
-#| label: Packages
 library(INLA)
 ```
 
