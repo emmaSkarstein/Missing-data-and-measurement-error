@@ -7,9 +7,21 @@ Repeated systolic blood pressure measurements with measurement error.
 A dataset containing a repeated blood pressure measurement along with some other variables for participants in the Third National Health and Nutrition Survey (NHANES III), merged with data from the US National Death Index by Ruth H. Keogh and Jonathan Bartlett.
 
 ## Load the data
+If you have cloned the repository:
 ```{r}
 bloodpressure <- read.csv("data/bloodpressure.csv")
 ```
+
+Otherwise you can download it from GitHub like this:
+```{r}
+#| message: false
+library(RCurl)
+
+url_bloodpressure <- getURL("https://raw.githubusercontent.com/emmaSkarstein/Missing-data-and-measurement-error/master/data/bloodpressure.csv")
+bloodpressure <- read.csv(text = url_bloodpressure)
+```
+
+
 
 ## Format
 A data frame with 6519 rows and 8 variables:

@@ -29,16 +29,7 @@ Example | Classical ME | Berkson ME | Missing data
 
 
 ## Datasets
-All the data sets that are used in the paper can be downloaded manually from [the GitHub repository](https://github.com/emmaSkarstein/Missing-data-and-measurement-error), or like this:
-
-```{r}
-library(RCurl)
-url_bloodpressure <- getURL("https://raw.githubusercontent.com/emmaSkarstein/Missing-data-and-measurement-error/master/data/bloodpressure.csv")
-bloodpressure <- read.csv(text = url_bloodpressure)
-
-url_simulated_data <- getURL("https://raw.githubusercontent.com/emmaSkarstein/Missing-data-and-measurement-error/master/data/simulated_data.csv")
-simulated_data <- read.csv(text = url_simulated_data)
-```
+All the data sets that are used in the paper can be downloaded manually from [the GitHub repository](https://github.com/emmaSkarstein/Missing-data-and-measurement-error), or directly in **R** as specified in the data descriptions. 
 
 ## Session info
 
