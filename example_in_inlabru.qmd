@@ -28,7 +28,7 @@ We here show how to fit the measurement error and missing data model in `inlabru
 TODO: the model is still using the random effect formulation and the exposure model uses x, this needs to be updated.
 
 ## Loading the data
-For this demonstration we will use the simulated data from the "Simulation example" vignette. Just to refresh: this is a situation where we have one covariate ($\boldsymbol{x}$) that has both classical  error, Berkson error and missing data. We also observe another covariate ($\boldsymbol{z}$) that has no error.
+For this demonstration we will use the simulated data from the [Simulation example](simulation_example.qmd). Just to refresh: this is a situation where we have one covariate ($\boldsymbol{x}$) that has both classical  error, Berkson error and missing data. We also observe another covariate ($\boldsymbol{z}$) that has no error.
 
 ```{r}
 data <- read.csv("data/simulated_data.csv")
@@ -49,14 +49,96 @@ prior.alpha <- c(0, 1/10000) # N(0, 10^4)
 prior.prec.y <- c(0.5, 0.5) # Gamma(0.5, 0.5)
 prior.prec.u_b <- c(0.5, 0.5) # Gamma(0.5, 0.5)
 prior.prec.u_c <- c(0.5, 0.5) # Gamma(0.5, 0.5)
-prior.prec.x <- c(0.5, 0.5) # Gamma(0.5, 0.5) 
+prior.prec.r <- c(0.5, 0.5) # Gamma(0.5, 0.5) 
 
 # Initial values
 prec.y <- 1
 prec.u_b <- 1
 prec.u_c <- 1
+prec.r <- 1
+
 prec.x <- 1
+prior.prec.x <- c(0.5, 0.5)
 ```
+
+## Updated version
+(the original code from Sara is for now unchanged in the next sections)
+
+```{r}
+# Regression model of interest 
+data_moi <- data.frame(y = data$y, z = data$z, weight.x = 1, weight.r = 1, r = 1:n) 
+# Berkson ME model
+data_berkson <- data.frame(zero = 0, weight.x = -1, weight.r = 1, r = 1:n) 
+# Classical ME model
+data_classical <- data.frame(w = data$w, weight.x = 1, weight.r = 1, r = 1:n)
+# Imputation model
+data_imputation <- data.frame(zero = 0, z = data$z, weight.x = 1, weight.r = -1, r = 1:n)
+
+cmp_new = ~ Intercept(1, model = "linear", prec.linear = prior.beta[2]) +
+  beta_z(main = z, model = "linear", prec.linear = prior.beta[2]) +
+  x_eff(r, weight.x, model = "iid",  hyper = list(prec = list(initial = -15, fixed=TRUE))) +
+  x_eff_copy(r, copy="r_eff", hyper = list(beta = list(param = prior.beta, fixed=FALSE))) +
+  r_eff(r, weight.r, model = "iid",  hyper = list(prec = list(initial = -15, fixed=TRUE))) +
+  alpha_0(main = 1, model = "linear", prec.linear = prior.alpha[2]) +
+  alpha_z(main = z, model = "linear", prec.linear = prior.alpha[2])
+
+
+lik_moi <- like(formula = y ~ Intercept + beta_z + x_eff_copy,
+                family = "gaussian",
+                include = c("Intercept", "beta_z", "x_eff_copy"),
+                control.family = list(
+                  hyper = list(prec = list(initial = log(prec.y), 
+                                           param = prior.prec.y, 
+                                           fixed = FALSE))),
+            data = data_moi)
+
+lik_berkson <- like(formula = zero ~ x_eff + r_eff,
+                    family = "gaussian",
+                    include = c("x_eff", "r_eff"),
+                    control.family = list(
+                      hyper = list(prec = list(initial = log(prec.u_b),
+                                               param = prior.prec.u_b,
+                                               fixed = FALSE))),
+                    data = data_berkson)
+
+lik_classical <- like(formula = w ~ r_eff,
+                      family = "gaussian",
+                      include = c("r_eff"),
+                      control.family =  list(
+                        hyper = list(prec = list(initial = log(prec.u_c), 
+                                                 param = prior.prec.u_c, 
+                                                 fixed = FALSE))),
+            data  = data_classical)
+
+lik_imputation <- like(formula = zero ~ alpha_0 + alpha_z + r_eff,
+                       family = "gaussian",
+                       include = c("alpha_0", "alpha_z","r_eff"),
+                       control.family =   list(
+                         hyper = list(prec = list(initial = log(prec.r), 
+                                                  param = prior.prec.r, 
+                                                  fixed = FALSE))),
+             data = data_imputation)
+# Note: 
+# formula = y ~ .,
+# formula = w ~ .,
+# formula = zero ~ .,
+# does exactly the same in this case.
+
+
+bru_options_set(bru_verbose = 1)
+fit <- bru(components = cmp_new,
+           lik_moi,
+           lik_berkson,
+           lik_classical,
+           lik_imputation,
+           options = list(verbose = F,
+                          bru_max_iter = 20,
+                          inla.mode  = "experimental"))
+fit$summary.fixed
+fit$summary.hyperpar
+```
+
+
 
 ## First version -- using the `copy` option
 This is a direct translation of the INLA code.
@@ -116,6 +198,7 @@ fit = bru(components = cmp,
                          bru_max_iter = 20,
                          inla.mode  = "experimental"))
 fit$summary.fixed
+fit$summary.hyperpar
 ```
 
 ## Second version -- no `copy` option 
