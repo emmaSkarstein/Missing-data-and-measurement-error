@@ -16,14 +16,12 @@ website:
           - data_bloodpressure.qmd
           - data_nhanes.qmd
           - data_simulated.qmd
-      - section: "Examples from the paper"
+      - section: "Examples"
         contents:
           - missing_covariate_imputation.qmd
           - missing_and_mismeasured_covariate.qmd
-          - simulation_study.qmd
-      - section: "Additional examples"
-        contents: 
           - simulation_example.qmd
+          - simulation_study.qmd
           - example_in_inlabru.qmd
 
 format:

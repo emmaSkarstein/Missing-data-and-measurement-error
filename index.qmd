@@ -29,7 +29,7 @@ Example | Classical ME | Berkson ME | Missing data
 
 
 ## Datasets
-All the data sets that are used in the paper can be downloaded manually from [the GitHub repository](https://github.com/emmaSkarstein/Missing-data-and-measurement-error), or directly in **R** as specified in the data descriptions. 
+All the data sets that are used in the paper can be downloaded manually from [the GitHub repository](https://github.com/emmaSkarstein/Missing-data-and-measurement-error), or directly in *R* as specified in the data descriptions. 
 
 ## Session info
 

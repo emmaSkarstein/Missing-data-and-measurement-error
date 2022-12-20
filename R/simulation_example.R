@@ -35,6 +35,9 @@ w[m_index] <- NA
 
 simulated_data <- data.frame(y = y, w = w, z = z)
 
+## ----r------------------------------------------------------------------------
+write.csv(simulated_data, "data/simulated_data.csv")
+
 
 ## ----r------------------------------------------------------------------------
 attach(simulated_data)

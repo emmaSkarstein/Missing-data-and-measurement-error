@@ -59,7 +59,7 @@ bmi <- scale(nhanes2$bmi, scale = FALSE)[,1]
 We want to fit the model
 
 $$
-chl \sim \beta_0 + \beta_{age2} age_2 + \beta_{age3} age_3 + \beta_{bmi} bmi
+chl \sim \beta_0 + \beta_{age2} age_2 + \beta_{age3} age_3 + \beta_{bmi} bmi + \varepsilon
 $$
 
 ### Specifying priors

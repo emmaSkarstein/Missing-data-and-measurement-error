@@ -23,7 +23,7 @@ simulate_data <- function(n){
   
   # Classical error:
   u_c <- rnorm(n)
-  w <- r + u_c # Use w_b here.
+  w <- r + u_c # Use r here.
   
   # Missingness:
   m_pred <- -1.5 - 0.5*z # This gives a mean probability of missing of ca 0.2.
@@ -58,10 +58,10 @@ make_matrix_ME <- function(data){
   beta.z <- c(z, rep(NA, 3*n))
 
   id.x <- c(rep(NA, n), 1:n, rep(NA, n), rep(NA, n))
-  weight.x <- c(rep(NA, n), rep(1, n), rep(NA, n), rep(NA, n))
+  weight.x <- c(rep(NA, n), rep(-1, n), rep(NA, n), rep(NA, n))
 
   id.r <- c(rep(NA, n), 1:n, 1:n, 1:n)
-  weight.r <- c(rep(NA, n), rep(-1, n), rep(1, n), rep(-1, n))
+  weight.r <- c(rep(NA, n), rep(1, n), rep(1, n), rep(-1, n))
 
   alpha.0 = c(rep(NA, 3*n), rep(1, n))
   alpha.z = c(rep(NA, 3*n), z)
@@ -120,13 +120,13 @@ fit_model_ME <- function(data_matrix) {
   prior.prec.y <- c(0.5, 0.5) # Gamma(0.5, 0.5)
   prior.prec.u_b <- c(0.5, 0.5) # Gamma(0.5, 0.5)
   prior.prec.u_c <- c(0.5, 0.5) # Gamma(0.5, 0.5)
-  prior.prec.x <- c(0.5, 0.5) # Gamma(0.5, 0.5)
+  prior.prec.r <- c(0.5, 0.5) # Gamma(0.5, 0.5)
   
   # Initial values
   prec.y <- 1
   prec.u_b <- 1
   prec.u_c <- 1
-  prec.x <- 1
+  prec.r <- 1
   
   # Formula
   formula = Y ~ - 1 + beta.0 + beta.z +
@@ -147,13 +147,13 @@ fit_model_ME <- function(data_matrix) {
                                                 param = prior.prec.y, 
                                                 fixed = FALSE))), 
                   list(hyper = list(prec = list(initial = log(prec.u_b),
-                                                  param = prior.prec.u_b,
-                                                  fixed = FALSE))),
+                                                param = prior.prec.u_b,
+                                                fixed = FALSE))),
                   list(hyper = list(prec = list(initial = log(prec.u_c), 
                                                 param = prior.prec.u_c, 
                                                 fixed = FALSE))), 
-                  list(hyper = list(prec = list(initial = log(prec.x), 
-                                                param = prior.prec.x, 
+                  list(hyper = list(prec = list(initial = log(prec.r), 
+                                                param = prior.prec.r, 
                                                 fixed = FALSE)))), 
                 control.predictor = list(compute = TRUE), 
                 control.fixed = list(
@@ -210,7 +210,7 @@ fit_model_naive_true <- function(data_matrix){
 
 ## ----r------------------------------------------------------------------------
 # Number of iterations
-niter <- 100
+niter <- 5
 
 # Data frames to store the results 
 results_ME <- data.frame(matrix(NA, nrow=niter, ncol=5))
@@ -241,7 +241,7 @@ for(i in 1:niter){
   
   results_ME[i, c("beta.0", "beta.z", 
                   "alpha.0", "alpha.z")] <- t(model_ME$summary.fixed["mean"])
-  results_ME[i, "beta.x"] <- model_ME$summary.hyperpar[3, "mean"]
+  results_ME[i, "beta.x"] <- model_ME$summary.hyperpar["Beta for beta.x", "mean"]
   
   results_naive[i, c("beta.0", "beta.z", "beta.x")] <- t(model_naive$summary.fixed["mean"])
   

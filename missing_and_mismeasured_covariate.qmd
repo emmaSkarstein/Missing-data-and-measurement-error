@@ -16,7 +16,7 @@ knitr::purl(input = "missing_and_mismeasured_covariate.qmd",
             output = "R/missing_and_mismeasured_covariate.R")
 ```
 
-The data for this example is originally from the Third National Health and Nutrition Survey (NHANES III), but we use the data as pre-processed and provided by Bartlett and Keogh (2018) TODO: include source. They linked the NHANES III data to data from the US National Death Index, with information about the mortality status of each participant in 2011. Following Bartlett and Keogh (2018), we consider a Weibull survival model with continuous covariates systolic blood pressure (SBP) and age, and binary covariates diabetes status, sex and smoking status. The response is time until death by cardiovascular disease. Deaths by other causes are treated as censorings. 
+The data for this example is originally from the Third National Health and Nutrition Survey (NHANES III), but we use the data as pre-processed and provided by Bartlett and Keogh (2018). They linked the NHANES III data to data from the US National Death Index, with information about the mortality status of each participant in 2011. Following Keogh and Bartlett (2021), we consider a Weibull survival model with continuous covariates systolic blood pressure (SBP) and age, and binary covariates diabetes status, sex and smoking status. The response is time until death by cardiovascular disease. Deaths by other causes are treated as censorings. 
 
 Measurements of SBP are known to vary substantially within the same patient, and it is therefore measured twice for some participants, enabling us to estimate the variance of the error. However, for some participants there is only one measurement, and for others the SBP is completely missing. Note that the smoking status is also missing for around half of the participants, but since we only consider continuous ME, all observations with missingness in the (binary) smoking status are removed for this illustrative example, resulting in $n = 3433$ observations. 
 
@@ -486,3 +486,11 @@ ggsave("figures/bloodpressure_figure.png", height = 4, width = 10)
 
 If we compare this to the results from Keogh and Bartlett (2021) (see Figure 2 in their paper), our "Complete case naive" corresponds to their "Naive", and our "ME adjusted complete case" corresponds to their "Bayes^c". Our "ME adjusted and imputation does not quite correspond to their "Bayes^d", since they also include an imputation model for smoking in their final model, which we do not. 
 The results for the two models that are comparable are almost identical. 
+
+
+
+## References
+
+Bartlett, J. W. and Keogh, R. H. (2018). Bayesian correction for covariate measurement error: A frequentist evaluation and comparison with regression calibration. *Statistical Methods in Medical Research*, 27(6):1695–1708.
+
+Keogh, R. H. and Bartlett, J. W. (2021). Measurement error as a missing data problem. In *Handbook of Measurement Error Models*, Chapman & Hall/CRC Handbooks of Modern Statistical Methods, pages 429–452. CRC Press. Available as preprint, arXiv:1910.06443.

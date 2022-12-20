@@ -43,8 +43,8 @@ n <- 1000
 z <- rnorm(n, mean = 0, sd = 1)
 
 # Berkson error:
-r <- rnorm(n, mean = 1 + 2*z, sd = 1)
 u_b <- rnorm(n, sd = 1)
+r <- rnorm(n, mean = 1 + 2*z, sd = 1)
 x <- r + u_b
 
 # Response:
@@ -63,6 +63,10 @@ m_index <- rbinom(n, 1, prob = m_prob) # MAR
 w[m_index] <- NA
 
 simulated_data <- data.frame(y = y, w = w, z = z)
+```
+```{r}
+#| echo: false
+write.csv(simulated_data, "data/simulated_data.csv")
 ```
 
 The simulated "observed" data then consists of three columns:

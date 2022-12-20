@@ -194,7 +194,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Examples from the paper</a>
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Examples</a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -212,22 +212,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./simulation_study.html" class="sidebar-item-text sidebar-link">Simulation study</a>
+  <a href="./simulation_example.html" class="sidebar-item-text sidebar-link active">Simulation example</a>
   </div>
 </li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Additional examples</a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./simulation_example.html" class="sidebar-item-text sidebar-link active">Simulation example</a>
+  <a href="./simulation_study.html" class="sidebar-item-text sidebar-link">Simulation study</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -313,6 +303,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>w[m_index] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
 <span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>simulated_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">y =</span> y, <span class="at">w =</span> w, <span class="at">z =</span> z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+
 </div>
 <p>The simulated “observed” data then consists of three columns:</p>
 <p><span class="math display">\[
@@ -630,7 +623,7 @@ Beta for beta.x                            1.9318527  1.6882794   2.206946</code
 <p>The fixed effects can then be accessed through <code>model$summary.fixed</code>, whereas the posterior mean and sd for the coefficient of <span class="math inline">\(\boldsymbol{x}\)</span> can be accessed through <code>model$summary.hyperpar</code>, since <span class="math inline">\(\beta_x\)</span> is actually a hyperparameter of the model. In <code>model$summary.hyperpar</code> we also get the precision terms for each of the sub-models in the order they have been defined, so the first precision is <span class="math inline">\(\tau_y\)</span>, the second one <span class="math inline">\(\tau_{u_b}\)</span>, the third one <span class="math inline">\(\tau_{u_c}\)</span> and the final one is <span class="math inline">\(\tau_r\)</span>.</p>
 <div class="cell" data-fig.showtext="true">
 <div class="cell-output-display">
-<p><img src="simulation_example_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+<p><img src="simulation_example_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
