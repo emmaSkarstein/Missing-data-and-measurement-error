@@ -210,7 +210,7 @@ fit_model_naive_true <- function(data_matrix){
 
 ## ----r------------------------------------------------------------------------
 # Number of iterations
-niter <- 5
+niter <- 100
 
 # Data frames to store the results 
 results_ME <- data.frame(matrix(NA, nrow=niter, ncol=5))

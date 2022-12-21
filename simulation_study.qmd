@@ -250,7 +250,7 @@ Note that this chunk may take a while to run.
 
 ```{r}
 # Number of iterations
-niter <- 5
+niter <- 100
 
 # Data frames to store the results 
 results_ME <- data.frame(matrix(NA, nrow=niter, ncol=5))
@@ -299,6 +299,7 @@ for(i in 1:niter){
 library(ggplot2)
 library(showtext)
 library(colorspace)
+library(tidyverse)
 
 ## Boxplot
 joint_results <- bind_rows(ME = results_ME, 
@@ -395,6 +396,8 @@ ggplot(simulation_results, aes(x = 1, y = value, groups = model)) +
   scale_color_manual(values = color_pal) +
   # Make second x-axis so we get grey line on top
   scale_x_continuous(sec.axis = sec_axis(trans = ~.)) +
+  # Breakpoints for y-axis
+  scale_y_continuous(breaks = 1:5) +
   ylab("Posterior mean") +
   theme_titles
 
