@@ -247,6 +247,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#me-model-with-missingness-in-sbp1-and-sbp2" id="toc-me-model-with-missingness-in-sbp1-and-sbp2" class="nav-link" data-scroll-target="#me-model-with-missingness-in-sbp1-and-sbp2">ME model with missingness in SBP1 and SBP2</a></li>
   </ul></li>
   <li><a href="#looking-at-all-the-models" id="toc-looking-at-all-the-models" class="nav-link" data-scroll-target="#looking-at-all-the-models">Looking at all the models</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
     </div>
@@ -269,7 +270,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<p>The data for this example is originally from the Third National Health and Nutrition Survey (NHANES III), but we use the data as pre-processed and provided by Bartlett and Keogh (2018) TODO: include source. They linked the NHANES III data to data from the US National Death Index, with information about the mortality status of each participant in 2011. Following Bartlett and Keogh (2018), we consider a Weibull survival model with continuous covariates systolic blood (SBP) pressure and age, and binary covariates diabetes status, sex and smoking status. The response is time until death by cardiovascular disease. Deaths by other causes are treated as censorings.</p>
+<p>The data for this example is originally from the Third National Health and Nutrition Survey (NHANES III), but we use the data as pre-processed and provided by Bartlett and Keogh (2018). They linked the NHANES III data to data from the US National Death Index, with information about the mortality status of each participant in 2011. Following Keogh and Bartlett (2021), we consider a Weibull survival model with continuous covariates systolic blood pressure (SBP) and age, and binary covariates diabetes status, sex and smoking status. The response is time until death by cardiovascular disease. Deaths by other causes are treated as censorings.</p>
 <p>Measurements of SBP are known to vary substantially within the same patient, and it is therefore measured twice for some participants, enabling us to estimate the variance of the error. However, for some participants there is only one measurement, and for others the SBP is completely missing. Note that the smoking status is also missing for around half of the participants, but since we only consider continuous ME, all observations with missingness in the (binary) smoking status are removed for this illustrative example, resulting in <span class="math inline">\(n = 3433\)</span> observations.</p>
 <p>To read more about how the Weibull hazard model is used in INLA in general, the <a href="https://inla.r-inla-download.org/r-inla.org/doc/likelihood/weibull.pdf">documentation</a> is very helpful.</p>
 <section id="packages" class="level2">
@@ -685,6 +686,11 @@ beta.smoke    0.2717879 0.10401999  0.4363125</code></pre>
 
 </div>
 <p>If we compare this to the results from Keogh and Bartlett (2021) (see Figure 2 in their paper), our “Complete case naive” corresponds to their “Naive”, and our “ME adjusted complete case” corresponds to their “Bayes^c”. Our “ME adjusted and imputation does not quite correspond to their”Bayes^d”, since they also include an imputation model for smoking in their final model, which we do not. The results for the two models that are comparable are almost identical.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Bartlett, J. W. and Keogh, R. H. (2018). Bayesian correction for covariate measurement error: A frequentist evaluation and comparison with regression calibration. <em>Statistical Methods in Medical Research</em>, 27(6):1695–1708.</p>
+<p>Keogh, R. H. and Bartlett, J. W. (2021). Measurement error as a missing data problem. In <em>Handbook of Measurement Error Models</em>, Chapman &amp; Hall/CRC Handbooks of Modern Statistical Methods, pages 429–452. CRC Press. Available as preprint, arXiv:1910.06443.</p>
 
 
 </section>

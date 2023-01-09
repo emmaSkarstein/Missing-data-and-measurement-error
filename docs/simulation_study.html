@@ -492,45 +492,47 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>We simulate 100 data sets and fit the model that accounts for measurement error and missing data, and then save the posterior means for the intercept ans slopes.</p>
 <p>Note that this chunk may take a while to run.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of iterations</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>niter <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Data frames to store the results </span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>results_ME <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow=</span>niter, <span class="at">ncol=</span><span class="dv">5</span>))</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(results_ME) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"beta.0"</span>, <span class="st">"beta.x"</span>, <span class="st">"beta.z"</span>, <span class="st">"alpha.0"</span>, <span class="st">"alpha.z"</span>)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>results_naive <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow=</span>niter, <span class="at">ncol=</span><span class="dv">3</span>))</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(results_naive) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"beta.0"</span>, <span class="st">"beta.x"</span>, <span class="st">"beta.z"</span>)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>results_true <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow=</span>niter, <span class="at">ncol=</span><span class="dv">3</span>))</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(results_true) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"beta.0"</span>, <span class="st">"beta.x"</span>, <span class="st">"beta.z"</span>)</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>niter){</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  data <span class="ot">&lt;-</span> <span class="fu">simulate_data</span>(n)</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ME model</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  matrix_ME <span class="ot">&lt;-</span> <span class="fu">make_matrix_ME</span>(data)</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  model_ME <span class="ot">&lt;-</span> <span class="fu">fit_model_ME</span>(matrix_ME)</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Naive model</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  matrix_naive <span class="ot">&lt;-</span> <span class="fu">make_matrix_naive</span>(data)</span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  model_naive <span class="ot">&lt;-</span> <span class="fu">fit_model_naive_true</span>(matrix_naive)</span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># True model</span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>  matrix_true <span class="ot">&lt;-</span> <span class="fu">make_matrix_true</span>(data)</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  model_true <span class="ot">&lt;-</span> <span class="fu">fit_model_naive_true</span>(matrix_true)</span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  results_ME[i, <span class="fu">c</span>(<span class="st">"beta.0"</span>, <span class="st">"beta.z"</span>, </span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"alpha.0"</span>, <span class="st">"alpha.z"</span>)] <span class="ot">&lt;-</span> <span class="fu">t</span>(model_ME<span class="sc">$</span>summary.fixed[<span class="st">"mean"</span>])</span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>  results_ME[i, <span class="st">"beta.x"</span>] <span class="ot">&lt;-</span> model_ME<span class="sc">$</span>summary.hyperpar[<span class="st">"Beta for beta.x"</span>, <span class="st">"mean"</span>]</span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>  results_naive[i, <span class="fu">c</span>(<span class="st">"beta.0"</span>, <span class="st">"beta.z"</span>, <span class="st">"beta.x"</span>)] <span class="ot">&lt;-</span> <span class="fu">t</span>(model_naive<span class="sc">$</span>summary.fixed[<span class="st">"mean"</span>])</span>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of iterations</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>niter <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Data frames to store the results </span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>results_ME <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow=</span>niter, <span class="at">ncol=</span><span class="dv">5</span>))</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(results_ME) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"beta.0"</span>, <span class="st">"beta.x"</span>, <span class="st">"beta.z"</span>, <span class="st">"alpha.0"</span>, <span class="st">"alpha.z"</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>results_naive <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow=</span>niter, <span class="at">ncol=</span><span class="dv">3</span>))</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(results_naive) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"beta.0"</span>, <span class="st">"beta.x"</span>, <span class="st">"beta.z"</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>results_true <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow=</span>niter, <span class="at">ncol=</span><span class="dv">3</span>))</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(results_true) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"beta.0"</span>, <span class="st">"beta.x"</span>, <span class="st">"beta.z"</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>niter){</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  data <span class="ot">&lt;-</span> <span class="fu">simulate_data</span>(n)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ME model</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  matrix_ME <span class="ot">&lt;-</span> <span class="fu">make_matrix_ME</span>(data)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  model_ME <span class="ot">&lt;-</span> <span class="fu">fit_model_ME</span>(matrix_ME)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Naive model</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  matrix_naive <span class="ot">&lt;-</span> <span class="fu">make_matrix_naive</span>(data)</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  model_naive <span class="ot">&lt;-</span> <span class="fu">fit_model_naive_true</span>(matrix_naive)</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># True model</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  matrix_true <span class="ot">&lt;-</span> <span class="fu">make_matrix_true</span>(data)</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  model_true <span class="ot">&lt;-</span> <span class="fu">fit_model_naive_true</span>(matrix_true)</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>  results_ME[i, <span class="fu">c</span>(<span class="st">"beta.0"</span>, <span class="st">"beta.z"</span>, </span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"alpha.0"</span>, <span class="st">"alpha.z"</span>)] <span class="ot">&lt;-</span> <span class="fu">t</span>(model_ME<span class="sc">$</span>summary.fixed[<span class="st">"mean"</span>])</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>  results_ME[i, <span class="st">"beta.x"</span>] <span class="ot">&lt;-</span> model_ME<span class="sc">$</span>summary.hyperpar[<span class="st">"Beta for beta.x"</span>, <span class="st">"mean"</span>]</span>
 <span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>  results_true[i, <span class="fu">c</span>(<span class="st">"beta.0"</span>, <span class="st">"beta.z"</span>, <span class="st">"beta.x"</span>)] <span class="ot">&lt;-</span> <span class="fu">t</span>(model_true<span class="sc">$</span>summary.fixed[<span class="st">"mean"</span>])</span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>  results_naive[i, <span class="fu">c</span>(<span class="st">"beta.0"</span>, <span class="st">"beta.z"</span>, <span class="st">"beta.x"</span>)] <span class="ot">&lt;-</span> <span class="fu">t</span>(model_naive<span class="sc">$</span>summary.fixed[<span class="st">"mean"</span>])</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>  results_true[i, <span class="fu">c</span>(<span class="st">"beta.0"</span>, <span class="st">"beta.z"</span>, <span class="st">"beta.x"</span>)] <span class="ot">&lt;-</span> <span class="fu">t</span>(model_true<span class="sc">$</span>summary.fixed[<span class="st">"mean"</span>])</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="results" class="level2">
@@ -544,6 +546,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell" data-fig.showtext="true">
 <div class="cell-output-display">
 <p><img src="simulation_study_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="960"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="simulation_study_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid" width="960"></p>
 </div>
 </div>
 

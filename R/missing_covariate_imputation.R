@@ -32,6 +32,90 @@ bmi <- scale(nhanes2$bmi, scale = FALSE)[,1]
 
 ## ----r------------------------------------------------------------------------
 # Priors for model of interest coefficients
+prior.beta = c(0, 0.001) # Gaussian, c(mean, precision)
+
+# Priors for exposure model coefficient
+#prior.alpha <- c(26.56, 1/71.07) # Gaussian, c(mean, precision)
+
+# Priors for y, measurement error
+prior.prec.y <- c(1, 0.00005) # Gamma
+prior.prec.u_c <- c(0.5, 0.5) # Gamma
+#prior.prec.x <- c(2.5-1,(2.5)*4.2^2) # Gamma
+
+# Initial values
+prec.y <- 1
+prec.u_c <- 1
+#prec.x <- 1/71.07
+prec.x <- 1/71.07
+
+
+## ----r------------------------------------------------------------------------
+Y <- matrix(NA, 3*n, 3)
+
+Y[1:n, 1] <- chl             # Regression model of interest response
+Y[n+(1:n), 2] <- bmi         # Error model response
+Y[2*n+(1:n), 3] <- rep(0, n) # Exposure model response
+
+beta.0 <- c(rep(1, n), rep(NA, n), rep(NA, n))
+beta.bmi <- c(1:n, rep(NA, n), rep(NA, n))
+beta.age2 <- c(age2, rep(NA, n), rep(NA, n))
+beta.age3 <- c(age3, rep(NA, n), rep(NA, n))
+
+id.x <- c(rep(NA, n), 1:n, 1:n) 
+weight.x <- c(rep(1, n), rep(1, n), rep(-1, n))
+
+offset.imp <- c(rep(NA, n), rep(NA, n), rep(26.56, n))
+#alpha.0 <- c(rep(NA, n), rep(NA, n), rep(1, n))
+
+dd <- data.frame(Y = Y, 
+                 beta.0 = beta.0,
+                 beta.bmi = beta.bmi,
+                 beta.age2 = beta.age2,
+                 beta.age3 = beta.age3,
+                 id.x = id.x,
+                 weight.x = weight.x,
+                 offset.imp = offset.imp)
+
+
+## ----r------------------------------------------------------------------------
+formula = Y ~ - 1 + beta.0 + beta.age2 + beta.age3 + 
+  f(beta.bmi, copy="id.x", 
+    hyper = list(beta = list(param = prior.beta, fixed=FALSE))) +
+  f(id.x, weight.x, model="iid", values = 1:n, 
+    hyper = list(prec = list(initial = -15, fixed=TRUE)))
+
+
+## ----r------------------------------------------------------------------------
+Scale <- c(rep(1, n), rep(10^12, n), rep(1, n))
+
+
+## ----r------------------------------------------------------------------------
+model_missing1 <- inla(formula, data = dd, scale = Scale, offset = log(dat$pop),
+                     family = c("gaussian", "gaussian", "gaussian"),
+                     control.family = list(
+                       list(hyper = list(prec = list(initial = log(prec.y), 
+                                                     param = prior.prec.y, 
+                                                     fixed = FALSE))),
+                       list(hyper = list(prec = list(initial = log(prec.u_c), 
+                                                     param = prior.prec.u_c, 
+                                                     fixed = FALSE))),
+                       list(hyper = list(prec = list(initial = log(prec.x),
+                                                     fixed = TRUE)))
+                     ),
+                     control.fixed = list(
+                       mean = list(beta.0 = prior.beta[1], 
+                                   beta.age2 = prior.beta[1], 
+                                   beta.age3 = prior.beta[1]), 
+                       prec = list(beta.0 = prior.beta[2], 
+                                   beta.age2 = prior.beta[2], 
+                                   beta.age3 = prior.beta[2])),
+                     verbose=F)
+model_missing1$summary.fixed
+model_missing1$summary.hyperpar
+
+
+## ----r------------------------------------------------------------------------
+# Priors for model of interest coefficients
 prior.beta = c(0, 1e-6) # Gaussian, c(mean, precision)
 
 # Priors for exposure model coefficients
@@ -48,11 +132,11 @@ prior.prec.u_c <- c(0.5, 0.5) # Gamma
 prior.prec.x <- c(2.5-1,(2.5)*4.2^2) # Gamma
 
 # We can visualize these priors:
-#curve(dinvgamma(x, 2.5-1,(2.5)*29.1^2), 0, 2000)
-#abline(v=29.1^2)
+curve(dinvgamma(x, 2.5-1,(2.5)*29.1^2), 0, 2000)
+abline(v=29.1^2)
 
-#curve(dinvgamma(x,2.5-1,(2.5)*4.1^2), 0, 50)
-#abline(v=4.2^2)
+curve(dinvgamma(x,2.5-1,(2.5)*4.1^2), 0, 50)
+abline(v=4.2^2)
 
 # Initial values
 prec.y <- 1/29.1^2
@@ -106,7 +190,7 @@ Scale <- c(rep(1, n), rep(10^12, n), rep(1, n))
 
 
 ## ----r------------------------------------------------------------------------
-model_missing <- inla(formula, data = dd, scale = Scale,
+model_missing2 <- inla(formula, data = dd, scale = Scale,
                      family = c("gaussian", "gaussian", "gaussian"),
                      control.family = list(
                        list(hyper = list(prec = list(initial = log(prec.y), 
@@ -114,7 +198,7 @@ model_missing <- inla(formula, data = dd, scale = Scale,
                                                      fixed = FALSE))),
                        list(hyper = list(prec = list(initial = log(prec.u_c), 
                                                      param = prior.prec.u_c, 
-                                                     fixed = TRUE))),
+                                                     fixed = FALSE))),
                        list(hyper = list(prec = list(initial = log(prec.x), 
                                                      param = prior.prec.x, 
                                                      fixed = FALSE)))
@@ -143,8 +227,6 @@ model_missing <- inla(formula, data = dd, scale = Scale,
 
 
 
-
-
 ## ----r------------------------------------------------------------------------
 # https://stefvanbuuren.name/RECAPworkshop/Practicals/RECAP_Practical_II.html 
 
@@ -154,5 +236,5 @@ model_missing <- inla(formula, data = dd, scale = Scale,
 
 
 ## ----r------------------------------------------------------------------------
-summary(model_missing)
+summary(model_missing2)
 

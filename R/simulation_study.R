@@ -209,6 +209,8 @@ fit_model_naive_true <- function(data_matrix){
 
 
 ## ----r------------------------------------------------------------------------
+set.seed(1)
+
 # Number of iterations
 niter <- 100
 
@@ -255,6 +257,7 @@ for(i in 1:niter){
 library(ggplot2)
 library(showtext)
 library(colorspace)
+library(tidyverse)
 
 ## Boxplot
 joint_results <- bind_rows(ME = results_ME, 
