@@ -1,14 +1,14 @@
-## ----r------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------
 library(survival)   # Survival modelling
 library(INLA)       # Modelling
 library(tidyverse)  # Data wrangling and visualisation
 
 
-## ----r------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------
 inla.setOption(num.threads = "1:1")
 
 
-## ----r------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------
 view_relevant <- function(INLA_res, model_name){
   fixed <- INLA_res$summary.fixed[c("mean", "0.025quant", "0.975quant")]
   hyper <- INLA_res$summary.hyperpar[c("mean", "0.025quant", "0.975quant")]
@@ -21,23 +21,23 @@ view_relevant <- function(INLA_res, model_name){
 }
 
 
-## ----r------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------
 full_data <- read.csv("data/bloodpressure.csv")
 head(full_data)
 
 
-## ----r------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------
 data <- full_data %>% drop_na(smoke)
 head(data)
 
 
-## ----r------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------
 ccdata <- data %>% drop_na(sbp1)
 n <- nrow(ccdata)
 head(ccdata)
 
 
-## ----r------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------
 # Note: JAGS and INLA use the same Weibull parameterization
 # (provided "variant" = 0 in INLA)
 
@@ -52,7 +52,7 @@ cat("Naive model")
 model_naive$summary.fixed[c("mean", "0.025quant", "0.975quant")]
 
 
-## ----r------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------
 # Priors for measurement error variance and true x-value
 prior.prec.u <- c(0.5, 0.5) # Gamma(0.5, 0.5) (same as Keogh&Bartlett)
 prior.prec.x <- c(0.5, 0.5) # Gamma(0.5, 0.5) (same as K&B)
@@ -76,7 +76,7 @@ prior.exp <- 0.01 # Gamma(1, 0.001) ~ Exp(0.001) (INLA sets prior on theta, r~Ex
 exp.init <- 1.4
 
 
-## ----r------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------
 n <- nrow(ccdata)
 
 # Specifying Y object
@@ -125,7 +125,7 @@ mat1 <- list(Y = Y,
            Scale = Scale)
 
 
-## ----r------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------
 # INLA formula with copy option
 formula1 <- Y ~ beta.0 - 1 +
   f(beta.sbp.copy, weight.sbp, model="iid", values = 1:n,
@@ -136,7 +136,7 @@ formula1 <- Y ~ beta.0 - 1 +
   alpha.0 + alpha.sex + alpha.age + alpha.smoke + alpha.diabetes
 
 
-## ----r------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------
 model1 <- inla(formula1, data = mat1,
                  family = c("weibull.surv", "gaussian", "gaussian"),
                  control.family = list(
@@ -177,7 +177,7 @@ model1 <- inla(formula1, data = mat1,
 view_relevant(model1, "Repeated measurement")
 
 
-## ----r------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------
 n <- nrow(data)
 
 # Specifying Y object
@@ -226,7 +226,7 @@ mat2 <- list(Y = Y,
            Scale = Scale)
 
 
-## ----r------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------
 # INLA formula with copy option
 formula2 <- Y ~ beta.0 - 1 +
   f(beta.sbp.copy, weight.sbp, model="iid", values = 1:n,
@@ -237,7 +237,7 @@ formula2 <- Y ~ beta.0 - 1 +
   alpha.0 + alpha.sex + alpha.age + alpha.smoke + alpha.diabetes
 
 
-## ----r------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------
 model_bloodpressure <- inla(formula2, data = mat2,
                  family = c("weibull.surv", "gaussian", "gaussian"),
                  control.family = list(
@@ -278,7 +278,7 @@ model_bloodpressure <- inla(formula2, data = mat2,
 view_relevant(model_bloodpressure, "Repeated measurement")
 
 
-## ----r------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------
 # Corresponds to Naive?
 cat("Naive model")
 naive <- model_naive$summary.fixed[c("mean", "0.025quant", "0.975quant")]
@@ -293,7 +293,7 @@ missing_adjusted <- view_relevant(model_bloodpressure, "Missingness in both SBP 
 missing_adjusted
 
 
-## ----r------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------
 naive <- naive %>% 
   mutate(coef_name = rownames(.)) %>% 
   filter(coef_name != "(Intercept)") %>% 
@@ -322,20 +322,20 @@ kb_c <- tibble::tribble(
   0.50, 0.27, 0.72, "beta.diabetes"
 )
 
-all_models <- bind_rows("Complete case naive" = naive, 
-                        "ME adjusted complete case" = me_adjusted, 
-                        "ME adjusted and imputation" = missing_adjusted, 
+all_models <- bind_rows("Complete case,\nnaive" = naive, 
+                        "Complete case,\nME adjusted" = me_adjusted, 
+                        "Imputation,\nME adjusted" = missing_adjusted, 
                         .id = "model") %>% 
   tidyr::separate(coef_name, c("sub_model", "coef_name")) %>% 
   mutate(coef_pretty = paste0("beta[", coef_name, "]")) %>% 
   rename(quant_0.025 = "0.025quant", quant_0.975 = "0.975quant") %>% 
-  mutate(model = fct_relevel(model, levels = c("ME adjusted and imputation",
-                                               "ME adjusted complete case",
-                                               "Complete case naive")))
+  mutate(model = fct_relevel(model, levels = c("Imputation,\nME adjusted",
+                                               "Complete case,\nME adjusted",
+                                               "Complete case,\nnaive")))
 
 
 
 
-## ----r------------------------------------------------------------------------
-ggsave("figures/bloodpressure_figure.png", height = 4, width = 10)
+## -------------------------------------------------------------------------------------------------------------------------------------
+ggsave("figures/bloodpressure_figure.pdf", height = 4, width = 10, dpi = 600)
 

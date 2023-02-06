@@ -413,17 +413,19 @@ all_models_for_plot <- bind_rows("me1" = me_plot1,
                                  "inla_mcmc" = inla_mcmc_plot, 
                                  .id = "model") %>% 
   mutate(coef_name = recode_factor(coefficient.name, "Beta for beta.bmi" = "beta.bmi")) %>%
-  filter(coef_name %in% c("beta.0", "beta.age2", "beta.age3", "beta.bmi")) %>% 
+  filter(coef_name %in% c("beta.age2", "beta.age3", "beta.bmi")) %>% 
   tidyr::separate(coef_name, c("sub_model", "coef_name")) %>% 
   mutate(coef_pretty = paste0(sub_model, "[", coef_name, "]")) %>% 
+  mutate(model = fct_relevel(model, levels = c("me2", "inla_mcmc", "me1", "naive"))) %>% 
   mutate(model = recode(model, "me1" = "Simple imputation model", "me2" = "More complex imputation model", "naive" = "Complete case analysis", "inla_mcmc" = "Goméz-Rubio & Rue (2018)")) %>% 
-  mutate(model = fct_relevel(model, levels = c("More complex imputation model", "Simple imputation model", "Goméz-Rubio & Rue (2018)", "Complete case analysis"))) %>% 
   mutate(coef_pretty = fct_relevel(coef_pretty, levels = c("beta[0]", "beta[age2]", "beta[age3]", "beta[bmi]", "alpha[0]", "alpha[age2]", "alpha[age3]")))
 
+showtext_auto()
 
 # Colors
 col_bgr <- "white" #"#fbf9f4"
 col_text <- "#191919"
+color_pal <- c("#004488", "#DDAA33", "#DDAA33", "#BB5566")
 
 # Loading fonts
 f1 <- "Open Sans"
@@ -449,19 +451,20 @@ theme_model_summary <- theme_minimal(base_size = font_size, base_family = f1) +
   strip.text = element_text(color = col_text),
   panel.grid.major.y = element_blank(),
   panel.grid.minor = element_blank(),
-  #panel.border = element_rect(color = "grey65", fill = NA, size = 1), 
+  panel.border = element_rect(color = "grey65", fill = NA, size = 0.7), 
   plot.title.position = "plot",
-  axis.line.x = element_line(size = 1, color = "grey65"),
+  axis.line.x = element_line(size = 1.2, color = "grey65"),
   plot.margin = margin(rep(15, 4))
 )
 
 ggplot(all_models_for_plot, aes(y = model)) +
   geom_linerange(aes(xmin = mean-sd, xmax = mean+sd, color = model), size = 1) +
   geom_point(aes(x = mean, color = model), size = 3) +
-  geom_text(aes(x = mean, y = model, label = round(mean, 2)), 
+  geom_text(aes(x = mean, y = model, 
+                label = format(round(mean, digits=2), nsmall = 2)), 
             vjust = -1, family = "Open Sans", size = 4) +
-  scale_color_manual(values = darken(ggthemes::canva_palettes$"Subtle and versatile", 0.4)) +
-  facet_wrap(vars(coef_pretty), nrow = 2,
+  scale_color_manual(values = color_pal) +
+  facet_wrap(vars(coef_pretty), nrow = 1,
              labeller = label_parsed, 
              scales = "free_x") +
   labs(x = "Posterior mean") +
@@ -469,17 +472,35 @@ ggplot(all_models_for_plot, aes(y = model)) +
   theme_model_summary
 ```
 
+
 ```{r}
-#| purl: false
 #| echo: false
-ggsave("../PhDEmma/PaperA_ME_and_missing_data/figures/missing_figure.png", width = 7, height = 5)
+#| warning: false
+ggsave("figures/missing_figure.pdf", height = 4, width = 10, dpi = 600)
 ```
+
+We can also look at the imputed values themselves, they can be found in `marginals.random$id.x` inside the model object.
+
+```{r}
+bmi_imputed <- model_missing2$marginals.random$id.x[missing_bmi]
+bmi_imp_df <- data.table::rbindlist(lapply(bmi_imputed, as.data.frame), idcol = TRUE)
+
+ggplot(bmi_imp_df, aes(x = x, y = y)) +
+  geom_line() +
+  facet_wrap(~ .id, ncol = 3) +
+  theme_minimal()
+```
+
 
 ### Model summary
 
 ```{r}
 summary(model_missing2)
 ```
+
+
+
+
 
 ### References
 

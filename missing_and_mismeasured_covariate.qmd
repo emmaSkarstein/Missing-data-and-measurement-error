@@ -392,16 +392,16 @@ kb_c <- tibble::tribble(
   0.50, 0.27, 0.72, "beta.diabetes"
 )
 
-all_models <- bind_rows("Complete case naive" = naive, 
-                        "ME adjusted complete case" = me_adjusted, 
-                        "ME adjusted and imputation" = missing_adjusted, 
+all_models <- bind_rows("Complete case,\nnaive" = naive, 
+                        "Complete case,\nME adjusted" = me_adjusted, 
+                        "Imputation,\nME adjusted" = missing_adjusted, 
                         .id = "model") %>% 
   tidyr::separate(coef_name, c("sub_model", "coef_name")) %>% 
   mutate(coef_pretty = paste0("beta[", coef_name, "]")) %>% 
   rename(quant_0.025 = "0.025quant", quant_0.975 = "0.975quant") %>% 
-  mutate(model = fct_relevel(model, levels = c("ME adjusted and imputation",
-                                               "ME adjusted complete case",
-                                               "Complete case naive")))
+  mutate(model = fct_relevel(model, levels = c("Imputation,\nME adjusted",
+                                               "Complete case,\nME adjusted",
+                                               "Complete case,\nnaive")))
 ```
 
 
@@ -415,6 +415,7 @@ all_models <- bind_rows("Complete case naive" = naive,
 
 library(colorspace)
 library(showtext)
+showtext_auto()
 
 # Colors
 col_bgr <- "white" #"#fbf9f4"
@@ -455,6 +456,11 @@ ggplot(all_models, aes(y = model)) +
                      xmax = quant_0.975, 
                      color = model), 
                  size = 1) +
+  # Line going up from best case model
+  geom_segment(aes(x = mean, xend = mean, y = 1, yend = 4, 
+                   alpha = model), 
+               color = "grey30", linetype = "dotted", size = 1) +
+  scale_alpha_manual(values = c(1, 0, 0)) +
   # Point for mean
   geom_point(aes(x = mean, 
                  color = model), 
@@ -480,7 +486,7 @@ ggplot(all_models, aes(y = model)) +
 ```{r}
 #| echo: false
 #| warning: false
-ggsave("figures/bloodpressure_figure.png", height = 4, width = 10)
+ggsave("figures/bloodpressure_figure.pdf", height = 4, width = 10, dpi = 600)
 ```
 
 If we compare this to the results from Keogh and Bartlett (2021) (see Figure 2 in their paper), our "Complete case naive" corresponds to their "Naive", and our "ME adjusted complete case" corresponds to their "Bayes^c". Our "ME adjusted and imputation does not quite correspond to their "Bayes^d", since they also include an imputation model for smoking in their final model, which we do not. 

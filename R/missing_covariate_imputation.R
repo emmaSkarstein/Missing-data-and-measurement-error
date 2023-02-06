@@ -233,6 +233,18 @@ model_missing2 <- inla(formula, data = dd, scale = Scale,
 
 
 
+## ----r------------------------------------------------------------------------
+ggsave("figures/missing_figure.pdf", height = 4, width = 10, dpi = 600)
+
+
+## ----r------------------------------------------------------------------------
+bmi_imputed <- model_missing2$marginals.random$id.x[missing_bmi]
+bmi_imp_df <- data.table::rbindlist(lapply(bmi_imputed, as.data.frame), idcol = TRUE)
+
+ggplot(bmi_imp_df, aes(x = x, y = y)) +
+  geom_line() +
+  facet_wrap(~ .id, ncol = 3) +
+  theme_minimal()
 
 
 ## ----r------------------------------------------------------------------------

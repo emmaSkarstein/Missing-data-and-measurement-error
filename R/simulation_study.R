@@ -1,14 +1,14 @@
-## ----r------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------
 library(INLA)
 library(inlabru)
 library(tidyverse)
 
 
-## ----r------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------
 inla.setOption(num.threads = "1:1")
 
 
-## ----r------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------
 simulate_data <- function(n){
   # Covariate without error:
   z <- rnorm(n, mean = 0, sd = 1)
@@ -37,7 +37,7 @@ simulate_data <- function(n){
 }
 
 
-## ----r------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------
 # Make matrix for ME model
 make_matrix_ME <- function(data){
   n <- nrow(data)
@@ -107,7 +107,7 @@ make_matrix_true <- function(data){
 }
 
 
-## ----r------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------
 # Fit ME model
 fit_model_ME <- function(data_matrix) {
   # Priors for model of interest coefficients
@@ -172,7 +172,7 @@ fit_model_ME <- function(data_matrix) {
 }
 
 
-## ----r------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------
 fit_model_naive_true <- function(data_matrix){
   # Priors for model of interest coefficients
   prior.beta <- c(0, 1/1000) # N(0, 10^3)
@@ -208,7 +208,7 @@ fit_model_naive_true <- function(data_matrix){
 }
 
 
-## ----r------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------
 set.seed(1)
 
 # Number of iterations
@@ -253,7 +253,7 @@ for(i in 1:niter){
 
 
 
-## ----r------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------
 library(ggplot2)
 library(showtext)
 library(colorspace)
@@ -269,6 +269,89 @@ joint_results <- bind_rows(ME = results_ME,
   mutate(variable = tools::toTitleCase(gsub(pattern = ".*beta.", replacement = "", variable)))
 
 
-## ----r------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------
 saveRDS(joint_results, file = "results/simulation_results.rds")
+
+
+
+
+
+
+## ---------------------------------------------------------------------------------------------------------
+library(colorspace)
+library(showtext)
+
+# Colors
+col_bgr <- "white" #"#fbf9f4"
+col_text <- "#191919"
+color_pal <- c("#004488", "#DDAA33", "#BB5566")
+
+# Loading fonts
+f1 <- "Open Sans"
+font_add_google(name = f1, family = f1)
+
+font_size <- 20
+# Plot theme
+theme_model_summary <- theme_minimal(base_size = font_size, base_family = f1) + 
+  theme(
+  axis.title.y = element_blank(),
+  axis.title.x = element_text(size = 0.7*font_size, color = col_text, family = f1),
+  axis.text.y = element_text(size = 0.6*font_size, color = col_text, family = f1),
+  axis.text.x = element_text(size = 0.4*font_size, color = col_text, family = f1,
+                             margin = margin(0, 0, 1, 0)),
+  axis.ticks = element_blank(),
+  legend.title = element_blank(),
+  panel.background = element_rect(fill = col_bgr, color = col_bgr),
+  plot.background = element_rect(fill = col_bgr, color = col_bgr),
+  legend.position = "none",
+  strip.placement = "outside",
+  strip.text = element_text(color = col_text),
+  panel.grid.major.y = element_blank(),
+  panel.grid.minor.y = element_blank(),
+  panel.border = element_rect(color = "grey65", fill = NA, size = 1), 
+  plot.title.position = "plot",
+  axis.line.x = element_line(size = 1, color = "grey65"),
+  plot.margin = margin(rep(15, 4))
+)
+
+ggplot(simulation_results, aes(x = value, y = model, color = model)) +
+  # Invisible points to set limits
+  #geom_point(aes(x = upper), alpha = 0) +
+  #geom_point(aes(x = lower), alpha = 0) +
+  # Correct value
+  geom_vline(aes(xintercept = true_value), color = "grey60") +
+  # Points for each run
+  geom_point(aes(fill = stage(model, after_scale = lighten(fill, 0.4))), 
+             alpha = 0.7, size = 1.5, pch = 21, stroke = 0,
+             position = position_jitterdodge(jitter.width = 0.8, seed = 1)) +
+  # Error lines
+  stat_summary(geom = "linerange",
+               fun.min = function(z) {quantile(z, 0.025)},
+               fun.max = function(z) {quantile(z, 0.975)},
+               position = position_dodge(width = 0.75),
+               size = 1.3) +
+  # Point for mean
+  geom_point(aes(x = mean), size = 3) +
+  # Numeric text at mean
+  geom_text(aes(x = mean, 
+                y = model, 
+                label = format(round(mean, digits=2), nsmall = 2)), 
+            vjust = -1.5, family = f1, size = 5) +
+  # Color for point and line
+  scale_color_manual(values = color_pal) +
+  scale_fill_manual(values = color_pal) +
+  # One plot for each variable
+  facet_wrap(vars(variable), 
+             nrow = 1,
+             labeller = label_parsed, 
+             scales = "free_x") +
+  # x-axis breaks
+  scale_x_continuous(breaks = seq(0, 4, 1)) +
+  # Lables
+  labs(x = "Posterior mean") +
+  # Add theme
+  theme_model_summary
+
+ggsave("figures/simulation_boxplot.png", 
+       width = 10, height = 4)
 
