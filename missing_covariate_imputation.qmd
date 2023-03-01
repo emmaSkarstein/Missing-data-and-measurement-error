@@ -165,7 +165,7 @@ model_missing1$summary.hyperpar
 ```
 
 
-## More complex imputation model
+## Full imputation model
 This model includes age as a covariate in the imputation model.
 
 ### Specifying priors
@@ -183,12 +183,15 @@ summary(lm(chl~bmi+age2+age3))$sigma
 summary(lm(bmi~age2+age3))$sigma
 
 # Use those values to create reasonable priors:
-prior.prec.y <- c(2.5-1,(2.5)*29.1^2) # Gamma
-prior.prec.u_c <- c(0.5, 0.5) # Gamma
-prior.prec.x <- c(2.5-1,(2.5)*4.2^2) # Gamma
+prior.prec.y <- c(2.5-1, (2.5)*29.1^2) # Gamma
+#prior.prec.u_c <- c(0.5, 0.5) # Gamma
+prior.prec.x <- c(2.5-1, (2.5)*4.2^2) # Gamma
+#prior.prec.x <- c(1, 20)
+#curve(dinvgamma(x,0.5, 0.5), 0, 5)
+
 
 # We can visualize these priors:
-curve(dinvgamma(x, 2.5-1,(2.5)*29.1^2), 0, 2000)
+curve(dinvgamma(x, 2.5-1,(2.5)*29.1^2), 0, 2000) # Where does 2.5 come from?
 abline(v=29.1^2)
 
 curve(dinvgamma(x,2.5-1,(2.5)*4.1^2), 0, 50)
@@ -198,6 +201,7 @@ abline(v=4.2^2)
 prec.y <- 1/29.1^2
 prec.u_c <- 1
 prec.x <- 1/4.2^2
+#prex.x <- 1/71
 ```
 
 ### Setting up the matrices for the joint model
@@ -259,9 +263,8 @@ model_missing2 <- inla(formula, data = dd, scale = Scale,
                        list(hyper = list(prec = list(initial = log(prec.y), 
                                                      param = prior.prec.y, 
                                                      fixed = FALSE))),
-                       list(hyper = list(prec = list(initial = log(prec.u_c), 
-                                                     param = prior.prec.u_c, 
-                                                     fixed = FALSE))),
+                       list(hyper = list(prec = list(initial = log(prec.u_c),
+                                                     fixed = TRUE))),
                        list(hyper = list(prec = list(initial = log(prec.x), 
                                                      param = prior.prec.x, 
                                                      fixed = FALSE)))
@@ -367,16 +370,19 @@ inla_mcmc_results <- tibble::tribble(
   "Beta for beta.bmi", "Model of interest", 4.864, 2.206, 
   "beta.age2",         "Model of interest", 29.501, 17.871, 
   "beta.age3",         "Model of interest", 49.449, 23.207
-)
+) %>% 
+  mutate(inla_mcmc.lower = inla_mcmc.mean-1.96*inla_mcmc.sd, inla_mcmc.upper = inla_mcmc.mean+1.96*inla_mcmc.sd) %>% 
+  dplyr::select(-c(inla_mcmc.sd))
+  
 
-naive_results <- return_estimates(model_naive) |> 
-  dplyr::select(coefficient.name, mean, sd, model) %>% 
-  rename(naive.mean = mean, naive.sd = sd)
+naive_results <- return_estimates(model_naive) %>%  
+  dplyr::select(coefficient.name, mean, X0.025quant, X0.975quant, model) %>% 
+  rename(naive.mean = mean, naive.lower = X0.025quant, naive.upper = X0.975quant)
 naive_results$coefficient.name[4] <- "Beta for beta.bmi"
 
 return_estimates(model_missing2) %>% 
-  dplyr::select(coefficient.name, mean, sd, model) %>% 
-  rename(me_adjusted.mean = mean, me_adjusted.sd = sd) %>%
+  dplyr::select(coefficient.name, mean, X0.025quant, X0.975quant, model) %>% 
+  rename(me_adjusted.mean = mean, me_adjusted.lower = X0.025quant, me_adjusted.upper = X0.975quant) %>%
   full_join(naive_results, by = c("coefficient.name", "model")) %>% 
   full_join(inla_mcmc_results, by = c("coefficient.name", "model")) %>% 
   mutate_if(is.numeric, round, digits = 3) %>% 
@@ -401,11 +407,15 @@ return_estimates(model_missing2) %>%
 #| warning: false
 #| echo: false
 me_plot1 <- return_estimates(model_missing1) %>% 
-  dplyr::select(coefficient.name, mean, sd, model) 
+  dplyr::select(coefficient.name, mean, X0.025quant, X0.975quant, model) %>% 
+  dplyr::rename(lower = X0.025quant, upper = X0.975quant)
 me_plot2 <- return_estimates(model_missing2) %>% 
-  dplyr::select(coefficient.name, mean, sd, model) 
-naive_plot <- naive_results %>% rename(sd = naive.sd, mean = naive.mean)
-inla_mcmc_plot <- inla_mcmc_results %>% rename(sd = inla_mcmc.sd, mean = inla_mcmc.mean)
+  dplyr::select(coefficient.name, mean, X0.025quant, X0.975quant, model) %>% 
+  dplyr::rename(lower = X0.025quant, upper = X0.975quant)
+naive_plot <- naive_results %>% 
+  rename(mean = naive.mean, lower = naive.lower, upper = naive.upper)
+inla_mcmc_plot <- inla_mcmc_results %>% 
+  rename(mean = inla_mcmc.mean, lower = inla_mcmc.lower, upper = inla_mcmc.upper)
 
 all_models_for_plot <- bind_rows("me1" = me_plot1, 
                                  "me2" = me_plot2,
@@ -417,7 +427,7 @@ all_models_for_plot <- bind_rows("me1" = me_plot1,
   tidyr::separate(coef_name, c("sub_model", "coef_name")) %>% 
   mutate(coef_pretty = paste0(sub_model, "[", coef_name, "]")) %>% 
   mutate(model = fct_relevel(model, levels = c("me2", "inla_mcmc", "me1", "naive"))) %>% 
-  mutate(model = recode(model, "me1" = "Simple imputation model", "me2" = "More complex imputation model", "naive" = "Complete case analysis", "inla_mcmc" = "Goméz-Rubio & Rue (2018)")) %>% 
+  mutate(model = recode(model, "me1" = "Simple imputation model", "me2" = "Full imputation model", "naive" = "Complete case analysis", "inla_mcmc" = "Goméz-Rubio & Rue (2018)")) %>% 
   mutate(coef_pretty = fct_relevel(coef_pretty, levels = c("beta[0]", "beta[age2]", "beta[age3]", "beta[bmi]", "alpha[0]", "alpha[age2]", "alpha[age3]")))
 
 showtext_auto()
@@ -458,7 +468,7 @@ theme_model_summary <- theme_minimal(base_size = font_size, base_family = f1) +
 )
 
 ggplot(all_models_for_plot, aes(y = model)) +
-  geom_linerange(aes(xmin = mean-sd, xmax = mean+sd, color = model), size = 1) +
+  geom_linerange(aes(xmin = lower, xmax = upper, color = model), size = 1) +
   geom_point(aes(x = mean, color = model), size = 3) +
   geom_text(aes(x = mean, y = model, 
                 label = format(round(mean, digits=2), nsmall = 2)), 
@@ -476,6 +486,7 @@ ggplot(all_models_for_plot, aes(y = model)) +
 ```{r}
 #| echo: false
 #| warning: false
+#| purl: false
 ggsave("figures/missing_figure.pdf", height = 4, width = 10, dpi = 600)
 ```
 

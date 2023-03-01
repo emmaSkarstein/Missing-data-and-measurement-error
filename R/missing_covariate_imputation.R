@@ -1,4 +1,4 @@
-## ----r------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------------------
 library(mice)       # Just used for the nhanes2 data set
 library(INLA)       # INLA modelling
 library(dplyr)      # Data wrangling of the results
@@ -9,11 +9,11 @@ library(colorspace) # Color adjustments
 library(MCMCpack)   # dinvgamma()
 
 
-## ----r------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------------------
 inla.setOption(num.threads = "1:1")
 
 
-## ----r------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------------------
 # Using the nhanes data set found in mice so we can compare to mice:
 data(nhanes2)
 
@@ -30,7 +30,7 @@ chl <- scale(nhanes2$chl, scale = FALSE)[,1]
 bmi <- scale(nhanes2$bmi, scale = FALSE)[,1]
 
 
-## ----r------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------------------
 # Priors for model of interest coefficients
 prior.beta = c(0, 0.001) # Gaussian, c(mean, precision)
 
@@ -49,7 +49,7 @@ prec.u_c <- 1
 prec.x <- 1/71.07
 
 
-## ----r------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------------------
 Y <- matrix(NA, 3*n, 3)
 
 Y[1:n, 1] <- chl             # Regression model of interest response
@@ -77,7 +77,7 @@ dd <- data.frame(Y = Y,
                  offset.imp = offset.imp)
 
 
-## ----r------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------------------
 formula = Y ~ - 1 + beta.0 + beta.age2 + beta.age3 + 
   f(beta.bmi, copy="id.x", 
     hyper = list(beta = list(param = prior.beta, fixed=FALSE))) +
@@ -85,11 +85,11 @@ formula = Y ~ - 1 + beta.0 + beta.age2 + beta.age3 +
     hyper = list(prec = list(initial = -15, fixed=TRUE)))
 
 
-## ----r------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------------------
 Scale <- c(rep(1, n), rep(10^12, n), rep(1, n))
 
 
-## ----r------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------------------
 model_missing1 <- inla(formula, data = dd, scale = Scale, offset = log(dat$pop),
                      family = c("gaussian", "gaussian", "gaussian"),
                      control.family = list(
@@ -114,7 +114,7 @@ model_missing1$summary.fixed
 model_missing1$summary.hyperpar
 
 
-## ----r------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------------------
 # Priors for model of interest coefficients
 prior.beta = c(0, 1e-6) # Gaussian, c(mean, precision)
 
@@ -128,8 +128,11 @@ summary(lm(bmi~age2+age3))$sigma
 
 # Use those values to create reasonable priors:
 prior.prec.y <- c(2.5-1,(2.5)*29.1^2) # Gamma
-prior.prec.u_c <- c(0.5, 0.5) # Gamma
+#prior.prec.u_c <- c(0.5, 0.5) # Gamma
 prior.prec.x <- c(2.5-1,(2.5)*4.2^2) # Gamma
+#prior.prec.x <- c(1, 20)
+curve(dinvgamma(x,0.5,0.5), 0, 5)
+
 
 # We can visualize these priors:
 curve(dinvgamma(x, 2.5-1,(2.5)*29.1^2), 0, 2000)
@@ -142,9 +145,10 @@ abline(v=4.2^2)
 prec.y <- 1/29.1^2
 prec.u_c <- 1
 prec.x <- 1/4.2^2
+#prex.x <- 1/71
 
 
-## ----r------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------------------
 Y <- matrix(NA, 3*n, 3)
 
 
@@ -176,7 +180,7 @@ dd <- data.frame(Y = Y,
                  alpha.age3 = alpha.age3)
 
 
-## ----r------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------------------
 formula = Y ~ - 1 + beta.0 + beta.age2 + beta.age3 + 
   f(beta.bmi, copy="id.x", 
     hyper = list(beta = list(param = prior.beta, fixed=FALSE))) +
@@ -185,20 +189,19 @@ formula = Y ~ - 1 + beta.0 + beta.age2 + beta.age3 +
   alpha.0 + alpha.age2 + alpha.age3
 
 
-## ----r------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------------------
 Scale <- c(rep(1, n), rep(10^12, n), rep(1, n))
 
 
-## ----r------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------------------
 model_missing2 <- inla(formula, data = dd, scale = Scale,
                      family = c("gaussian", "gaussian", "gaussian"),
                      control.family = list(
                        list(hyper = list(prec = list(initial = log(prec.y), 
                                                      param = prior.prec.y, 
                                                      fixed = FALSE))),
-                       list(hyper = list(prec = list(initial = log(prec.u_c), 
-                                                     param = prior.prec.u_c, 
-                                                     fixed = FALSE))),
+                       list(hyper = list(prec = list(initial = log(prec.u_c),
+                                                     fixed = TRUE))),
                        list(hyper = list(prec = list(initial = log(prec.x), 
                                                      param = prior.prec.x, 
                                                      fixed = FALSE)))
@@ -227,17 +230,15 @@ model_missing2 <- inla(formula, data = dd, scale = Scale,
 
 
 
-## ----r------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------------------
 # https://stefvanbuuren.name/RECAPworkshop/Practicals/RECAP_Practical_II.html 
 
 
 
 
-## ----r------------------------------------------------------------------------
-ggsave("figures/missing_figure.pdf", height = 4, width = 10, dpi = 600)
 
 
-## ----r------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------------------
 bmi_imputed <- model_missing2$marginals.random$id.x[missing_bmi]
 bmi_imp_df <- data.table::rbindlist(lapply(bmi_imputed, as.data.frame), idcol = TRUE)
 
@@ -247,6 +248,6 @@ ggplot(bmi_imp_df, aes(x = x, y = y)) +
   theme_minimal()
 
 
-## ----r------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------------------
 summary(model_missing2)
 
