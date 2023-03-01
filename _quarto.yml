@@ -23,6 +23,7 @@ website:
           - simulation_example.qmd
           - simulation_study.qmd
           - example_in_inlabru.qmd
+  google-analytics: "G-HBKNWV9B6H"
 
 format:
   html:
