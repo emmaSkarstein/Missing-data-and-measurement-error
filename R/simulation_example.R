@@ -14,8 +14,8 @@ n <- 1000
 z <- rnorm(n, mean = 0, sd = 1)
 
 # Berkson error:
-r <- rnorm(n, mean = 1 + 2*z, sd = 1)
 u_b <- rnorm(n, sd = 1)
+r <- rnorm(n, mean = 1 + 2*z, sd = 1)
 x <- r + u_b
 
 # Response:
@@ -29,7 +29,7 @@ w <- r + u_c
 m_pred <- -1.5 - 0.5*z # This gives a mean probability of missing of ca 0.2.
 m_prob <- exp(m_pred)/(1 + exp(m_pred))
 
-m_index <- rbinom(n, 1, prob = m_prob) # MAR
+m_index <- as.logical(rbinom(n, 1, prob = m_prob)) # MAR
 # m_index <- sample(1:n, 0.2*n, replace = FALSE) # MCAR
 w[m_index] <- NA
 
@@ -150,87 +150,8 @@ hyper <- model_sim$summary.hyperpar[1:5]
 hyper[c("mean", "0.025quant", "0.975quant")]
 
 
-## ----r------------------------------------------------------------------------
-library(tidyverse)
-library(showtext)
-
-true_values <- tibble::tribble(
-  ~coef_name, ~mean,
-  "Beta for beta.x", 2, 
-  "beta.z", 2, 
-  "beta.0", 1, 
-  "alpha.0", 1, 
-  "alpha.z", 2
-)
-
-# Prepare data for plotting
-post_estimates <- bind_rows(fixed, hyper) %>% 
-  janitor::clean_names() %>% 
-  mutate(coef_name = rownames(.)) %>% 
-  bind_rows(me_model = ., "truth" = true_values, .id = "model") %>% 
-  filter(coef_name %in% c("beta.0", "beta.z", "Beta for beta.x", "alpha.0", "alpha.z")) %>% 
-  mutate(coef_name = recode_factor(coef_name, "Beta for beta.x" = "beta.x")) %>%
-  separate(coef_name, c("sub_model", "coef_name")) %>% 
-  mutate(coef_pretty = paste0(sub_model, "[", coef_name, "]")) %>% 
-  mutate(model = recode(model, "me_model" = "ME model", "truth" = "True value")) %>% 
-  mutate(coef_pretty = fct_relevel(coef_pretty, levels = c("beta[0]", "beta[z]", "beta[x]", "alpha[0]", "alpha[z]"))) %>% 
-  mutate(limit_lower = ifelse(coef_name==0, 0.5, 1.5),
-         limit_upper = ifelse(coef_name==0, 1.2, 2.2))
 
 
-# Colors
-col_bgr <- "white" #"#fbf9f4"
-col_text <- "#191919"
-color_pal <- c("#BB5566", "#DDAA33", "#004488") # red, yellow, blue
-
-# Loading fonts
-f1 <- "Open Sans"
-f2 <- "Open Sans"
-font_add_google(name = f1, family = f1)
-font_add_google(name = f2, family = f2)
-
-# Plot theme
-theme_model_summary <- theme_minimal(base_size = 18, base_family = "Open Sans") + 
-  theme(
-  axis.title.y = element_blank(),
-  axis.text = element_text(size = 10, color = col_text),
-  #axis.text.x = element_blank(),
-  axis.ticks = element_blank(),
-  legend.title = element_blank(),
-  legend.text = element_text(size = 10),
-  panel.background = element_rect(fill = col_bgr, color = col_bgr),
-  #plot.background = element_rect(fill = col_bgr, color = "grey75", size = 1),
-  legend.position = "none",
-  strip.placement = "outside",
-  strip.text = element_text(color = col_text),
-  panel.grid.major.y = element_blank(),
-  panel.grid.minor = element_blank(),
-  plot.title.position = "plot",
-  axis.line.x = element_line(size = 1, color = "grey65"),
-  plot.margin = margin(rep(15, 4))
-)
-
-showtext.auto()
-
-ggplot(post_estimates, aes(y = model)) +
-  geom_linerange(aes(xmin = limit_lower, xmax = limit_upper), alpha = 0) +
-  geom_linerange(aes(xmin = x0_025quant, xmax = x0_975quant, color = model), size = 1) +
-  geom_point(aes(x = mean, color = model), size = 3) +
-  geom_text(aes(x = mean, y = model, label = round(mean, 2)), 
-            vjust = -1, family = "Open Sans") +
-  scale_color_manual(values = color_pal[2:3], 
-                     #labels = c("ME model", "True value"),
-    guide = guide_legend(override.aes = list(size = 2, alpha = 1))) +
-  facet_wrap(vars(coef_pretty), nrow = 2, #switch = "x",
-             labeller = label_parsed, scales = "free_x"
-             ) +
-  labs(x = "Posterior mean") +
-  coord_cartesian(clip = "off") +
-  theme_model_summary
-
-
-## ----r------------------------------------------------------------------------
-ggsave("figures/simulation_ex_figure.png", width = 7, height = 5)
 
 
 ## ----r------------------------------------------------------------------------

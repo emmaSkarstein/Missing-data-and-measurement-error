@@ -247,7 +247,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#scaling-of-me-precision" id="toc-scaling-of-me-precision" class="nav-link" data-scroll-target="#scaling-of-me-precision">Scaling of ME precision</a></li>
   <li><a href="#fitting-the-model" id="toc-fitting-the-model" class="nav-link" data-scroll-target="#fitting-the-model">Fitting the model</a></li>
   </ul></li>
-  <li><a href="#more-complex-imputation-model" id="toc-more-complex-imputation-model" class="nav-link" data-scroll-target="#more-complex-imputation-model">More complex imputation model</a>
+  <li><a href="#full-imputation-model" id="toc-full-imputation-model" class="nav-link" data-scroll-target="#full-imputation-model">Full imputation model</a>
   <ul class="collapse">
   <li><a href="#specifying-priors-1" id="toc-specifying-priors-1" class="nav-link" data-scroll-target="#specifying-priors-1">Specifying priors</a></li>
   <li><a href="#setting-up-the-matrices-for-the-joint-model-1" id="toc-setting-up-the-matrices-for-the-joint-model-1" class="nav-link" data-scroll-target="#setting-up-the-matrices-for-the-joint-model-1">Setting up the matrices for the joint model</a></li>
@@ -454,8 +454,8 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
 </div>
 </section>
 </section>
-<section id="more-complex-imputation-model" class="level2">
-<h2 class="anchored" data-anchor-id="more-complex-imputation-model">More complex imputation model</h2>
+<section id="full-imputation-model" class="level2">
+<h2 class="anchored" data-anchor-id="full-imputation-model">Full imputation model</h2>
 <p>This model includes age as a covariate in the imputation model.</p>
 <section id="specifying-priors-1" class="level3">
 <h3 class="anchored" data-anchor-id="specifying-priors-1">Specifying priors</h3>
@@ -478,149 +478,153 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use those values to create reasonable priors:</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>prior.prec.y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">2.5</span><span class="dv">-1</span>,(<span class="fl">2.5</span>)<span class="sc">*</span><span class="fl">29.1</span><span class="sc">^</span><span class="dv">2</span>) <span class="co"># Gamma</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>prior.prec.u_c <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co">#prior.prec.u_c &lt;- c(0.5, 0.5) # Gamma</span></span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>prior.prec.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">2.5</span><span class="dv">-1</span>,(<span class="fl">2.5</span>)<span class="sc">*</span><span class="fl">4.2</span><span class="sc">^</span><span class="dv">2</span>) <span class="co"># Gamma</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co"># We can visualize these priors:</span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dinvgamma</span>(x, <span class="fl">2.5</span><span class="dv">-1</span>,(<span class="fl">2.5</span>)<span class="sc">*</span><span class="fl">29.1</span><span class="sc">^</span><span class="dv">2</span>), <span class="dv">0</span>, <span class="dv">2000</span>)</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fl">29.1</span><span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co">#prior.prec.x &lt;- c(1, 20)</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dinvgamma</span>(x,<span class="fl">0.5</span>,<span class="fl">0.5</span>), <span class="dv">0</span>, <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="missing_covariate_imputation_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dinvgamma</span>(x,<span class="fl">2.5</span><span class="dv">-1</span>,(<span class="fl">2.5</span>)<span class="sc">*</span><span class="fl">4.1</span><span class="sc">^</span><span class="dv">2</span>), <span class="dv">0</span>, <span class="dv">50</span>)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fl">4.2</span><span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We can visualize these priors:</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dinvgamma</span>(x, <span class="fl">2.5</span><span class="dv">-1</span>,(<span class="fl">2.5</span>)<span class="sc">*</span><span class="fl">29.1</span><span class="sc">^</span><span class="dv">2</span>), <span class="dv">0</span>, <span class="dv">2000</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fl">29.1</span><span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="missing_covariate_imputation_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial values</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>prec.y <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span><span class="fl">29.1</span><span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>prec.u_c <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>prec.x <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span><span class="fl">4.2</span><span class="sc">^</span><span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dinvgamma</span>(x,<span class="fl">2.5</span><span class="dv">-1</span>,(<span class="fl">2.5</span>)<span class="sc">*</span><span class="fl">4.1</span><span class="sc">^</span><span class="dv">2</span>), <span class="dv">0</span>, <span class="dv">50</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fl">4.2</span><span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="missing_covariate_imputation_files/figure-html/unnamed-chunk-10-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial values</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>prec.y <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span><span class="fl">29.1</span><span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>prec.u_c <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>prec.x <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span><span class="fl">4.2</span><span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co">#prex.x &lt;- 1/71</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="setting-up-the-matrices-for-the-joint-model-1" class="level3">
 <h3 class="anchored" data-anchor-id="setting-up-the-matrices-for-the-joint-model-1">Setting up the matrices for the joint model</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n, <span class="dv">3</span>)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span>] <span class="ot">&lt;-</span> chl             <span class="co"># Regression model of interest response</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>Y[n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">2</span>] <span class="ot">&lt;-</span> bmi         <span class="co"># Error model response</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">2</span><span class="sc">*</span>n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n) <span class="co"># Exposure model response</span></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>beta<span class="fl">.0</span> <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>beta.bmi <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>beta.age2 <span class="ot">&lt;-</span> <span class="fu">c</span>(age2, <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>beta.age3 <span class="ot">&lt;-</span> <span class="fu">c</span>(age3, <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>id.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span><span class="sc">:</span>n) </span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>weight.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span>, n))</span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>alpha<span class="fl">.0</span> <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, n))</span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>alpha.age2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), age2)</span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>alpha.age3 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), age3)</span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>dd <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Y =</span> Y, </span>
-<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.0 =</span> beta<span class="fl">.0</span>,</span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.bmi =</span> beta.bmi,</span>
-<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.age2 =</span> beta.age2,</span>
-<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.age3 =</span> beta.age3,</span>
-<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>                 <span class="at">id.x =</span> id.x,</span>
-<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>                 <span class="at">weight.x =</span> weight.x,</span>
-<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha.0 =</span> alpha<span class="fl">.0</span>,</span>
-<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha.age2 =</span> alpha.age2,</span>
-<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha.age3 =</span> alpha.age3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="dv">3</span><span class="sc">*</span>n, <span class="dv">3</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span>] <span class="ot">&lt;-</span> chl             <span class="co"># Regression model of interest response</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>Y[n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">2</span>] <span class="ot">&lt;-</span> bmi         <span class="co"># Error model response</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">2</span><span class="sc">*</span>n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n) <span class="co"># Exposure model response</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>beta<span class="fl">.0</span> <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>beta.bmi <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>beta.age2 <span class="ot">&lt;-</span> <span class="fu">c</span>(age2, <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>beta.age3 <span class="ot">&lt;-</span> <span class="fu">c</span>(age3, <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>id.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span><span class="sc">:</span>n) </span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>weight.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span>, n))</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>alpha<span class="fl">.0</span> <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, n))</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>alpha.age2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), age2)</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>alpha.age3 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), age3)</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>dd <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Y =</span> Y, </span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.0 =</span> beta<span class="fl">.0</span>,</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.bmi =</span> beta.bmi,</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.age2 =</span> beta.age2,</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.age3 =</span> beta.age3,</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>                 <span class="at">id.x =</span> id.x,</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>                 <span class="at">weight.x =</span> weight.x,</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha.0 =</span> alpha<span class="fl">.0</span>,</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha.age2 =</span> alpha.age2,</span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha.age3 =</span> alpha.age3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="inla-formula-1" class="level3">
 <h3 class="anchored" data-anchor-id="inla-formula-1">INLA formula</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>formula <span class="ot">=</span> Y <span class="sc">~</span> <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> beta<span class="fl">.0</span> <span class="sc">+</span> beta.age2 <span class="sc">+</span> beta.age3 <span class="sc">+</span> </span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(beta.bmi, <span class="at">copy=</span><span class="st">"id.x"</span>, </span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">beta =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.beta, <span class="at">fixed=</span><span class="cn">FALSE</span>))) <span class="sc">+</span></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(id.x, weight.x, <span class="at">model=</span><span class="st">"iid"</span>, <span class="at">values =</span> <span class="dv">1</span><span class="sc">:</span>n, </span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  alpha<span class="fl">.0</span> <span class="sc">+</span> alpha.age2 <span class="sc">+</span> alpha.age3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>formula <span class="ot">=</span> Y <span class="sc">~</span> <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> beta<span class="fl">.0</span> <span class="sc">+</span> beta.age2 <span class="sc">+</span> beta.age3 <span class="sc">+</span> </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(beta.bmi, <span class="at">copy=</span><span class="st">"id.x"</span>, </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">beta =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.beta, <span class="at">fixed=</span><span class="cn">FALSE</span>))) <span class="sc">+</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(id.x, weight.x, <span class="at">model=</span><span class="st">"iid"</span>, <span class="at">values =</span> <span class="dv">1</span><span class="sc">:</span>n, </span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  alpha<span class="fl">.0</span> <span class="sc">+</span> alpha.age2 <span class="sc">+</span> alpha.age3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="scaling-of-me-precision-1" class="level3">
 <h3 class="anchored" data-anchor-id="scaling-of-me-precision-1">Scaling of ME precision</h3>
 <p>Since we are not assuming any measurement error here, we need to “turn off” the error model by scaling the error precision to be very large (it makes no difference if we scale the precision only for the observed values or for the observed and missing values).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>Scale <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="dv">10</span><span class="sc">^</span><span class="dv">12</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>Scale <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="dv">10</span><span class="sc">^</span><span class="dv">12</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="fitting-the-model-1" class="level3">
 <h3 class="anchored" data-anchor-id="fitting-the-model-1">Fitting the model</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>model_missing2 <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula, <span class="at">data =</span> dd, <span class="at">scale =</span> Scale,</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">family =</span> <span class="fu">c</span>(<span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>),</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">control.family =</span> <span class="fu">list</span>(</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.y), </span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">param =</span> prior.prec.y, </span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_c), </span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">param =</span> prior.prec.u_c, </span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x), </span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">param =</span> prior.prec.x, </span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">fixed =</span> <span class="cn">FALSE</span>)))</span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>                     ),</span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>                     <span class="at">control.fixed =</span> <span class="fu">list</span>(</span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>                       <span class="at">mean =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">1</span>], </span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.age2 =</span> prior.beta[<span class="dv">1</span>], </span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.age3 =</span> prior.beta[<span class="dv">1</span>],  </span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">1</span>], </span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.age2 =</span> prior.alpha[<span class="dv">1</span>],</span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.age3 =</span> prior.alpha[<span class="dv">1</span>]), </span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>                       <span class="at">prec =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">2</span>], </span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.age2 =</span> prior.beta[<span class="dv">2</span>], </span>
-<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.age3 =</span> prior.beta[<span class="dv">2</span>],  </span>
-<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">2</span>], </span>
-<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.age2 =</span> prior.alpha[<span class="dv">2</span>],</span>
-<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.age3 =</span> prior.alpha[<span class="dv">2</span>])),</span>
-<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>                     <span class="at">verbose=</span>F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>model_missing2 <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula, <span class="at">data =</span> dd, <span class="at">scale =</span> Scale,</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">family =</span> <span class="fu">c</span>(<span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>),</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">control.family =</span> <span class="fu">list</span>(</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.y), </span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">param =</span> prior.prec.y, </span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_c),</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">fixed =</span> <span class="cn">TRUE</span>))),</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x), </span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">param =</span> prior.prec.x, </span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>                                                     <span class="at">fixed =</span> <span class="cn">FALSE</span>)))</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>                     ),</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>                     <span class="at">control.fixed =</span> <span class="fu">list</span>(</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>                       <span class="at">mean =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">1</span>], </span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.age2 =</span> prior.beta[<span class="dv">1</span>], </span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.age3 =</span> prior.beta[<span class="dv">1</span>],  </span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">1</span>], </span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.age2 =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.age3 =</span> prior.alpha[<span class="dv">1</span>]), </span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>                       <span class="at">prec =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">2</span>], </span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.age2 =</span> prior.beta[<span class="dv">2</span>], </span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.age3 =</span> prior.beta[<span class="dv">2</span>],  </span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">2</span>], </span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.age2 =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha.age3 =</span> prior.alpha[<span class="dv">2</span>])),</span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>                     <span class="at">verbose=</span>F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save results:</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(model_missing2, <span class="at">file =</span> <span class="st">"results/model_missing2.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save results:</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(model_missing2, <span class="at">file =</span> <span class="st">"results/model_missing2.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
 <section id="fitting-a-complete-case-model" class="level2">
 <h2 class="anchored" data-anchor-id="fitting-a-complete-case-model">Fitting a complete case model</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Where is bmi missing? </span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>missing_bmi <span class="ot">&lt;-</span> <span class="fu">is.na</span>(bmi)</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>dd_naive <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Y =</span> chl, </span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">beta.0 =</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">length</span>(bmi)),</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>                       <span class="at">beta.bmi =</span> bmi, </span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">beta.age2 =</span> age2, </span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>                       <span class="at">beta.age3 =</span> age3)[<span class="sc">!</span>missing_bmi, ]</span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Formula</span></span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>formula <span class="ot">&lt;-</span> Y <span class="sc">~</span> <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> beta<span class="fl">.0</span> <span class="sc">+</span> beta.age2 <span class="sc">+</span> beta.age3 <span class="sc">+</span> beta.bmi</span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit model</span></span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>model_naive <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula,</span>
-<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> dd_naive,</span>
-<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>              <span class="at">family =</span> <span class="fu">c</span>(<span class="st">"gaussian"</span>),</span>
-<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>              <span class="at">control.family =</span> <span class="fu">list</span>(</span>
-<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>                <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> prec.y, </span>
-<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">param =</span> prior.prec.y, </span>
-<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">fixed =</span> <span class="cn">FALSE</span>)))),</span>
-<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>              <span class="at">control.fixed =</span> <span class="fu">list</span>(</span>
-<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>                       <span class="at">mean =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">1</span>], </span>
-<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.age2 =</span> prior.beta[<span class="dv">1</span>], </span>
-<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.age3 =</span> prior.beta[<span class="dv">1</span>],</span>
-<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.bmi =</span> prior.beta[<span class="dv">1</span>]), </span>
-<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>                       <span class="at">prec =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">2</span>], </span>
-<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.age2 =</span> prior.beta[<span class="dv">2</span>], </span>
-<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.age3 =</span> prior.beta[<span class="dv">2</span>],  </span>
-<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.bmi =</span> prior.beta[<span class="dv">2</span>]))</span>
-<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Where is bmi missing? </span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>missing_bmi <span class="ot">&lt;-</span> <span class="fu">is.na</span>(bmi)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>dd_naive <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Y =</span> chl, </span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">beta.0 =</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">length</span>(bmi)),</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>                       <span class="at">beta.bmi =</span> bmi, </span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">beta.age2 =</span> age2, </span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>                       <span class="at">beta.age3 =</span> age3)[<span class="sc">!</span>missing_bmi, ]</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Formula</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>formula <span class="ot">&lt;-</span> Y <span class="sc">~</span> <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> beta<span class="fl">.0</span> <span class="sc">+</span> beta.age2 <span class="sc">+</span> beta.age3 <span class="sc">+</span> beta.bmi</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit model</span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>model_naive <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula,</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> dd_naive,</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>              <span class="at">family =</span> <span class="fu">c</span>(<span class="st">"gaussian"</span>),</span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>              <span class="at">control.family =</span> <span class="fu">list</span>(</span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>                <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> prec.y, </span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">param =</span> prior.prec.y, </span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">fixed =</span> <span class="cn">FALSE</span>)))),</span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>              <span class="at">control.fixed =</span> <span class="fu">list</span>(</span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>                       <span class="at">mean =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">1</span>], </span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.age2 =</span> prior.beta[<span class="dv">1</span>], </span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.age3 =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.bmi =</span> prior.beta[<span class="dv">1</span>]), </span>
+<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a>                       <span class="at">prec =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">2</span>], </span>
+<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.age2 =</span> prior.beta[<span class="dv">2</span>], </span>
+<span id="cb27-29"><a href="#cb27-29" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.age3 =</span> prior.beta[<span class="dv">2</span>],  </span>
+<span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">beta.bmi =</span> prior.beta[<span class="dv">2</span>]))</span>
+<span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="results" class="level2">
@@ -632,12 +636,12 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="mqdwicfqsc" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="uqnnzwtlro" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-:where(#mqdwicfqsc) .gt_table {
+:where(#uqnnzwtlro) .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -662,7 +666,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-left-color: #D3D3D3;
 }
 
-:where(#mqdwicfqsc) .gt_heading {
+:where(#uqnnzwtlro) .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -674,7 +678,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-right-color: #D3D3D3;
 }
 
-:where(#mqdwicfqsc) .gt_title {
+:where(#uqnnzwtlro) .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -686,7 +690,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-bottom-width: 0;
 }
 
-:where(#mqdwicfqsc) .gt_subtitle {
+:where(#uqnnzwtlro) .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -698,13 +702,13 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-top-width: 0;
 }
 
-:where(#mqdwicfqsc) .gt_bottom_border {
+:where(#uqnnzwtlro) .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-:where(#mqdwicfqsc) .gt_col_headings {
+:where(#uqnnzwtlro) .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -719,7 +723,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-right-color: #D3D3D3;
 }
 
-:where(#mqdwicfqsc) .gt_col_heading {
+:where(#uqnnzwtlro) .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -739,7 +743,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   overflow-x: hidden;
 }
 
-:where(#mqdwicfqsc) .gt_column_spanner_outer {
+:where(#uqnnzwtlro) .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -751,15 +755,15 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   padding-right: 4px;
 }
 
-:where(#mqdwicfqsc) .gt_column_spanner_outer:first-child {
+:where(#uqnnzwtlro) .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-:where(#mqdwicfqsc) .gt_column_spanner_outer:last-child {
+:where(#uqnnzwtlro) .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-:where(#mqdwicfqsc) .gt_column_spanner {
+:where(#uqnnzwtlro) .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -771,7 +775,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   width: 100%;
 }
 
-:where(#mqdwicfqsc) .gt_group_heading {
+:where(#uqnnzwtlro) .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -796,7 +800,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   vertical-align: middle;
 }
 
-:where(#mqdwicfqsc) .gt_empty_group_heading {
+:where(#uqnnzwtlro) .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -811,15 +815,15 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   vertical-align: middle;
 }
 
-:where(#mqdwicfqsc) .gt_from_md > :first-child {
+:where(#uqnnzwtlro) .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-:where(#mqdwicfqsc) .gt_from_md > :last-child {
+:where(#uqnnzwtlro) .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-:where(#mqdwicfqsc) .gt_row {
+:where(#uqnnzwtlro) .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -838,7 +842,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   overflow-x: hidden;
 }
 
-:where(#mqdwicfqsc) .gt_stub {
+:where(#uqnnzwtlro) .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -851,7 +855,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   padding-right: 5px;
 }
 
-:where(#mqdwicfqsc) .gt_stub_row_group {
+:where(#uqnnzwtlro) .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -865,11 +869,11 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   vertical-align: top;
 }
 
-:where(#mqdwicfqsc) .gt_row_group_first td {
+:where(#uqnnzwtlro) .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-:where(#mqdwicfqsc) .gt_summary_row {
+:where(#uqnnzwtlro) .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -879,16 +883,16 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   padding-right: 5px;
 }
 
-:where(#mqdwicfqsc) .gt_first_summary_row {
+:where(#uqnnzwtlro) .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-:where(#mqdwicfqsc) .gt_first_summary_row.thick {
+:where(#uqnnzwtlro) .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-:where(#mqdwicfqsc) .gt_last_summary_row {
+:where(#uqnnzwtlro) .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -898,7 +902,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-:where(#mqdwicfqsc) .gt_grand_summary_row {
+:where(#uqnnzwtlro) .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -908,7 +912,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   padding-right: 5px;
 }
 
-:where(#mqdwicfqsc) .gt_first_grand_summary_row {
+:where(#uqnnzwtlro) .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -918,11 +922,11 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-top-color: #D3D3D3;
 }
 
-:where(#mqdwicfqsc) .gt_striped {
+:where(#uqnnzwtlro) .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-:where(#mqdwicfqsc) .gt_table_body {
+:where(#uqnnzwtlro) .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -931,7 +935,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-:where(#mqdwicfqsc) .gt_footnotes {
+:where(#uqnnzwtlro) .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -945,7 +949,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-right-color: #D3D3D3;
 }
 
-:where(#mqdwicfqsc) .gt_footnote {
+:where(#uqnnzwtlro) .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-left: 4px;
@@ -954,7 +958,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   padding-right: 5px;
 }
 
-:where(#mqdwicfqsc) .gt_sourcenotes {
+:where(#uqnnzwtlro) .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -968,7 +972,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-right-color: #D3D3D3;
 }
 
-:where(#mqdwicfqsc) .gt_sourcenote {
+:where(#uqnnzwtlro) .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -976,64 +980,64 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   padding-right: 5px;
 }
 
-:where(#mqdwicfqsc) .gt_left {
+:where(#uqnnzwtlro) .gt_left {
   text-align: left;
 }
 
-:where(#mqdwicfqsc) .gt_center {
+:where(#uqnnzwtlro) .gt_center {
   text-align: center;
 }
 
-:where(#mqdwicfqsc) .gt_right {
+:where(#uqnnzwtlro) .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-:where(#mqdwicfqsc) .gt_font_normal {
+:where(#uqnnzwtlro) .gt_font_normal {
   font-weight: normal;
 }
 
-:where(#mqdwicfqsc) .gt_font_bold {
+:where(#uqnnzwtlro) .gt_font_bold {
   font-weight: bold;
 }
 
-:where(#mqdwicfqsc) .gt_font_italic {
+:where(#uqnnzwtlro) .gt_font_italic {
   font-style: italic;
 }
 
-:where(#mqdwicfqsc) .gt_super {
+:where(#uqnnzwtlro) .gt_super {
   font-size: 65%;
 }
 
-:where(#mqdwicfqsc) .gt_footnote_marks {
+:where(#uqnnzwtlro) .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 75%;
   vertical-align: 0.4em;
 }
 
-:where(#mqdwicfqsc) .gt_asterisk {
+:where(#uqnnzwtlro) .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-:where(#mqdwicfqsc) .gt_indent_1 {
+:where(#uqnnzwtlro) .gt_indent_1 {
   text-indent: 5px;
 }
 
-:where(#mqdwicfqsc) .gt_indent_2 {
+:where(#uqnnzwtlro) .gt_indent_2 {
   text-indent: 10px;
 }
 
-:where(#mqdwicfqsc) .gt_indent_3 {
+:where(#uqnnzwtlro) .gt_indent_3 {
   text-indent: 15px;
 }
 
-:where(#mqdwicfqsc) .gt_indent_4 {
+:where(#uqnnzwtlro) .gt_indent_4 {
   text-indent: 20px;
 }
 
-:where(#mqdwicfqsc) .gt_indent_5 {
+:where(#uqnnzwtlro) .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -1042,77 +1046,101 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   <thead class="gt_col_headings">
     <tr>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" scope="col"></th>
-      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2" scope="colgroup">
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="3" scope="colgroup">
         <span class="gt_column_spanner">me_adjusted</span>
       </th>
-      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2" scope="colgroup">
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="3" scope="colgroup">
         <span class="gt_column_spanner">naive</span>
       </th>
-      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2" scope="colgroup">
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="3" scope="colgroup">
         <span class="gt_column_spanner">inla_mcmc</span>
       </th>
     </tr>
     <tr>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col">mean</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col">sd</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col">lower</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col">upper</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col">mean</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col">sd</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col">lower</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col">upper</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col">mean</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col">sd</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col">lower</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col">upper</th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
     <tr class="gt_group_heading_row">
-      <td colspan="7" class="gt_group_heading">Model of interest</td>
+      <td colspan="10" class="gt_group_heading">Model of interest</td>
     </tr>
     <tr class="gt_row_group_first"><th scope="row" class="gt_row gt_left gt_stub">beta.0</th>
-<td class="gt_row gt_right">-34.464</td>
-<td class="gt_row gt_right">12.273</td>
+<td class="gt_row gt_right">-31.114</td>
+<td class="gt_row gt_right">-56.265</td>
+<td class="gt_row gt_right">-5.851</td>
 <td class="gt_row gt_right">-36.459</td>
-<td class="gt_row gt_right">14.532</td>
+<td class="gt_row gt_right">-65.404</td>
+<td class="gt_row gt_right">-7.491</td>
 <td class="gt_row gt_right">43.469</td>
-<td class="gt_row gt_right">62.603</td></tr>
+<td class="gt_row gt_right">-79.233</td>
+<td class="gt_row gt_right">166.171</td></tr>
     <tr><th scope="row" class="gt_row gt_left gt_stub">beta.age2</th>
-<td class="gt_row gt_right">53.341</td>
-<td class="gt_row gt_right">18.625</td>
+<td class="gt_row gt_right">47.983</td>
+<td class="gt_row gt_right">9.395</td>
+<td class="gt_row gt_right">86.493</td>
 <td class="gt_row gt_right">55.749</td>
-<td class="gt_row gt_right">21.786</td>
+<td class="gt_row gt_right">12.324</td>
+<td class="gt_row gt_right">99.144</td>
 <td class="gt_row gt_right">29.501</td>
-<td class="gt_row gt_right">17.871</td></tr>
+<td class="gt_row gt_right">-5.526</td>
+<td class="gt_row gt_right">64.528</td></tr>
     <tr><th scope="row" class="gt_row gt_left gt_stub">beta.age3</th>
-<td class="gt_row gt_right">90.360</td>
-<td class="gt_row gt_right">23.619</td>
+<td class="gt_row gt_right">79.842</td>
+<td class="gt_row gt_right">31.700</td>
+<td class="gt_row gt_right">126.835</td>
 <td class="gt_row gt_right">104.611</td>
-<td class="gt_row gt_right">29.380</td>
+<td class="gt_row gt_right">46.041</td>
+<td class="gt_row gt_right">163.124</td>
 <td class="gt_row gt_right">49.449</td>
-<td class="gt_row gt_right">23.207</td></tr>
+<td class="gt_row gt_right">3.963</td>
+<td class="gt_row gt_right">94.935</td></tr>
     <tr><th scope="row" class="gt_row gt_left gt_stub">Beta for beta.bmi</th>
-<td class="gt_row gt_right">6.330</td>
-<td class="gt_row gt_right">0.459</td>
+<td class="gt_row gt_right">4.559</td>
+<td class="gt_row gt_right">3.748</td>
+<td class="gt_row gt_right">5.240</td>
 <td class="gt_row gt_right">6.918</td>
-<td class="gt_row gt_right">2.308</td>
+<td class="gt_row gt_right">2.317</td>
+<td class="gt_row gt_right">11.517</td>
 <td class="gt_row gt_right">4.864</td>
-<td class="gt_row gt_right">2.206</td></tr>
+<td class="gt_row gt_right">0.540</td>
+<td class="gt_row gt_right">9.188</td></tr>
     <tr class="gt_group_heading_row">
-      <td colspan="7" class="gt_group_heading">Imputation model</td>
+      <td colspan="10" class="gt_group_heading">Imputation model</td>
     </tr>
     <tr class="gt_row_group_first"><th scope="row" class="gt_row gt_left gt_stub">alpha.0</th>
-<td class="gt_row gt_right">1.995</td>
-<td class="gt_row gt_right">1.722</td>
+<td class="gt_row gt_right">1.974</td>
+<td class="gt_row gt_right">-1.376</td>
+<td class="gt_row gt_right">5.352</td>
+<td class="gt_row gt_right">NA</td>
+<td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td></tr>
     <tr><th scope="row" class="gt_row gt_left gt_stub">alpha.age2</th>
-<td class="gt_row gt_right">-3.137</td>
-<td class="gt_row gt_right">2.721</td>
+<td class="gt_row gt_right">-3.117</td>
+<td class="gt_row gt_right">-8.408</td>
+<td class="gt_row gt_right">2.146</td>
+<td class="gt_row gt_right">NA</td>
+<td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td></tr>
     <tr><th scope="row" class="gt_row gt_left gt_stub">alpha.age3</th>
-<td class="gt_row gt_right">-4.617</td>
-<td class="gt_row gt_right">2.838</td>
+<td class="gt_row gt_right">-4.457</td>
+<td class="gt_row gt_right">-10.103</td>
+<td class="gt_row gt_right">1.037</td>
+<td class="gt_row gt_right">NA</td>
+<td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td>
@@ -1137,13 +1165,13 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
 </div>
 <p>We can also look at the imputed values themselves, they can be found in <code>marginals.random$id.x</code> inside the model object.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>bmi_imputed <span class="ot">&lt;-</span> model_missing2<span class="sc">$</span>marginals.random<span class="sc">$</span>id.x[missing_bmi]</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>bmi_imp_df <span class="ot">&lt;-</span> data.table<span class="sc">::</span><span class="fu">rbindlist</span>(<span class="fu">lapply</span>(bmi_imputed, as.data.frame), <span class="at">idcol =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(bmi_imp_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> .id, <span class="at">ncol =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>bmi_imputed <span class="ot">&lt;-</span> model_missing2<span class="sc">$</span>marginals.random<span class="sc">$</span>id.x[missing_bmi]</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>bmi_imp_df <span class="ot">&lt;-</span> data.table<span class="sc">::</span><span class="fu">rbindlist</span>(<span class="fu">lapply</span>(bmi_imputed, as.data.frame), <span class="at">idcol =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(bmi_imp_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> .id, <span class="at">ncol =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="missing_covariate_imputation_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -1151,7 +1179,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
 <section id="model-summary" class="level3">
 <h3 class="anchored" data-anchor-id="model-summary">Model summary</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_missing2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_missing2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1173,15 +1201,15 @@ Call:
    = inla.mode, safe = FALSE, debug = debug, ", " .parent.frame = 
    .parent.frame)") 
 Time used:
-    Pre = 2.9, Running = 0.282, Post = 0.0227, Total = 3.2 
+    Pre = 3.14, Running = 0.296, Post = 0.0259, Total = 3.46 
 Fixed effects:
               mean     sd 0.025quant 0.5quant 0.975quant mode kld
-beta.0     -34.464 12.273    -58.735  -34.483    -10.088   NA   0
-beta.age2   53.341 18.625     16.393   53.350     90.257   NA   0
-beta.age3   90.360 23.619     42.855   90.609    136.374   NA   0
-alpha.0      1.995  1.722     -1.404    1.989      5.422   NA   0
-alpha.age2  -3.137  2.721     -8.547   -3.132      2.243   NA   0
-alpha.age3  -4.617  2.838    -10.321   -4.587      0.920   NA   0
+beta.0     -31.114 12.721    -56.265  -31.140     -5.851   NA   0
+beta.age2   47.983 19.445      9.395   48.007     86.493   NA   0
+beta.age3   79.842 24.034     31.700   80.057    126.835   NA   0
+alpha.0      1.974  1.700     -1.376    1.969      5.352   NA   0
+alpha.age2  -3.117  2.666     -8.408   -3.112      2.146   NA   0
+alpha.age3  -4.457  2.816    -10.103   -4.430      1.037   NA   0
 
 Random effects:
   Name    Model
@@ -1190,17 +1218,15 @@ Random effects:
 
 Model hyperparameters:
                                             mean    sd 0.025quant 0.5quant
-Precision for the Gaussian observations    0.001 0.001      0.000    0.001
-Precision for the Gaussian observations[2] 1.822 0.936      0.550    1.637
-Precision for the Gaussian observations[3] 0.052 0.014      0.029    0.051
-Beta for beta.bmi                          6.330 0.459      5.380    6.344
+Precision for the Gaussian observations    0.001 0.000      0.001    0.001
+Precision for the Gaussian observations[3] 0.052 0.016      0.025    0.050
+Beta for beta.bmi                          4.559 0.373      3.748    4.573
                                            0.975quant mode
-Precision for the Gaussian observations         0.003   NA
-Precision for the Gaussian observations[2]      4.162   NA
-Precision for the Gaussian observations[3]      0.084   NA
-Beta for beta.bmi                               7.197   NA
+Precision for the Gaussian observations         0.002   NA
+Precision for the Gaussian observations[3]      0.088   NA
+Beta for beta.bmi                               5.240   NA
 
-Marginal log-Likelihood:  -367.03 
+Marginal log-Likelihood:  -367.34 
  is computed 
 Posterior summaries for the linear predictor and the fitted values are computed
 (Posterior marginals needs also 'control.compute=list(return.marginals.predictor=TRUE)')</code></pre>

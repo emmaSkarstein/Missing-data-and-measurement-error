@@ -284,8 +284,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>)</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Berkson error:</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="at">mean =</span> <span class="dv">1</span> <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>z, <span class="at">sd =</span> <span class="dv">1</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>u_b <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> <span class="dv">1</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>u_b <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> <span class="dv">1</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="at">mean =</span> <span class="dv">1</span> <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>z, <span class="at">sd =</span> <span class="dv">1</span>)</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> r <span class="sc">+</span> u_b</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Response:</span></span>
@@ -299,7 +299,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>m_pred <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">1.5</span> <span class="sc">-</span> <span class="fl">0.5</span><span class="sc">*</span>z <span class="co"># This gives a mean probability of missing of ca 0.2.</span></span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>m_prob <span class="ot">&lt;-</span> <span class="fu">exp</span>(m_pred)<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(m_pred))</span>
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>m_index <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n, <span class="dv">1</span>, <span class="at">prob =</span> m_prob) <span class="co"># MAR</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>m_index <span class="ot">&lt;-</span> <span class="fu">as.logical</span>(<span class="fu">rbinom</span>(n, <span class="dv">1</span>, <span class="at">prob =</span> m_prob)) <span class="co"># MAR</span></span>
 <span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co"># m_index &lt;- sample(1:n, 0.2*n, replace = FALSE) # MCAR</span></span>
 <span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>w[m_index] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
 <span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
@@ -604,21 +604,21 @@ z_n \\
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>fixed[<span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"0.025quant"</span>, <span class="st">"0.975quant"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>            mean 0.025quant 0.975quant
-beta.0  1.030390  0.6528240   1.338318
-beta.z  2.123489  1.4632119   2.628708
-alpha.0 1.014109  0.9262175   1.101999
-alpha.z 2.008122  1.9200374   2.096205</code></pre>
+beta.0  1.045890  0.6562144   1.372191
+beta.z  2.157892  1.4764692   2.676830
+alpha.0 1.005302  0.9123583   1.098251
+alpha.z 1.987672  1.8916031   2.083756</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of random effects:</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>hyper <span class="ot">&lt;-</span> model_sim<span class="sc">$</span>summary.hyperpar[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>hyper[<span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"0.025quant"</span>, <span class="st">"0.975quant"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                                                mean 0.025quant 0.975quant
-Precision for the Gaussian observations    0.9432112  0.6121326   1.722205
-Precision for the Gaussian observations[2] 1.0421744  0.6998576   1.573373
-Precision for the Gaussian observations[3] 1.1385433  0.9312267   1.352441
-Precision for the Gaussian observations[4] 0.8956919  0.7873540   1.032751
-Beta for beta.x                            1.9318527  1.6882794   2.206946</code></pre>
+Precision for the Gaussian observations    0.6573104  0.4748465  0.6681521
+Precision for the Gaussian observations[2] 1.4160039  1.1534509 11.2367339
+Precision for the Gaussian observations[3] 1.0216925  0.9021679  1.0810789
+Precision for the Gaussian observations[4] 1.0364528  0.9792048  1.9582454
+Beta for beta.x                            2.1149641  2.0095097  3.2729965</code></pre>
 </div>
 </div>
 <p>The fixed effects can then be accessed through <code>model$summary.fixed</code>, whereas the posterior mean and sd for the coefficient of <span class="math inline">\(\boldsymbol{x}\)</span> can be accessed through <code>model$summary.hyperpar</code>, since <span class="math inline">\(\beta_x\)</span> is actually a hyperparameter of the model. In <code>model$summary.hyperpar</code> we also get the precision terms for each of the sub-models in the order they have been defined, so the first precision is <span class="math inline">\(\tau_y\)</span>, the second one <span class="math inline">\(\tau_{u_b}\)</span>, the third one <span class="math inline">\(\tau_{u_c}\)</span> and the final one is <span class="math inline">\(\tau_r\)</span>.</p>

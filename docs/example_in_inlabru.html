@@ -310,101 +310,100 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 class="anchored" data-anchor-id="updated-version">Updated version</h2>
 <p>(the original code from Sara is for now unchanged in the next sections)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regression model of interest </span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>data_moi <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">y =</span> data<span class="sc">$</span>y, <span class="at">z =</span> data<span class="sc">$</span>z, <span class="at">weight.x =</span> <span class="dv">1</span>, <span class="at">weight.r =</span> <span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n) </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Berkson ME model</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>data_berkson <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">zero =</span> <span class="dv">0</span>, <span class="at">weight.x =</span> <span class="dv">1</span>, <span class="at">weight.r =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n) </span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Classical ME model</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>data_classical <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">w =</span> data<span class="sc">$</span>w, <span class="at">weight.x =</span> <span class="dv">1</span>, <span class="at">weight.r =</span> <span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Imputation model</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>data_imputation <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">zero =</span> <span class="dv">0</span>, <span class="at">z =</span> data<span class="sc">$</span>z, <span class="at">weight.x =</span> <span class="dv">1</span>, <span class="at">weight.r =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>cmp_new <span class="ot">=</span> <span class="er">~</span> <span class="fu">Intercept</span>(<span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">beta_z</span>(<span class="at">main =</span> z, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">x_eff</span>(r, weight.x, <span class="at">model =</span> <span class="st">"iid"</span>,  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">x_eff_copy</span>(r, <span class="at">copy=</span><span class="st">"r_eff"</span>, <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">beta =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.beta, <span class="at">fixed=</span><span class="cn">FALSE</span>))) <span class="sc">+</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">r_eff</span>(r, weight.r, <span class="at">model =</span> <span class="st">"iid"</span>,  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alpha_0</span>(<span class="at">main =</span> <span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.alpha[<span class="dv">2</span>]) <span class="sc">+</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alpha_z</span>(<span class="at">main =</span> z, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.alpha[<span class="dv">2</span>])</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>lik_moi <span class="ot">&lt;-</span> <span class="fu">like</span>(<span class="at">formula =</span> y <span class="sc">~</span> Intercept <span class="sc">+</span> beta_z <span class="sc">+</span> x_eff_copy,</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>                <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>                <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"Intercept"</span>, <span class="st">"beta_z"</span>, <span class="st">"x_eff_copy"</span>),</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>                <span class="at">control.family =</span> <span class="fu">list</span>(</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>                  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.y), </span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>                                           <span class="at">param =</span> prior.prec.y, </span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>                                           <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> data_moi)</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>lik_berkson <span class="ot">&lt;-</span> <span class="fu">like</span>(<span class="at">formula =</span> zero <span class="sc">~</span> x_eff <span class="sc">+</span> r_eff,</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>                    <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>                    <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"x_eff"</span>, <span class="st">"r_eff"</span>),</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>                    <span class="at">control.family =</span> <span class="fu">list</span>(</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>                      <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_b),</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">param =</span> prior.prec.u_b,</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> data_berkson)</span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>lik_classical <span class="ot">&lt;-</span> <span class="fu">like</span>(<span class="at">formula =</span> w <span class="sc">~</span> r_eff,</span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>                      <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>                      <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"r_eff"</span>),</span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>                      <span class="at">control.family =</span>  <span class="fu">list</span>(</span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>                        <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_c), </span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">param =</span> prior.prec.u_c, </span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>            <span class="at">data  =</span> data_classical)</span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>lik_imputation <span class="ot">&lt;-</span> <span class="fu">like</span>(<span class="at">formula =</span> zero <span class="sc">~</span> alpha_0 <span class="sc">+</span> alpha_z <span class="sc">+</span> r_eff,</span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>                       <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>                       <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"alpha_0"</span>, <span class="st">"alpha_z"</span>,<span class="st">"r_eff"</span>),</span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>                       <span class="at">control.family =</span>   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.r), </span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>                                                              <span class="at">param =</span> prior.prec.r, </span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>                                                              <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> data_imputation)</span>
-<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: </span></span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = y ~ .,</span></span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = w ~ .,</span></span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = zero ~ .,</span></span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a><span class="co"># does exactly the same in this case.</span></span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a><span class="fu">bru_options_set</span>(<span class="at">bru_verbose =</span> <span class="dv">1</span>)</span>
-<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">bru</span>(<span class="at">components =</span> cmp_new,</span>
-<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>           lik_moi,</span>
-<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>           lik_berkson,</span>
-<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a>           lik_classical,</span>
-<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>           lik_imputation,</span>
-<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>           <span class="at">options =</span> <span class="fu">list</span>(<span class="at">verbose =</span> F,</span>
-<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>                          <span class="at">bru_max_iter =</span> <span class="dv">20</span>,</span>
-<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>                          <span class="at">inla.mode  =</span> <span class="st">"experimental"</span>))</span>
-<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span>summary.fixed</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Updated model ----------------------------------------------------------------</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Regression model of interest </span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>data_moi <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">y =</span> data<span class="sc">$</span>y, <span class="at">z =</span> data<span class="sc">$</span>z, <span class="at">weight.x =</span> <span class="dv">1</span>, <span class="at">weight.r =</span> <span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n) </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Berkson ME model</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>data_berkson <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">zero =</span> <span class="dv">0</span>, <span class="at">weight.x =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">weight.r =</span> <span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n) </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Classical ME model</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>data_classical <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">w =</span> data<span class="sc">$</span>w, <span class="at">weight.x =</span> <span class="dv">1</span>, <span class="at">weight.r =</span> <span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Imputation model</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>data_imputation <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">zero =</span> <span class="dv">0</span>, <span class="at">z =</span> data<span class="sc">$</span>z, <span class="at">weight.x =</span> <span class="dv">1</span>, <span class="at">weight.r =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>cmp_new <span class="ot">=</span> <span class="er">~</span> <span class="fu">Intercept</span>(<span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">beta_z</span>(<span class="at">main =</span> z, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">x_eff</span>(r, weight.x, <span class="at">model =</span> <span class="st">"iid"</span>,  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">x_eff_copy</span>(r, <span class="at">copy=</span><span class="st">"x_eff"</span>, <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">beta =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.beta, <span class="at">fixed=</span><span class="cn">FALSE</span>))) <span class="sc">+</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">r_eff</span>(r, weight.r, <span class="at">model =</span> <span class="st">"iid"</span>,  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alpha_0</span>(<span class="at">main =</span> <span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.alpha[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alpha_z</span>(<span class="at">main =</span> z, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.alpha[<span class="dv">2</span>])</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>lik_moi <span class="ot">&lt;-</span> <span class="fu">like</span>(<span class="at">formula =</span> y <span class="sc">~</span> .,</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>                <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>                <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"Intercept"</span>, <span class="st">"beta_z"</span>, <span class="st">"x_eff_copy"</span>),</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>                <span class="at">control.family =</span> <span class="fu">list</span>(</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>                  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.y), </span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>                                           <span class="at">param =</span> prior.prec.y, </span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>                                           <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> data_moi)</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>lik_berkson <span class="ot">&lt;-</span> <span class="fu">like</span>(<span class="at">formula =</span> zero <span class="sc">~</span> .,</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>                    <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>                    <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"x_eff"</span>, <span class="st">"r_eff"</span>),</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>                    <span class="at">control.family =</span> <span class="fu">list</span>(</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>                      <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_b),</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">param =</span> prior.prec.u_b,</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> data_berkson)</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>lik_classical <span class="ot">&lt;-</span> <span class="fu">like</span>(<span class="at">formula =</span> w <span class="sc">~</span> .,</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>                      <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>                      <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"r_eff"</span>),</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>                      <span class="at">control.family =</span>  <span class="fu">list</span>(</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>                        <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_c), </span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">param =</span> prior.prec.u_c, </span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>            <span class="at">data  =</span> data_classical)</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>lik_imputation <span class="ot">&lt;-</span> <span class="fu">like</span>(<span class="at">formula =</span> zero <span class="sc">~</span> .,</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>                       <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>                       <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"alpha_0"</span>, <span class="st">"alpha_z"</span>,<span class="st">"r_eff"</span>),</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>                       <span class="at">control.family =</span>   <span class="fu">list</span>(</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>                         <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.r), </span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">param =</span> prior.prec.r, </span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> data_imputation)</span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: </span></span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = y ~ .,</span></span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = zero ~ .,</span></span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = w ~ .,</span></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = zero ~ .,</span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a><span class="co"># does exactly the same in this case.</span></span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a><span class="fu">bru_options_set</span>(<span class="at">bru_verbose =</span> <span class="dv">1</span>)</span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">bru</span>(<span class="at">components =</span> cmp_new,</span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>           lik_moi,</span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>           lik_berkson,</span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>           lik_classical,</span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>           lik_imputation,</span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>           <span class="at">options =</span> <span class="fu">list</span>(<span class="at">verbose =</span> F,</span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>                          <span class="at">bru_max_iter =</span> <span class="dv">20</span>,</span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>                          <span class="at">inla.mode  =</span> <span class="st">"experimental"</span>))</span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span>summary.fixed</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>               mean         sd 0.025quant  0.5quant 0.975quant mode
-Intercept 0.2407677 0.36072508 -0.4992460 0.2918836  0.7785278   NA
-beta_z    0.5759891 0.66992138 -0.7961703 0.6593687  1.5296412   NA
-alpha_0   1.0141067 0.04488190  0.9260721 1.0141071  1.1021395   NA
-alpha_z   2.0081183 0.04498038  1.9198906 2.0081186  2.0963444   NA
-                   kld
-Intercept 1.127826e-05
-beta_z    1.216473e-03
-alpha_0   7.991616e-12
-alpha_z   7.901787e-12</code></pre>
+<pre><code>              mean         sd 0.025quant 0.5quant 0.975quant mode          kld
+Intercept 1.000871 0.17477625  0.6171142 1.023330   1.291305   NA 1.219935e-06
+beta_z    2.070481 0.30233865  1.4000095 2.132443   2.520561   NA 8.593488e-06
+alpha_0   1.005297 0.04730354  0.9125180 1.005296   1.098081   NA 1.257765e-11
+alpha_z   1.987651 0.04889942  1.8917480 1.987648   2.083571   NA 1.323263e-11</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span>summary.hyperpar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                                                mean         sd 0.025quant
-Precision for the Gaussian observations    0.3285546 0.04577585 0.24543631
-Precision for the Gaussian observations[2] 0.8509024 0.93672433 0.03318495
-Precision for the Gaussian observations[3] 0.8214843 0.04444034 0.71424866
-Precision for the Gaussian observations[4] 1.2827418 0.10257386 1.08469922
-Beta for x_eff_copy                        2.7653830 0.20215751 2.33799484
-                                            0.5quant 0.975quant mode
-Precision for the Gaussian observations    0.3431020  0.4564513   NA
-Precision for the Gaussian observations[2] 0.5416939  3.3771067   NA
-Precision for the Gaussian observations[3] 0.8035361  0.9205185   NA
-Precision for the Gaussian observations[4] 1.3172667  1.5578332   NA
-Beta for x_eff_copy                        2.8463195  3.2758863   NA</code></pre>
+Precision for the Gaussian observations    1.3215370 0.12891126  1.1204920
+Precision for the Gaussian observations[2] 0.9835689 0.11150074  0.7666513
+Precision for the Gaussian observations[3] 1.1465015 0.07147174  0.9476022
+Precision for the Gaussian observations[4] 0.9761411 0.04944324  0.9398728
+Beta for x_eff_copy                        1.9862676 0.09205144  1.9235916
+                                           0.5quant 0.975quant mode
+Precision for the Gaussian observations    1.511967   1.896480   NA
+Precision for the Gaussian observations[2] 1.260254   1.480340   NA
+Precision for the Gaussian observations[3] 1.049763   1.197601   NA
+Precision for the Gaussian observations[4] 1.042509   1.129890   NA
+Beta for x_eff_copy                        2.113436   2.261097   NA</code></pre>
 </div>
 </div>
 </section>
@@ -412,77 +411,84 @@ Beta for x_eff_copy                        2.8463195  3.2758863   NA</code></pre
 <h2 class="anchored" data-anchor-id="first-version-using-the-copy-option">First version – using the <code>copy</code> option</h2>
 <p>This is a direct translation of the INLA code.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>data1 <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">y =</span> data<span class="sc">$</span>y, <span class="at">z =</span> data<span class="sc">$</span>z, <span class="at">weight =</span> <span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>data2 <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">w =</span> data<span class="sc">$</span>w, <span class="at">weight =</span> <span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>data3 <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">zero =</span> <span class="dv">0</span>, <span class="at">z =</span> data<span class="sc">$</span>z, <span class="at">weight =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>cmp <span class="ot">=</span> <span class="er">~</span> <span class="fu">Intercept</span>(<span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">beta_z</span>(<span class="at">main =</span> z, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">u_b</span>(<span class="at">main =</span> r, <span class="at">model =</span> <span class="st">"iid"</span>,  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(<span class="dv">1</span>), <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">r_eff</span>(r, weight, <span class="at">model =</span> <span class="st">"iid"</span>,  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">r_eff_copy</span>(r, <span class="at">copy=</span><span class="st">"r_eff"</span>, </span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">beta =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.beta, <span class="at">fixed=</span><span class="cn">FALSE</span>))) <span class="sc">+</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alpha_0</span>(<span class="at">main =</span> <span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.alpha[<span class="dv">2</span>]) <span class="sc">+</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alpha_z</span>(<span class="at">main =</span> z, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.alpha[<span class="dv">2</span>])</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>lik1 <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> y <span class="sc">~</span> Intercept <span class="sc">+</span> beta_z <span class="sc">+</span> u_b <span class="sc">+</span> r_eff_copy,</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>            <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"Intercept"</span>,<span class="st">"beta_z"</span>,<span class="st">"u_b"</span>,<span class="st">"r_eff_copy"</span>),</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>            <span class="at">control.family =</span> <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.y), </span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">param =</span> prior.prec.y, </span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> data1)</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>lik2 <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> w <span class="sc">~</span> r_eff,</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>            <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"r_eff"</span>),</span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>            <span class="at">control.family =</span>  <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_c), </span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">param =</span> prior.prec.u_c, </span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">fixed =</span> <span class="cn">TRUE</span>))),</span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>            <span class="at">data  =</span> data2)</span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>lik3  <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> zero <span class="sc">~</span> alpha_0 <span class="sc">+</span> alpha_z <span class="sc">+</span> r_eff,</span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>             <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"alpha_0"</span>, <span class="st">"alpha_z"</span>,<span class="st">"r_eff"</span>),</span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>             <span class="at">control.family =</span>   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x), </span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>                                                              <span class="at">param =</span> prior.prec.x, </span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>                                                              <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> data3)</span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: </span></span>
-<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = y ~ .,</span></span>
-<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = w ~ .,</span></span>
-<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = zero ~ .,</span></span>
-<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="co"># does exactly the same in this case.</span></span>
-<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a><span class="fu">bru_options_set</span>(<span class="at">bru_verbose =</span> <span class="dv">1</span>)</span>
-<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">bru</span>(<span class="at">components =</span> cmp,</span>
-<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>          lik1,</span>
-<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>          lik2,</span>
-<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>          lik3,</span>
-<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>          <span class="at">options =</span> <span class="fu">list</span>(<span class="at">verbose =</span> F,</span>
-<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>                         <span class="at">bru_max_iter =</span> <span class="dv">20</span>,</span>
-<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>                         <span class="at">inla.mode  =</span> <span class="st">"experimental"</span>))</span>
-<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span>summary.fixed</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First version -- using the `copy` option -------------------------------------</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>data1 <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">y =</span> data<span class="sc">$</span>y, <span class="at">z =</span> data<span class="sc">$</span>z, <span class="at">weight =</span> <span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>data2 <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">w =</span> data<span class="sc">$</span>w, <span class="at">weight =</span> <span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>data3 <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">zero =</span> <span class="dv">0</span>, <span class="at">z =</span> data<span class="sc">$</span>z, <span class="at">weight =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">r =</span> <span class="dv">1</span><span class="sc">:</span>n)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>cmp <span class="ot">=</span> <span class="er">~</span> <span class="fu">Intercept</span>(<span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">beta_z</span>(<span class="at">main =</span> z, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">u_b</span>(<span class="at">main =</span> r, <span class="at">model =</span> <span class="st">"iid"</span>,  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(<span class="dv">1</span>), <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">r_eff</span>(r, weight, <span class="at">model =</span> <span class="st">"iid"</span>,  <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">15</span>, <span class="at">fixed=</span><span class="cn">TRUE</span>))) <span class="sc">+</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">r_eff_copy</span>(r, <span class="at">copy=</span><span class="st">"r_eff"</span>, </span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>             <span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">beta =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.beta, <span class="at">fixed=</span><span class="cn">FALSE</span>))) <span class="sc">+</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alpha_0</span>(<span class="at">main =</span> <span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.alpha[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alpha_z</span>(<span class="at">main =</span> z, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.alpha[<span class="dv">2</span>])</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>lik1 <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> y <span class="sc">~</span> Intercept <span class="sc">+</span> beta_z <span class="sc">+</span> u_b <span class="sc">+</span> r_eff_copy,</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>            <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"Intercept"</span>,<span class="st">"beta_z"</span>,<span class="st">"u_b"</span>,<span class="st">"r_eff_copy"</span>),</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>            <span class="at">control.family =</span> <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.y), </span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">param =</span> prior.prec.y, </span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> data1)</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>lik2 <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> w <span class="sc">~</span> r_eff,</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>            <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"r_eff"</span>),</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>            <span class="at">control.family =</span>  <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u_c), </span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">param =</span> prior.prec.u_c, </span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">fixed =</span> <span class="cn">TRUE</span>))),</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>            <span class="at">data  =</span> data2)</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>lik3  <span class="ot">=</span> <span class="fu">like</span>(<span class="at">formula =</span> zero <span class="sc">~</span> alpha_0 <span class="sc">+</span> alpha_z <span class="sc">+</span> r_eff,</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>             <span class="at">include =</span> <span class="fu">c</span>(<span class="st">"alpha_0"</span>, <span class="st">"alpha_z"</span>,<span class="st">"r_eff"</span>),</span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>             <span class="at">control.family =</span>   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x), </span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>                                                              <span class="at">param =</span> prior.prec.x, </span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>                                                              <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> data3)</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: </span></span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = y ~ .,</span></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = w ~ .,</span></span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a><span class="co"># formula = zero ~ .,</span></span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a><span class="co"># does exactly the same in this case.</span></span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a><span class="fu">bru_options_set</span>(<span class="at">bru_verbose =</span> <span class="dv">1</span>)</span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">bru</span>(<span class="at">components =</span> cmp,</span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>          lik1,</span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>          lik2,</span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>          lik3,</span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>          <span class="at">options =</span> <span class="fu">list</span>(<span class="at">verbose =</span> F,</span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>                         <span class="at">bru_max_iter =</span> <span class="dv">20</span>,</span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>                         <span class="at">inla.mode  =</span> <span class="st">"experimental"</span>))</span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span>summary.fixed</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>              mean        sd 0.025quant  0.5quant 0.975quant mode          kld
-Intercept 0.757722 0.1820924  0.3976366 0.7642335   1.093272   NA 6.523434e-07
-beta_z    1.582514 0.3210952  0.9597011 1.6006610   2.155501   NA 5.690472e-06
-alpha_0   1.014106 0.0447009  0.9264207 1.0141062   1.101788   NA 1.111239e-12
-alpha_z   2.008119 0.0447990  1.9202417 2.0081194   2.095994   NA 1.106377e-12</code></pre>
+<pre><code>               mean         sd 0.025quant  0.5quant 0.975quant mode
+Intercept 0.6696357 0.21563533  0.2403365 0.6805497   1.060392   NA
+beta_z    1.4144575 0.38657278  0.6566837 1.4441089   2.094553   NA
+alpha_0   1.0053110 0.04726856  0.9125930 1.0053094   1.098038   NA
+alpha_z   1.9877064 0.04885742  1.8918847 1.9877004   2.083563   NA
+                   kld
+Intercept 8.458547e-07
+beta_z    5.347009e-06
+alpha_0   2.236032e-13
+alpha_z   1.627860e-12</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span>summary.hyperpar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                                                mean         sd 0.025quant
-Precision for the Gaussian observations    0.3034131 0.03711778  0.2385541
-Precision for the Gaussian observations[3] 1.0111750 0.09080516  0.8468101
-Beta for r_eff_copy                        2.1894841 0.15244351  1.8997118
+Precision for the Gaussian observations    0.3042106 0.04273041  0.2312752
+Precision for the Gaussian observations[3] 1.1152818 0.11463312  0.9113484
+Beta for r_eff_copy                        2.3012862 0.18578064  1.9522581
                                             0.5quant 0.975quant mode
-Precision for the Gaussian observations    0.3005239  0.3845363   NA
-Precision for the Gaussian observations[3] 1.0060682  1.2042685   NA
-Beta for r_eff_copy                        2.1854570  2.4999727   NA</code></pre>
+Precision for the Gaussian observations    0.3002929  0.3991976   NA
+Precision for the Gaussian observations[3] 1.1075781  1.3624424   NA
+Beta for r_eff_copy                        2.2949360  2.6832677   NA</code></pre>
 </div>
 </div>
 </section>
@@ -490,7 +496,7 @@ Beta for r_eff_copy                        2.1854570  2.4999727   NA</code></pre
 <h2 class="anchored" data-anchor-id="second-version-no-copy-option">Second version – no <code>copy</code> option</h2>
 <p>This takes advantage of special <code>inlabru</code> features.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># no copy -----------------------------------------------------------------</span></span>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Second version -- no `copy` option -------------------------------------------</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>cmp2 <span class="ot">=</span> <span class="er">~</span> <span class="fu">Intercept</span>(<span class="dv">1</span>, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">beta_z</span>(<span class="at">main =</span> z, <span class="at">model =</span> <span class="st">"linear"</span>, <span class="at">prec.linear =</span> prior.beta[<span class="dv">2</span>]) <span class="sc">+</span></span>
@@ -541,18 +547,18 @@ Beta for r_eff_copy                        2.1854570  2.4999727   NA</code></pre
 <span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>fit2<span class="sc">$</span>summary.fixed</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                  mean          sd   0.025quant     0.5quant  0.975quant mode
-Intercept -188.6646921 10.48502148 -209.1143432 -188.7077509 -167.967360   NA
-beta_z    -373.3217837 18.66387836 -409.6526295 -373.4263718 -336.384796   NA
-beta_u     194.9821527  9.44929796  176.2570056  195.0420815  213.358597   NA
-alpha_0      0.9826028  0.03124674    0.9213232    0.9826027    1.043883   NA
-alpha_z      1.9447761  0.03142417    1.8831491    1.9447759    2.006404   NA
+<pre><code>                  mean          sd  0.025quant     0.5quant  0.975quant mode
+Intercept -176.2037862 11.71709362 -199.028073 -176.2629644 -153.040164   NA
+beta_z    -344.0525267 20.15687208 -383.210603 -344.1965206 -304.063607   NA
+beta_u     184.3083226 10.44512495  163.539823  184.3965327  204.565785   NA
+alpha_0      0.9721403  0.03438865    0.904699    0.9721403    1.039582   NA
+alpha_z      1.8990816  0.03599182    1.828498    1.8990810    1.969669   NA
                    kld
-Intercept 1.698115e-09
-beta_z    3.230236e-09
-beta_u    4.182658e-09
-alpha_0   5.520606e-11
-alpha_z   5.520277e-11</code></pre>
+Intercept 2.557608e-09
+beta_z    5.214239e-09
+beta_u    7.354721e-09
+alpha_0   5.527232e-11
+alpha_z   5.519317e-11</code></pre>
 </div>
 </div>
 

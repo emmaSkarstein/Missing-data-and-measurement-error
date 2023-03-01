@@ -1,14 +1,14 @@
-## ---------------------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 library(INLA)
 library(inlabru)
 library(tidyverse)
 
 
-## ---------------------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 inla.setOption(num.threads = "1:1")
 
 
-## ---------------------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 simulate_data <- function(n){
   # Covariate without error:
   z <- rnorm(n, mean = 0, sd = 1)
@@ -28,7 +28,7 @@ simulate_data <- function(n){
   # Missingness:
   m_pred <- -1.5 - 0.5*z # This gives a mean probability of missing of ca 0.2.
   m_prob <- exp(m_pred)/(1 + exp(m_pred))
-  m_index <- rbinom(n, 1, prob = m_prob) # MAR
+  m_index <- as.logical(rbinom(n, 1, prob = m_prob)) # MAR
   # m_index <- sample(1:n, 0.2*n, replace = FALSE) # MCAR
   w[m_index] <- NA
 
@@ -37,7 +37,7 @@ simulate_data <- function(n){
 }
 
 
-## ---------------------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 # Make matrix for ME model
 make_matrix_ME <- function(data){
   n <- nrow(data)
@@ -107,7 +107,7 @@ make_matrix_true <- function(data){
 }
 
 
-## ---------------------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 # Fit ME model
 fit_model_ME <- function(data_matrix) {
   # Priors for model of interest coefficients
@@ -172,7 +172,7 @@ fit_model_ME <- function(data_matrix) {
 }
 
 
-## ---------------------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 fit_model_naive_true <- function(data_matrix){
   # Priors for model of interest coefficients
   prior.beta <- c(0, 1/1000) # N(0, 10^3)
@@ -208,7 +208,7 @@ fit_model_naive_true <- function(data_matrix){
 }
 
 
-## ---------------------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 set.seed(1)
 
 # Number of iterations
@@ -253,7 +253,7 @@ for(i in 1:niter){
 
 
 
-## ---------------------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 library(ggplot2)
 library(showtext)
 library(colorspace)
@@ -269,17 +269,16 @@ joint_results <- bind_rows(ME = results_ME,
   mutate(variable = tools::toTitleCase(gsub(pattern = ".*beta.", replacement = "", variable)))
 
 
-## ---------------------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 saveRDS(joint_results, file = "results/simulation_results.rds")
 
 
 
 
-
-
-## ---------------------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 library(colorspace)
 library(showtext)
+showtext_auto()
 
 # Colors
 col_bgr <- "white" #"#fbf9f4"
@@ -318,8 +317,10 @@ ggplot(simulation_results, aes(x = value, y = model, color = model)) +
   # Invisible points to set limits
   #geom_point(aes(x = upper), alpha = 0) +
   #geom_point(aes(x = lower), alpha = 0) +
-  # Correct value
-  geom_vline(aes(xintercept = true_value), color = "grey60") +
+  # Line going up from best case model
+  geom_segment(aes(x = true_value, xend = true_value), 
+               y = "Best case model", yend = Inf, 
+               color = "grey30", linetype = "dotted", size = 0.8) +
   # Points for each run
   geom_point(aes(fill = stage(model, after_scale = lighten(fill, 0.4))), 
              alpha = 0.7, size = 1.5, pch = 21, stroke = 0,
@@ -336,7 +337,7 @@ ggplot(simulation_results, aes(x = value, y = model, color = model)) +
   geom_text(aes(x = mean, 
                 y = model, 
                 label = format(round(mean, digits=2), nsmall = 2)), 
-            vjust = -1.5, family = f1, size = 5) +
+            vjust = -1.5, family = f1, size = 5, color = col_text) +
   # Color for point and line
   scale_color_manual(values = color_pal) +
   scale_fill_manual(values = color_pal) +
@@ -352,6 +353,6 @@ ggplot(simulation_results, aes(x = value, y = model, color = model)) +
   # Add theme
   theme_model_summary
 
-ggsave("figures/simulation_boxplot.png", 
-       width = 10, height = 4)
+ggsave("figures/simulation_boxplot.pdf", 
+       width = 10, height = 4, dpi = 600)
 

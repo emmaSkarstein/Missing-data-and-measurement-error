@@ -52,7 +52,7 @@ simulate_data <- function(n){
   # Missingness:
   m_pred <- -1.5 - 0.5*z # This gives a mean probability of missing of ca 0.2.
   m_prob <- exp(m_pred)/(1 + exp(m_pred))
-  m_index <- rbinom(n, 1, prob = m_prob) # MAR
+  m_index <- as.logical(rbinom(n, 1, prob = m_prob)) # MAR
   # m_index <- sample(1:n, 0.2*n, replace = FALSE) # MCAR
   w[m_index] <- NA
 
