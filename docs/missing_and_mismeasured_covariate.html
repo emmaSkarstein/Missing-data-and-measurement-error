@@ -246,7 +246,6 @@ gtag('config', 'G-HBKNWV9B6H', { 'anonymize_ip': true});
    
   <ul>
   <li><a href="#packages" id="toc-packages" class="nav-link active" data-scroll-target="#packages">Packages</a></li>
-  <li><a href="#function-for-looking-at-relevant-posterior-estimates" id="toc-function-for-looking-at-relevant-posterior-estimates" class="nav-link" data-scroll-target="#function-for-looking-at-relevant-posterior-estimates">Function for looking at relevant posterior estimates</a></li>
   <li><a href="#setting-up-the-data" id="toc-setting-up-the-data" class="nav-link" data-scroll-target="#setting-up-the-data">Setting up the data</a></li>
   <li><a href="#complete-case-bayesian-analysis-using-inla" id="toc-complete-case-bayesian-analysis-using-inla" class="nav-link" data-scroll-target="#complete-case-bayesian-analysis-using-inla">Complete case Bayesian analysis using INLA</a></li>
   <li><a href="#measurement-error-models-in-inla" id="toc-measurement-error-models-in-inla" class="nav-link" data-scroll-target="#measurement-error-models-in-inla">Measurement error models in INLA</a>
@@ -293,9 +292,7 @@ gtag('config', 'G-HBKNWV9B6H', { 'anonymize_ip': true});
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">inla.setOption</span>(<span class="at">num.threads =</span> <span class="st">"1:1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-<section id="function-for-looking-at-relevant-posterior-estimates" class="level2">
-<h2 class="anchored" data-anchor-id="function-for-looking-at-relevant-posterior-estimates">Function for looking at relevant posterior estimates</h2>
+<p>Function for looking at relevant posterior estimates:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>view_relevant <span class="ot">&lt;-</span> <span class="cf">function</span>(INLA_res, model_name){</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  fixed <span class="ot">&lt;-</span> INLA_res<span class="sc">$</span>summary.fixed[<span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"0.025quant"</span>, <span class="st">"0.975quant"</span>)]</span>

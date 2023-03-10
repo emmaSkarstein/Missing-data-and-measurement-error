@@ -352,7 +352,7 @@ Next comes the call of the `inla` function. We explain further some of the terms
 
   - `family`: Here we need to specify one likelihood function for each of the model levels corresponding to each column in the matrix `Y`. In this case, they are all Gaussian, but if we for instance had a logistic regression model as our model of interest, then the list would be `c("binomial", "gaussian", "gaussian", "gaussian")`.
   - `control.family`: Here we specify the hyperparameters for each of the three likelihoods. In this case, we specify the precision for each Gaussian likelihood, $\tau_y$, $\tau_{u_b}$, $\tau_{u_c}$ and $\tau_{r}$, respectively.
-  - `control.predictor`: Computes the predictive distribution of the missing observations in the response (TODO: does this mean w in this case? Since w is the response for one of the models?)
+  - `control.predictor`: Computes the predictive distribution of the missing observations in the response.
   - `control.fixed`: Prior specification for the fixed effects.
 
 
@@ -399,97 +399,6 @@ hyper[c("mean", "0.025quant", "0.975quant")]
 ```
 
 The fixed effects can then be accessed through `model$summary.fixed`, whereas the posterior mean and sd for the coefficient of $\boldsymbol{x}$ can be accessed through `model$summary.hyperpar`, since $\beta_x$ is actually a hyperparameter of the model. In `model$summary.hyperpar` we also get the precision terms for each of the sub-models in the order they have been defined, so the first precision is $\tau_y$, the second one $\tau_{u_b}$, the third one $\tau_{u_c}$ and the final one is $\tau_r$.
-
-```{r}
-#| echo: false
-#| warning: false
-#| fig.showtext: true
-#| purl: false
-
-library(tidyverse)
-library(showtext)
-
-true_values <- tibble::tribble(
-  ~coef_name, ~mean,
-  "Beta for beta.x", 2, 
-  "beta.z", 2, 
-  "beta.0", 1, 
-  "alpha.0", 1, 
-  "alpha.z", 2
-)
-
-# Prepare data for plotting
-post_estimates <- bind_rows(fixed, hyper) %>% 
-  janitor::clean_names() %>% 
-  mutate(coef_name = rownames(.)) %>% 
-  bind_rows(me_model = ., "truth" = true_values, .id = "model") %>% 
-  filter(coef_name %in% c("beta.0", "beta.z", "Beta for beta.x", "alpha.0", "alpha.z")) %>% 
-  mutate(coef_name = recode_factor(coef_name, "Beta for beta.x" = "beta.x")) %>%
-  separate(coef_name, c("sub_model", "coef_name")) %>% 
-  mutate(coef_pretty = paste0(sub_model, "[", coef_name, "]")) %>% 
-  mutate(model = recode(model, "me_model" = "ME model", "truth" = "True value")) %>% 
-  mutate(coef_pretty = fct_relevel(coef_pretty, levels = c("beta[0]", "beta[z]", "beta[x]", "alpha[0]", "alpha[z]"))) %>% 
-  mutate(limit_lower = ifelse(coef_name==0, 0.5, 1.5),
-         limit_upper = ifelse(coef_name==0, 1.2, 2.2))
-
-
-# Colors
-col_bgr <- "white" #"#fbf9f4"
-col_text <- "#191919"
-color_pal <- c("#BB5566", "#DDAA33", "#004488") # red, yellow, blue
-
-# Loading fonts
-f1 <- "Open Sans"
-f2 <- "Open Sans"
-font_add_google(name = f1, family = f1)
-font_add_google(name = f2, family = f2)
-
-# Plot theme
-theme_model_summary <- theme_minimal(base_size = 18, base_family = "Open Sans") + 
-  theme(
-  axis.title.y = element_blank(),
-  axis.text = element_text(size = 10, color = col_text),
-  #axis.text.x = element_blank(),
-  axis.ticks = element_blank(),
-  legend.title = element_blank(),
-  legend.text = element_text(size = 10),
-  panel.background = element_rect(fill = col_bgr, color = col_bgr),
-  #plot.background = element_rect(fill = col_bgr, color = "grey75", size = 1),
-  legend.position = "none",
-  strip.placement = "outside",
-  strip.text = element_text(color = col_text),
-  panel.grid.major.y = element_blank(),
-  panel.grid.minor = element_blank(),
-  plot.title.position = "plot",
-  axis.line.x = element_line(size = 1, color = "grey65"),
-  plot.margin = margin(rep(15, 4))
-)
-
-showtext.auto()
-
-ggplot(post_estimates, aes(y = model)) +
-  geom_linerange(aes(xmin = limit_lower, xmax = limit_upper), alpha = 0) +
-  geom_linerange(aes(xmin = x0_025quant, xmax = x0_975quant, color = model), size = 1) +
-  geom_point(aes(x = mean, color = model), size = 3) +
-  geom_text(aes(x = mean, y = model, label = round(mean, 2)), 
-            vjust = -1, family = "Open Sans") +
-  scale_color_manual(values = color_pal[2:3], 
-                     #labels = c("ME model", "True value"),
-    guide = guide_legend(override.aes = list(size = 2, alpha = 1))) +
-  facet_wrap(vars(coef_pretty), nrow = 2, #switch = "x",
-             labeller = label_parsed, scales = "free_x"
-             ) +
-  labs(x = "Posterior mean") +
-  coord_cartesian(clip = "off") +
-  theme_model_summary
-```
-
-```{r}
-#| echo: false
-#| warning: false
-#| purl: false
-ggsave("figures/simulation_ex_figure.png", width = 7, height = 5)
-```
 
 
 

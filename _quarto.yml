@@ -4,6 +4,7 @@ project:
   
 website:
   title: "Missing data and measurement error"
+  repo-url: https://github.com/emmaSkarstein/Missing-data-and-measurement-error
   navbar:
     left:
       - href: index.qmd
@@ -11,11 +12,6 @@ website:
   sidebar:
     style: "docked"
     contents:
-      - section: "Datasets"
-        contents:
-          - data_bloodpressure.qmd
-          - data_nhanes.qmd
-          - data_simulated.qmd
       - section: "Examples"
         contents:
           - missing_covariate_imputation.qmd
@@ -23,6 +19,11 @@ website:
           - simulation_example.qmd
           - simulation_study.qmd
           - example_in_inlabru.qmd
+      - section: "Datasets"
+        contents:
+          - data_bloodpressure.qmd
+          - data_nhanes.qmd
+          - data_simulated.qmd
   google-analytics: "G-HBKNWV9B6H"
 
 format:

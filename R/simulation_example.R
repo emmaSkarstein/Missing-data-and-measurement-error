@@ -35,8 +35,6 @@ w[m_index] <- NA
 
 simulated_data <- data.frame(y = y, w = w, z = z)
 
-## ----r------------------------------------------------------------------------
-write.csv(simulated_data, "data/simulated_data.csv")
 
 
 ## ----r------------------------------------------------------------------------
@@ -148,10 +146,6 @@ fixed[c("mean", "0.025quant", "0.975quant")]
 # Summary of random effects:
 hyper <- model_sim$summary.hyperpar[1:5]
 hyper[c("mean", "0.025quant", "0.975quant")]
-
-
-
-
 
 
 ## ----r------------------------------------------------------------------------

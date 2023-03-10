@@ -35,7 +35,7 @@ library(tidyverse)  # Data wrangling and visualisation
 inla.setOption(num.threads = "1:1")
 ```
 
-## Function for looking at relevant posterior estimates
+Function for looking at relevant posterior estimates:
 
 ```{r}
 view_relevant <- function(INLA_res, model_name){

@@ -572,7 +572,7 @@ z_n \\
 <ul>
 <li><code>family</code>: Here we need to specify one likelihood function for each of the model levels corresponding to each column in the matrix <code>Y</code>. In this case, they are all Gaussian, but if we for instance had a logistic regression model as our model of interest, then the list would be <code>c("binomial", "gaussian", "gaussian", "gaussian")</code>.</li>
 <li><code>control.family</code>: Here we specify the hyperparameters for each of the three likelihoods. In this case, we specify the precision for each Gaussian likelihood, <span class="math inline">\(\tau_y\)</span>, <span class="math inline">\(\tau_{u_b}\)</span>, <span class="math inline">\(\tau_{u_c}\)</span> and <span class="math inline">\(\tau_{r}\)</span>, respectively.</li>
-<li><code>control.predictor</code>: Computes the predictive distribution of the missing observations in the response (TODO: does this mean w in this case? Since w is the response for one of the models?)</li>
+<li><code>control.predictor</code>: Computes the predictive distribution of the missing observations in the response.</li>
 <li><code>control.fixed</code>: Prior specification for the fixed effects.</li>
 </ul>
 <div class="cell">
@@ -631,14 +631,6 @@ Beta for beta.x                            2.1149641  2.0095097  3.2729965</code
 </div>
 </div>
 <p>The fixed effects can then be accessed through <code>model$summary.fixed</code>, whereas the posterior mean and sd for the coefficient of <span class="math inline">\(\boldsymbol{x}\)</span> can be accessed through <code>model$summary.hyperpar</code>, since <span class="math inline">\(\beta_x\)</span> is actually a hyperparameter of the model. In <code>model$summary.hyperpar</code> we also get the precision terms for each of the sub-models in the order they have been defined, so the first precision is <span class="math inline">\(\tau_y\)</span>, the second one <span class="math inline">\(\tau_{u_b}\)</span>, the third one <span class="math inline">\(\tau_{u_c}\)</span> and the final one is <span class="math inline">\(\tau_r\)</span>.</p>
-<div class="cell" data-fig.showtext="true">
-<div class="cell-output-display">
-<p><img src="simulation_example_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<div class="cell">
-
-</div>
 <div class="cell">
 
 </div>
