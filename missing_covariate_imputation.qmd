@@ -28,7 +28,6 @@ library(gt)         # Tables
 library(tidyverse)  # Data wrangling and plotting
 library(showtext)   # Font
 library(colorspace) # Color adjustments
-library(MCMCpack)   # dinvgamma()
 ```
 
 ```{r}
@@ -38,10 +37,10 @@ inla.setOption(num.threads = "1:1")
 ## Loading and preparing the data
 
 ```{r}
-# Using the nhanes data set found in mice so we can compare to mice:
+# Using the nhanes data set found in mice:
 data(nhanes2)
 
-head(nhanes2)
+nhanes2
 
 n <- nrow(nhanes2)
 
@@ -98,7 +97,7 @@ Y <- matrix(NA, 3*n, 3)
 
 Y[1:n, 1] <- chl             # Regression model of interest response
 Y[n+(1:n), 2] <- bmi         # Error model response
-Y[2*n+(1:n), 3] <- rep(0, n) # Exposure model response
+Y[2*n+(1:n), 3] <- rep(0, n) # Imputation model response
 
 beta.0 <- c(rep(1, n), rep(NA, n), rep(NA, n))
 beta.bmi <- c(1:n, rep(NA, n), rep(NA, n))
@@ -109,7 +108,6 @@ id.x <- c(rep(NA, n), 1:n, 1:n)
 weight.x <- c(rep(1, n), rep(1, n), rep(-1, n))
 
 offset.imp <- c(rep(NA, n), rep(NA, n), rep(26.56, n))
-#alpha.0 <- c(rep(NA, n), rep(NA, n), rep(1, n))
 
 dd <- data.frame(Y = Y, 
                  beta.0 = beta.0,
@@ -170,38 +168,45 @@ This model includes age as a covariate in the imputation model.
 
 ### Specifying priors
 
+For the intercepts and slopes of the model of interest and imputation model we set very wide priors centered at zero. 
+
 ```{r}
 # Priors for model of interest coefficients
 prior.beta = c(0, 1e-6) # Gaussian, c(mean, precision)
 
 # Priors for exposure model coefficients
 prior.alpha <- c(0, 1e-6) # Gaussian, c(mean, precision)
+```
 
+For the precision of $y$ and $x$ we set more informative priors. The precisions are given gamma priors, and in INLA this is parameterized by the shape and rate parameters. Let's first look at the precision for $y$. 
+
+We base our priors for $x$ and $y$  around the values that we want as the modes of the distributions. For $y$, we look at the regression `chl~bmi+age2+age3`. The standard error is estimated to be $29.1$. We decide we want $1/29.1^2$ to be the mode of our prior. Since the gamma distribution with shape $\alpha$ and rate $\beta$ has mode $\frac{\alpha-1}{\beta}$, we can choose $\alpha = s+1$ and $\beta = s\cdot29.1^2$ in order to get a distribution with mode equal to $1/29.1^2$. Then we need to choose $s$ to decide the spread, the variance of the inverse gamma distribution will decrease as $s$ increases. For $x$ we similarly construct the prior to have its mode at $4.1$.
+
+An alternative approach could be to construct an upper limit for the variance by choosing that to be the variance of the covariate itself, as well as some lower limit, and then select the inverses of these limits to be the 2.7% and 97.5% quantiles in the gamma prior. in our case, the variance of `chl` is $2044$, so we would choose $1/2044$ to be the lower limit for $\tau_y$. For the upper limit, we decide on roughly a 10th of that variation, so the upper limit is $1/204.4$. By specifying these points as the 2.7% and 97.5% quantiles, respectively, we can achieve the parameters of a gamma distribution with these quantiles through numerical optimization. We get the distribution $\tau_y \sim G(3.4, 1588)$. Similarly, for $x$ (`bmi`), we find that the sample variance of `bmi` is $17.8$, and so we could set the lower limit of $\tau_x$ to $1/17.8$. Again, by choosing roughly a 10th of that variation we get a upper limit for the precision at $1/1.78$, giving the gamma distribution $\tau_x \sim G(3.4, 13.9)$.
+
+
+```{r}
 # Priors for y, measurement error and true x-value precision
 # Start by getting a reasonable prior guess for the standard error of the regression and exp. models
 summary(lm(chl~bmi+age2+age3))$sigma
 summary(lm(bmi~age2+age3))$sigma
 
 # Use those values to create reasonable priors:
-prior.prec.y <- c(2.5-1, (2.5)*29.1^2) # Gamma
-#prior.prec.u_c <- c(0.5, 0.5) # Gamma
-prior.prec.x <- c(2.5-1, (2.5)*4.2^2) # Gamma
-#prior.prec.x <- c(1, 20)
-#curve(dinvgamma(x,0.5, 0.5), 0, 5)
-
+s <- 0.5
+prior.prec.y <- c(s+1, s*29.1^2) # Gamma
+prior.prec.x <- c(s+1, s*4.1^2) # Gamma
 
 # We can visualize these priors:
-curve(dinvgamma(x, 2.5-1,(2.5)*29.1^2), 0, 2000) # Where does 2.5 come from?
-abline(v=29.1^2)
+curve(dgamma(x, s+1, s*29.1^2), 0, 0.02) 
+abline(v=1/(29.1^2))
 
-curve(dinvgamma(x,2.5-1,(2.5)*4.1^2), 0, 50)
-abline(v=4.2^2)
+curve(dgamma(x, s+1, s*4.1^2), 0, 1)
+abline(v=1/(4.2^2))
 
 # Initial values
 prec.y <- 1/29.1^2
 prec.u_c <- 1
 prec.x <- 1/4.2^2
-#prex.x <- 1/71
 ```
 
 ### Setting up the matrices for the joint model
@@ -212,7 +217,7 @@ Y <- matrix(NA, 3*n, 3)
 
 Y[1:n, 1] <- chl             # Regression model of interest response
 Y[n+(1:n), 2] <- bmi         # Error model response
-Y[2*n+(1:n), 3] <- rep(0, n) # Exposure model response
+Y[2*n+(1:n), 3] <- rep(0, n) # Imputation model response
 
 beta.0 <- c(rep(1, n), rep(NA, n), rep(NA, n))
 beta.bmi <- c(1:n, rep(NA, n), rep(NA, n))
@@ -250,7 +255,7 @@ formula = Y ~ - 1 + beta.0 + beta.age2 + beta.age3 +
 
 ### Scaling of ME precision
 
-Since we are not assuming any measurement error here, we need to "turn off" the error model by scaling the error precision to be very large (it makes no difference if we scale the precision only for the observed values or for the observed and missing values).
+Since we are (again) not assuming any measurement error here, we need to "turn off" the error model by scaling the error precision to be very large (it makes no difference if we scale the precision only for the observed values or for the observed and missing values).
 ```{r}
 Scale <- c(rep(1, n), rep(10^12, n), rep(1, n))
 ```
@@ -435,7 +440,7 @@ showtext_auto()
 # Colors
 col_bgr <- "white" #"#fbf9f4"
 col_text <- "#191919"
-color_pal <- c("#004488", "#DDAA33", "#DDAA33", "#BB5566")
+color_pal <- c("#004488", "#d6834a", "#DDAA33", "#BB5566")
 
 # Loading fonts
 f1 <- "Open Sans"

@@ -303,8 +303,7 @@ gtag('config', 'G-HBKNWV9B6H', { 'anonymize_ip': true});
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)         <span class="co"># Tables</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)  <span class="co"># Data wrangling and plotting</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(showtext)   <span class="co"># Font</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(colorspace) <span class="co"># Color adjustments</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MCMCpack)   <span class="co"># dinvgamma()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(colorspace) <span class="co"># Color adjustments</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">inla.setOption</span>(<span class="at">num.threads =</span> <span class="st">"1:1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -313,18 +312,37 @@ gtag('config', 'G-HBKNWV9B6H', { 'anonymize_ip': true});
 <section id="loading-and-preparing-the-data" class="level2">
 <h2 class="anchored" data-anchor-id="loading-and-preparing-the-data">Loading and preparing the data</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the nhanes data set found in mice so we can compare to mice:</span></span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the nhanes data set found in mice:</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(nhanes2)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(nhanes2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>nhanes2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>    age  bmi  hyp chl
-1 20-39   NA &lt;NA&gt;  NA
-2 40-59 22.7   no 187
-3 20-39   NA   no 187
-4 60-99   NA &lt;NA&gt;  NA
-5 20-39 20.4   no 113
-6 60-99   NA &lt;NA&gt; 184</code></pre>
+<pre><code>     age  bmi  hyp chl
+1  20-39   NA &lt;NA&gt;  NA
+2  40-59 22.7   no 187
+3  20-39   NA   no 187
+4  60-99   NA &lt;NA&gt;  NA
+5  20-39 20.4   no 113
+6  60-99   NA &lt;NA&gt; 184
+7  20-39 22.5   no 118
+8  20-39 30.1   no 187
+9  40-59 22.0   no 238
+10 40-59   NA &lt;NA&gt;  NA
+11 20-39   NA &lt;NA&gt;  NA
+12 40-59   NA &lt;NA&gt;  NA
+13 60-99 21.7   no 206
+14 40-59 28.7  yes 204
+15 20-39 29.6   no  NA
+16 20-39   NA &lt;NA&gt;  NA
+17 60-99 27.2  yes 284
+18 40-59 26.3  yes 199
+19 20-39 35.3   no 218
+20 60-99 25.5  yes  NA
+21 20-39   NA &lt;NA&gt;  NA
+22 20-39 33.2   no 229
+23 20-39 27.5   no 131
+24 60-99 24.9   no  NA
+25 40-59 27.4   no 186</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(nhanes2)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -375,7 +393,7 @@ chl \sim \beta_0 + \beta_{age2} age_2 + \beta_{age3} age_3 + \beta_{bmi} bmi + \
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span>] <span class="ot">&lt;-</span> chl             <span class="co"># Regression model of interest response</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>Y[n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">2</span>] <span class="ot">&lt;-</span> bmi         <span class="co"># Error model response</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">2</span><span class="sc">*</span>n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n) <span class="co"># Exposure model response</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">2</span><span class="sc">*</span>n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n) <span class="co"># Imputation model response</span></span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>beta<span class="fl">.0</span> <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>beta.bmi <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
@@ -386,16 +404,15 @@ chl \sim \beta_0 + \beta_{age2} age_2 + \beta_{age3} age_3 + \beta_{bmi} bmi + \
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>weight.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span>, n))</span>
 <span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>offset.imp <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="fl">26.56</span>, n))</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">#alpha.0 &lt;- c(rep(NA, n), rep(NA, n), rep(1, n))</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>dd <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Y =</span> Y, </span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.0 =</span> beta<span class="fl">.0</span>,</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.bmi =</span> beta.bmi,</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.age2 =</span> beta.age2,</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.age3 =</span> beta.age3,</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>                 <span class="at">id.x =</span> id.x,</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>                 <span class="at">weight.x =</span> weight.x,</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>                 <span class="at">offset.imp =</span> offset.imp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>dd <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Y =</span> Y, </span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.0 =</span> beta<span class="fl">.0</span>,</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.bmi =</span> beta.bmi,</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.age2 =</span> beta.age2,</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>                 <span class="at">beta.age3 =</span> beta.age3,</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>                 <span class="at">id.x =</span> id.x,</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>                 <span class="at">weight.x =</span> weight.x,</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>                 <span class="at">offset.imp =</span> offset.imp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="inla-formula" class="level3">
@@ -468,48 +485,48 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
 <p>This model includes age as a covariate in the imputation model.</p>
 <section id="specifying-priors-1" class="level3">
 <h3 class="anchored" data-anchor-id="specifying-priors-1">Specifying priors</h3>
+<p>For the intercepts and slopes of the model of interest and imputation model we set very wide priors centered at zero.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for model of interest coefficients</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>prior.beta <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">1e-6</span>) <span class="co"># Gaussian, c(mean, precision)</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for exposure model coefficients</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>prior.alpha <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">1e-6</span>) <span class="co"># Gaussian, c(mean, precision)</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for y, measurement error and true x-value precision</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Start by getting a reasonable prior guess for the standard error of the regression and exp. models</span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(chl<span class="sc">~</span>bmi<span class="sc">+</span>age2<span class="sc">+</span>age3))<span class="sc">$</span>sigma</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>prior.alpha <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">1e-6</span>) <span class="co"># Gaussian, c(mean, precision)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For the precision of <span class="math inline">\(y\)</span> and <span class="math inline">\(x\)</span> we set more informative priors. The precisions are given gamma priors, and in INLA this is parameterized by the shape and rate parameters. Let’s first look at the precision for <span class="math inline">\(y\)</span>.</p>
+<p>We base our priors for <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> around the values that we want as the modes of the distributions. For <span class="math inline">\(y\)</span>, we look at the regression <code>chl~bmi+age2+age3</code>. The standard error is estimated to be <span class="math inline">\(29.1\)</span>. We decide we want <span class="math inline">\(1/29.1^2\)</span> to be the mode of our prior. Since the gamma distribution with shape <span class="math inline">\(\alpha\)</span> and rate <span class="math inline">\(\beta\)</span> has mode <span class="math inline">\(\frac{\alpha-1}{\beta}\)</span>, we can choose <span class="math inline">\(\alpha = s+1\)</span> and <span class="math inline">\(\beta = s\cdot29.1^2\)</span> in order to get a distribution with mode equal to <span class="math inline">\(1/29.1^2\)</span>. Then we need to choose <span class="math inline">\(s\)</span> to decide the spread, the variance of the inverse gamma distribution will decrease as <span class="math inline">\(s\)</span> increases. For <span class="math inline">\(x\)</span> we similarly construct the prior to have its mode at <span class="math inline">\(4.1\)</span>.</p>
+<p>An alternative approach could be to construct an upper limit for the variance by choosing that to be the variance of the covariate itself, as well as some lower limit, and then select the inverses of these limits to be the 2.7% and 97.5% quantiles in the gamma prior. in our case, the variance of <code>chl</code> is <span class="math inline">\(2044\)</span>, so we would choose <span class="math inline">\(1/2044\)</span> to be the lower limit for <span class="math inline">\(\tau_y\)</span>. For the upper limit, we decide on roughly a 10th of that variation, so the upper limit is <span class="math inline">\(1/204.4\)</span>. By specifying these points as the 2.7% and 97.5% quantiles, respectively, we can achieve the parameters of a gamma distribution with these quantiles through numerical optimization. We get the distribution <span class="math inline">\(\tau_y \sim G(3.4, 1588)\)</span>. Similarly, for <span class="math inline">\(x\)</span> (<code>bmi</code>), we find that the sample variance of <code>bmi</code> is <span class="math inline">\(17.8\)</span>, and so we could set the lower limit of <span class="math inline">\(\tau_x\)</span> to <span class="math inline">\(1/17.8\)</span>. Again, by choosing roughly a 10th of that variation we get a upper limit for the precision at <span class="math inline">\(1/1.78\)</span>, giving the gamma distribution <span class="math inline">\(\tau_x \sim G(3.4, 13.9)\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for y, measurement error and true x-value precision</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Start by getting a reasonable prior guess for the standard error of the regression and exp. models</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(chl<span class="sc">~</span>bmi<span class="sc">+</span>age2<span class="sc">+</span>age3))<span class="sc">$</span>sigma</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 29.10126</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(bmi<span class="sc">~</span>age2<span class="sc">+</span>age3))<span class="sc">$</span>sigma</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(bmi<span class="sc">~</span>age2<span class="sc">+</span>age3))<span class="sc">$</span>sigma</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 4.160342</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use those values to create reasonable priors:</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>prior.prec.y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">2.5</span><span class="dv">-1</span>,(<span class="fl">2.5</span>)<span class="sc">*</span><span class="fl">29.1</span><span class="sc">^</span><span class="dv">2</span>) <span class="co"># Gamma</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co">#prior.prec.u_c &lt;- c(0.5, 0.5) # Gamma</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>prior.prec.x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">2.5</span><span class="dv">-1</span>,(<span class="fl">2.5</span>)<span class="sc">*</span><span class="fl">4.2</span><span class="sc">^</span><span class="dv">2</span>) <span class="co"># Gamma</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co">#prior.prec.x &lt;- c(1, 20)</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dinvgamma</span>(x,<span class="fl">0.5</span>,<span class="fl">0.5</span>), <span class="dv">0</span>, <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use those values to create reasonable priors:</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>prior.prec.y <span class="ot">&lt;-</span> <span class="fu">c</span>(s<span class="sc">+</span><span class="dv">1</span>, s<span class="sc">*</span><span class="fl">29.1</span><span class="sc">^</span><span class="dv">2</span>) <span class="co"># Gamma</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>prior.prec.x <span class="ot">&lt;-</span> <span class="fu">c</span>(s<span class="sc">+</span><span class="dv">1</span>, s<span class="sc">*</span><span class="fl">4.1</span><span class="sc">^</span><span class="dv">2</span>) <span class="co"># Gamma</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co"># We can visualize these priors:</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dgamma</span>(x, s<span class="sc">+</span><span class="dv">1</span>, s<span class="sc">*</span><span class="fl">29.1</span><span class="sc">^</span><span class="dv">2</span>), <span class="dv">0</span>, <span class="fl">0.02</span>) </span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="dv">1</span><span class="sc">/</span>(<span class="fl">29.1</span><span class="sc">^</span><span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="missing_covariate_imputation_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+<p><img src="missing_covariate_imputation_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We can visualize these priors:</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dinvgamma</span>(x, <span class="fl">2.5</span><span class="dv">-1</span>,(<span class="fl">2.5</span>)<span class="sc">*</span><span class="fl">29.1</span><span class="sc">^</span><span class="dv">2</span>), <span class="dv">0</span>, <span class="dv">2000</span>)</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fl">29.1</span><span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dgamma</span>(x, s<span class="sc">+</span><span class="dv">1</span>, s<span class="sc">*</span><span class="fl">4.1</span><span class="sc">^</span><span class="dv">2</span>), <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="dv">1</span><span class="sc">/</span>(<span class="fl">4.2</span><span class="sc">^</span><span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="missing_covariate_imputation_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid" width="672"></p>
-</div>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dinvgamma</span>(x,<span class="fl">2.5</span><span class="dv">-1</span>,(<span class="fl">2.5</span>)<span class="sc">*</span><span class="fl">4.1</span><span class="sc">^</span><span class="dv">2</span>), <span class="dv">0</span>, <span class="dv">50</span>)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fl">4.2</span><span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="missing_covariate_imputation_files/figure-html/unnamed-chunk-10-3.png" class="img-fluid" width="672"></p>
+<p><img src="missing_covariate_imputation_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid" width="672"></p>
 </div>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial values</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>prec.y <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span><span class="fl">29.1</span><span class="sc">^</span><span class="dv">2</span></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>prec.u_c <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>prec.x <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span><span class="fl">4.2</span><span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co">#prex.x &lt;- 1/71</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>prec.x <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span><span class="fl">4.2</span><span class="sc">^</span><span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="setting-up-the-matrices-for-the-joint-model-1" class="level3">
@@ -520,7 +537,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span>] <span class="ot">&lt;-</span> chl             <span class="co"># Regression model of interest response</span></span>
 <span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>Y[n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">2</span>] <span class="ot">&lt;-</span> bmi         <span class="co"># Error model response</span></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">2</span><span class="sc">*</span>n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n) <span class="co"># Exposure model response</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>Y[<span class="dv">2</span><span class="sc">*</span>n<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n) <span class="co"># Imputation model response</span></span>
 <span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>beta<span class="fl">.0</span> <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
 <span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>beta.bmi <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="fu">rep</span>(<span class="cn">NA</span>, n), <span class="fu">rep</span>(<span class="cn">NA</span>, n))</span>
@@ -559,7 +576,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
 </section>
 <section id="scaling-of-me-precision-1" class="level3">
 <h3 class="anchored" data-anchor-id="scaling-of-me-precision-1">Scaling of ME precision</h3>
-<p>Since we are not assuming any measurement error here, we need to “turn off” the error model by scaling the error precision to be very large (it makes no difference if we scale the precision only for the observed values or for the observed and missing values).</p>
+<p>Since we are (again) not assuming any measurement error here, we need to “turn off” the error model by scaling the error precision to be very large (it makes no difference if we scale the precision only for the observed values or for the observed and missing values).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>Scale <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="dv">10</span><span class="sc">^</span><span class="dv">12</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -645,12 +662,12 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="uqnnzwtlro" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="pqklhdbyuu" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-:where(#uqnnzwtlro) .gt_table {
+:where(#pqklhdbyuu) .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -675,7 +692,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-left-color: #D3D3D3;
 }
 
-:where(#uqnnzwtlro) .gt_heading {
+:where(#pqklhdbyuu) .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -687,7 +704,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-right-color: #D3D3D3;
 }
 
-:where(#uqnnzwtlro) .gt_title {
+:where(#pqklhdbyuu) .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -699,7 +716,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-bottom-width: 0;
 }
 
-:where(#uqnnzwtlro) .gt_subtitle {
+:where(#pqklhdbyuu) .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -711,13 +728,13 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-top-width: 0;
 }
 
-:where(#uqnnzwtlro) .gt_bottom_border {
+:where(#pqklhdbyuu) .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-:where(#uqnnzwtlro) .gt_col_headings {
+:where(#pqklhdbyuu) .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -732,7 +749,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-right-color: #D3D3D3;
 }
 
-:where(#uqnnzwtlro) .gt_col_heading {
+:where(#pqklhdbyuu) .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -752,7 +769,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   overflow-x: hidden;
 }
 
-:where(#uqnnzwtlro) .gt_column_spanner_outer {
+:where(#pqklhdbyuu) .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -764,15 +781,15 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   padding-right: 4px;
 }
 
-:where(#uqnnzwtlro) .gt_column_spanner_outer:first-child {
+:where(#pqklhdbyuu) .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-:where(#uqnnzwtlro) .gt_column_spanner_outer:last-child {
+:where(#pqklhdbyuu) .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-:where(#uqnnzwtlro) .gt_column_spanner {
+:where(#pqklhdbyuu) .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -784,7 +801,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   width: 100%;
 }
 
-:where(#uqnnzwtlro) .gt_group_heading {
+:where(#pqklhdbyuu) .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -809,7 +826,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   vertical-align: middle;
 }
 
-:where(#uqnnzwtlro) .gt_empty_group_heading {
+:where(#pqklhdbyuu) .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -824,15 +841,15 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   vertical-align: middle;
 }
 
-:where(#uqnnzwtlro) .gt_from_md > :first-child {
+:where(#pqklhdbyuu) .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-:where(#uqnnzwtlro) .gt_from_md > :last-child {
+:where(#pqklhdbyuu) .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-:where(#uqnnzwtlro) .gt_row {
+:where(#pqklhdbyuu) .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -851,7 +868,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   overflow-x: hidden;
 }
 
-:where(#uqnnzwtlro) .gt_stub {
+:where(#pqklhdbyuu) .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -864,7 +881,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   padding-right: 5px;
 }
 
-:where(#uqnnzwtlro) .gt_stub_row_group {
+:where(#pqklhdbyuu) .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -878,11 +895,11 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   vertical-align: top;
 }
 
-:where(#uqnnzwtlro) .gt_row_group_first td {
+:where(#pqklhdbyuu) .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-:where(#uqnnzwtlro) .gt_summary_row {
+:where(#pqklhdbyuu) .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -892,16 +909,16 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   padding-right: 5px;
 }
 
-:where(#uqnnzwtlro) .gt_first_summary_row {
+:where(#pqklhdbyuu) .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-:where(#uqnnzwtlro) .gt_first_summary_row.thick {
+:where(#pqklhdbyuu) .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-:where(#uqnnzwtlro) .gt_last_summary_row {
+:where(#pqklhdbyuu) .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -911,7 +928,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-:where(#uqnnzwtlro) .gt_grand_summary_row {
+:where(#pqklhdbyuu) .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -921,7 +938,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   padding-right: 5px;
 }
 
-:where(#uqnnzwtlro) .gt_first_grand_summary_row {
+:where(#pqklhdbyuu) .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -931,11 +948,11 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-top-color: #D3D3D3;
 }
 
-:where(#uqnnzwtlro) .gt_striped {
+:where(#pqklhdbyuu) .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-:where(#uqnnzwtlro) .gt_table_body {
+:where(#pqklhdbyuu) .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -944,7 +961,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-:where(#uqnnzwtlro) .gt_footnotes {
+:where(#pqklhdbyuu) .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -958,7 +975,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-right-color: #D3D3D3;
 }
 
-:where(#uqnnzwtlro) .gt_footnote {
+:where(#pqklhdbyuu) .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-left: 4px;
@@ -967,7 +984,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   padding-right: 5px;
 }
 
-:where(#uqnnzwtlro) .gt_sourcenotes {
+:where(#pqklhdbyuu) .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -981,7 +998,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   border-right-color: #D3D3D3;
 }
 
-:where(#uqnnzwtlro) .gt_sourcenote {
+:where(#pqklhdbyuu) .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -989,64 +1006,64 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
   padding-right: 5px;
 }
 
-:where(#uqnnzwtlro) .gt_left {
+:where(#pqklhdbyuu) .gt_left {
   text-align: left;
 }
 
-:where(#uqnnzwtlro) .gt_center {
+:where(#pqklhdbyuu) .gt_center {
   text-align: center;
 }
 
-:where(#uqnnzwtlro) .gt_right {
+:where(#pqklhdbyuu) .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-:where(#uqnnzwtlro) .gt_font_normal {
+:where(#pqklhdbyuu) .gt_font_normal {
   font-weight: normal;
 }
 
-:where(#uqnnzwtlro) .gt_font_bold {
+:where(#pqklhdbyuu) .gt_font_bold {
   font-weight: bold;
 }
 
-:where(#uqnnzwtlro) .gt_font_italic {
+:where(#pqklhdbyuu) .gt_font_italic {
   font-style: italic;
 }
 
-:where(#uqnnzwtlro) .gt_super {
+:where(#pqklhdbyuu) .gt_super {
   font-size: 65%;
 }
 
-:where(#uqnnzwtlro) .gt_footnote_marks {
+:where(#pqklhdbyuu) .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 75%;
   vertical-align: 0.4em;
 }
 
-:where(#uqnnzwtlro) .gt_asterisk {
+:where(#pqklhdbyuu) .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-:where(#uqnnzwtlro) .gt_indent_1 {
+:where(#pqklhdbyuu) .gt_indent_1 {
   text-indent: 5px;
 }
 
-:where(#uqnnzwtlro) .gt_indent_2 {
+:where(#pqklhdbyuu) .gt_indent_2 {
   text-indent: 10px;
 }
 
-:where(#uqnnzwtlro) .gt_indent_3 {
+:where(#pqklhdbyuu) .gt_indent_3 {
   text-indent: 15px;
 }
 
-:where(#uqnnzwtlro) .gt_indent_4 {
+:where(#pqklhdbyuu) .gt_indent_4 {
   text-indent: 20px;
 }
 
-:where(#uqnnzwtlro) .gt_indent_5 {
+:where(#pqklhdbyuu) .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -1082,42 +1099,42 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
       <td colspan="10" class="gt_group_heading">Model of interest</td>
     </tr>
     <tr class="gt_row_group_first"><th scope="row" class="gt_row gt_left gt_stub">beta.0</th>
-<td class="gt_row gt_right">-31.114</td>
-<td class="gt_row gt_right">-56.265</td>
-<td class="gt_row gt_right">-5.851</td>
-<td class="gt_row gt_right">-36.459</td>
-<td class="gt_row gt_right">-65.404</td>
-<td class="gt_row gt_right">-7.491</td>
+<td class="gt_row gt_right">-32.246</td>
+<td class="gt_row gt_right">-53.825</td>
+<td class="gt_row gt_right">-10.209</td>
+<td class="gt_row gt_right">-36.471</td>
+<td class="gt_row gt_right">-60.971</td>
+<td class="gt_row gt_right">-11.955</td>
 <td class="gt_row gt_right">43.469</td>
 <td class="gt_row gt_right">-79.233</td>
 <td class="gt_row gt_right">166.171</td></tr>
     <tr><th scope="row" class="gt_row gt_left gt_stub">beta.age2</th>
-<td class="gt_row gt_right">47.983</td>
-<td class="gt_row gt_right">9.395</td>
-<td class="gt_row gt_right">86.493</td>
-<td class="gt_row gt_right">55.749</td>
-<td class="gt_row gt_right">12.324</td>
-<td class="gt_row gt_right">99.144</td>
+<td class="gt_row gt_right">49.780</td>
+<td class="gt_row gt_right">16.172</td>
+<td class="gt_row gt_right">82.716</td>
+<td class="gt_row gt_right">55.767</td>
+<td class="gt_row gt_right">19.014</td>
+<td class="gt_row gt_right">92.496</td>
 <td class="gt_row gt_right">29.501</td>
 <td class="gt_row gt_right">-5.526</td>
 <td class="gt_row gt_right">64.528</td></tr>
     <tr><th scope="row" class="gt_row gt_left gt_stub">beta.age3</th>
-<td class="gt_row gt_right">79.842</td>
-<td class="gt_row gt_right">31.700</td>
-<td class="gt_row gt_right">126.835</td>
-<td class="gt_row gt_right">104.611</td>
-<td class="gt_row gt_right">46.041</td>
-<td class="gt_row gt_right">163.124</td>
+<td class="gt_row gt_right">83.479</td>
+<td class="gt_row gt_right">40.509</td>
+<td class="gt_row gt_right">124.367</td>
+<td class="gt_row gt_right">104.643</td>
+<td class="gt_row gt_right">55.072</td>
+<td class="gt_row gt_right">154.173</td>
 <td class="gt_row gt_right">49.449</td>
 <td class="gt_row gt_right">3.963</td>
 <td class="gt_row gt_right">94.935</td></tr>
     <tr><th scope="row" class="gt_row gt_left gt_stub">Beta for beta.bmi</th>
-<td class="gt_row gt_right">4.559</td>
-<td class="gt_row gt_right">3.748</td>
-<td class="gt_row gt_right">5.240</td>
-<td class="gt_row gt_right">6.918</td>
-<td class="gt_row gt_right">2.317</td>
-<td class="gt_row gt_right">11.517</td>
+<td class="gt_row gt_right">4.935</td>
+<td class="gt_row gt_right">3.541</td>
+<td class="gt_row gt_right">6.181</td>
+<td class="gt_row gt_right">6.919</td>
+<td class="gt_row gt_right">3.026</td>
+<td class="gt_row gt_right">10.811</td>
 <td class="gt_row gt_right">4.864</td>
 <td class="gt_row gt_right">0.540</td>
 <td class="gt_row gt_right">9.188</td></tr>
@@ -1125,9 +1142,9 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
       <td colspan="10" class="gt_group_heading">Imputation model</td>
     </tr>
     <tr class="gt_row_group_first"><th scope="row" class="gt_row gt_left gt_stub">alpha.0</th>
-<td class="gt_row gt_right">1.974</td>
-<td class="gt_row gt_right">-1.376</td>
-<td class="gt_row gt_right">5.352</td>
+<td class="gt_row gt_right">1.983</td>
+<td class="gt_row gt_right">-0.979</td>
+<td class="gt_row gt_right">4.978</td>
 <td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td>
@@ -1135,9 +1152,9 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
 <td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td></tr>
     <tr><th scope="row" class="gt_row gt_left gt_stub">alpha.age2</th>
-<td class="gt_row gt_right">-3.117</td>
-<td class="gt_row gt_right">-8.408</td>
-<td class="gt_row gt_right">2.146</td>
+<td class="gt_row gt_right">-3.126</td>
+<td class="gt_row gt_right">-7.829</td>
+<td class="gt_row gt_right">1.544</td>
 <td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td>
@@ -1145,9 +1162,9 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
 <td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td></tr>
     <tr><th scope="row" class="gt_row gt_left gt_stub">alpha.age3</th>
-<td class="gt_row gt_right">-4.457</td>
-<td class="gt_row gt_right">-10.103</td>
-<td class="gt_row gt_right">1.037</td>
+<td class="gt_row gt_right">-4.525</td>
+<td class="gt_row gt_right">-9.547</td>
+<td class="gt_row gt_right">0.320</td>
 <td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td>
 <td class="gt_row gt_right">NA</td>
@@ -1166,7 +1183,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
 </div>
 <div class="cell" data-fig.showtext="true">
 <div class="cell-output-display">
-<p><img src="missing_covariate_imputation_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+<p><img src="missing_covariate_imputation_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
@@ -1182,7 +1199,7 @@ Beta for beta.bmi                          6.082937710   NA</code></pre>
 <span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> .id, <span class="at">ncol =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
 <span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="missing_covariate_imputation_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+<p><img src="missing_covariate_imputation_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <section id="model-summary" class="level3">
@@ -1210,15 +1227,15 @@ Call:
    = inla.mode, safe = FALSE, debug = debug, ", " .parent.frame = 
    .parent.frame)") 
 Time used:
-    Pre = 3.14, Running = 0.296, Post = 0.0259, Total = 3.46 
+    Pre = 2.94, Running = 0.309, Post = 0.0258, Total = 3.27 
 Fixed effects:
               mean     sd 0.025quant 0.5quant 0.975quant mode kld
-beta.0     -31.114 12.721    -56.265  -31.140     -5.851   NA   0
-beta.age2   47.983 19.445      9.395   48.007     86.493   NA   0
-beta.age3   79.842 24.034     31.700   80.057    126.835   NA   0
-alpha.0      1.974  1.700     -1.376    1.969      5.352   NA   0
-alpha.age2  -3.117  2.666     -8.408   -3.112      2.146   NA   0
-alpha.age3  -4.457  2.816    -10.103   -4.430      1.037   NA   0
+beta.0     -32.246 10.999    -53.825  -32.333    -10.209   NA   0
+beta.age2   49.780 16.772     16.172   49.906     82.716   NA   0
+beta.age3   83.479 21.180     40.509   83.873    124.367   NA   0
+alpha.0      1.983  1.501     -0.979    1.978      4.978   NA   0
+alpha.age2  -3.126  2.361     -7.829   -3.120      1.544   NA   0
+alpha.age3  -4.525  2.487     -9.547   -4.494      0.320   NA   0
 
 Random effects:
   Name    Model
@@ -1227,15 +1244,15 @@ Random effects:
 
 Model hyperparameters:
                                             mean    sd 0.025quant 0.5quant
-Precision for the Gaussian observations    0.001 0.000      0.001    0.001
-Precision for the Gaussian observations[3] 0.052 0.016      0.025    0.050
-Beta for beta.bmi                          4.559 0.373      3.748    4.573
+Precision for the Gaussian observations    0.001 0.001      0.001    0.001
+Precision for the Gaussian observations[3] 0.063 0.016      0.036    0.062
+Beta for beta.bmi                          4.935 0.657      3.541    4.953
                                            0.975quant mode
-Precision for the Gaussian observations         0.002   NA
-Precision for the Gaussian observations[3]      0.088   NA
-Beta for beta.bmi                               5.240   NA
+Precision for the Gaussian observations         0.003   NA
+Precision for the Gaussian observations[3]      0.098   NA
+Beta for beta.bmi                               6.181   NA
 
-Marginal log-Likelihood:  -367.34 
+Marginal log-Likelihood:  -366.84 
  is computed 
 Posterior summaries for the linear predictor and the fitted values are computed
 (Posterior marginals needs also 'control.compute=list(return.marginals.predictor=TRUE)')</code></pre>

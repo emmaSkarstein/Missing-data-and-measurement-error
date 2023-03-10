@@ -6,7 +6,6 @@ library(gt)         # Tables
 library(tidyverse)  # Data wrangling and plotting
 library(showtext)   # Font
 library(colorspace) # Color adjustments
-library(MCMCpack)   # dinvgamma()
 
 
 ## ------------------------------------------------------------------------------------------
@@ -14,10 +13,10 @@ inla.setOption(num.threads = "1:1")
 
 
 ## ------------------------------------------------------------------------------------------
-# Using the nhanes data set found in mice so we can compare to mice:
+# Using the nhanes data set found in mice:
 data(nhanes2)
 
-head(nhanes2)
+nhanes2
 
 n <- nrow(nhanes2)
 
@@ -54,7 +53,7 @@ Y <- matrix(NA, 3*n, 3)
 
 Y[1:n, 1] <- chl             # Regression model of interest response
 Y[n+(1:n), 2] <- bmi         # Error model response
-Y[2*n+(1:n), 3] <- rep(0, n) # Exposure model response
+Y[2*n+(1:n), 3] <- rep(0, n) # Imputation model response
 
 beta.0 <- c(rep(1, n), rep(NA, n), rep(NA, n))
 beta.bmi <- c(1:n, rep(NA, n), rep(NA, n))
@@ -65,7 +64,6 @@ id.x <- c(rep(NA, n), 1:n, 1:n)
 weight.x <- c(rep(1, n), rep(1, n), rep(-1, n))
 
 offset.imp <- c(rep(NA, n), rep(NA, n), rep(26.56, n))
-#alpha.0 <- c(rep(NA, n), rep(NA, n), rep(1, n))
 
 dd <- data.frame(Y = Y, 
                  beta.0 = beta.0,
@@ -121,31 +119,29 @@ prior.beta = c(0, 1e-6) # Gaussian, c(mean, precision)
 # Priors for exposure model coefficients
 prior.alpha <- c(0, 1e-6) # Gaussian, c(mean, precision)
 
+
+## ------------------------------------------------------------------------------------------
 # Priors for y, measurement error and true x-value precision
 # Start by getting a reasonable prior guess for the standard error of the regression and exp. models
 summary(lm(chl~bmi+age2+age3))$sigma
 summary(lm(bmi~age2+age3))$sigma
 
 # Use those values to create reasonable priors:
-prior.prec.y <- c(2.5-1, (2.5)*29.1^2) # Gamma
-#prior.prec.u_c <- c(0.5, 0.5) # Gamma
-prior.prec.x <- c(2.5-1, (2.5)*4.2^2) # Gamma
-#prior.prec.x <- c(1, 20)
-#curve(dinvgamma(x,0.5, 0.5), 0, 5)
-
+s <- 0.5
+prior.prec.y <- c(s+1, s*29.1^2) # Gamma
+prior.prec.x <- c(s+1, s*4.1^2) # Gamma
 
 # We can visualize these priors:
-curve(dinvgamma(x, 2.5-1,(2.5)*29.1^2), 0, 2000) # Where does 2.5 come from?
-abline(v=29.1^2)
+curve(dgamma(x, s+1, s*29.1^2), 0, 0.02) 
+abline(v=1/(29.1^2))
 
-curve(dinvgamma(x,2.5-1,(2.5)*4.1^2), 0, 50)
-abline(v=4.2^2)
+curve(dgamma(x, s+1, s*4.1^2), 0, 1)
+abline(v=1/(4.2^2))
 
 # Initial values
 prec.y <- 1/29.1^2
 prec.u_c <- 1
 prec.x <- 1/4.2^2
-#prex.x <- 1/71
 
 
 ## ------------------------------------------------------------------------------------------
@@ -154,7 +150,7 @@ Y <- matrix(NA, 3*n, 3)
 
 Y[1:n, 1] <- chl             # Regression model of interest response
 Y[n+(1:n), 2] <- bmi         # Error model response
-Y[2*n+(1:n), 3] <- rep(0, n) # Exposure model response
+Y[2*n+(1:n), 3] <- rep(0, n) # Imputation model response
 
 beta.0 <- c(rep(1, n), rep(NA, n), rep(NA, n))
 beta.bmi <- c(1:n, rep(NA, n), rep(NA, n))
