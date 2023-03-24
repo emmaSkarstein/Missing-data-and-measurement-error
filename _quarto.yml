@@ -24,7 +24,6 @@ website:
           - data_bloodpressure.qmd
           - data_nhanes.qmd
           - data_simulated.qmd
-  google-analytics: "G-HBKNWV9B6H"
 
 format:
   html:
