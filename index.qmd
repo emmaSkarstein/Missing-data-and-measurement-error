@@ -2,7 +2,7 @@
 title: 'Supplementary material and reproducible research files for article "*A joint Bayesian framework for missing data and measurement error using integrated nested Laplace approximations*"'
 ---
 
-(Note: The article is not yet published.)
+Preprint: [arxiv.org/abs/2303.15240](https://arxiv.org/abs/2303.15240)
 
 Authors: Skarstein, E., Martino, S., Muff, S.
 
