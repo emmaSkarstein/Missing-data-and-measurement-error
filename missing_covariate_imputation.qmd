@@ -506,6 +506,12 @@ ggplot(bmi_imp_df, aes(x = x, y = y)) +
   facet_wrap(~ .id, ncol = 3) +
   theme_minimal()
 ```
+A summary can also be seen from `summary.random$id.x`:
+
+```{r}
+model_missing2$summary.random$id.x[,1:6]
+```
+
 
 
 ### Model summary

@@ -23,12 +23,13 @@ simulate_data <- function(n){
   
   # Classical error:
   u_c <- rnorm(n)
-  w <- r + u_c # Use r here.
+  w <- r + u_c 
   
   # Missingness:
-  m_pred <- -1.5 - 0.5*z # This gives a mean probability of missing of ca 0.2.
+  m_pred <- -1.5 - 0.5*z # MAR. This gives a mean probability of missing of ca 0.2.
+  # m_pred <- -1.5 - 0.5*x # MNAR
   m_prob <- exp(m_pred)/(1 + exp(m_pred))
-  m_index <- as.logical(rbinom(n, 1, prob = m_prob)) # MAR
+  m_index <- as.logical(rbinom(n, 1, prob = m_prob)) # MAR/MNAR
   # m_index <- sample(1:n, 0.2*n, replace = FALSE) # MCAR
   w[m_index] <- NA
 
@@ -245,9 +246,9 @@ for(i in 1:niter){
                   "alpha.0", "alpha.z")] <- t(model_ME$summary.fixed["mean"])
   results_ME[i, "beta.x"] <- model_ME$summary.hyperpar["Beta for beta.x", "mean"]
   
-  results_naive[i, c("beta.0", "beta.z", "beta.x")] <- t(model_naive$summary.fixed["mean"])
+  results_naive[i, c("beta.0", "beta.x", "beta.z")] <- t(model_naive$summary.fixed["mean"])
   
-  results_true[i, c("beta.0", "beta.z", "beta.x")] <- t(model_true$summary.fixed["mean"])
+  results_true[i, c("beta.0", "beta.x", "beta.z")] <- t(model_true$summary.fixed["mean"])
 
 }
 
@@ -307,9 +308,9 @@ theme_model_summary <- theme_minimal(base_size = font_size, base_family = f1) +
   strip.text = element_text(color = col_text),
   panel.grid.major.y = element_blank(),
   panel.grid.minor.y = element_blank(),
-  panel.border = element_rect(color = "grey65", fill = NA, size = 1), 
+  panel.border = element_rect(color = "grey65", fill = NA, linewidth = 1), #
   plot.title.position = "plot",
-  axis.line.x = element_line(size = 1, color = "grey65"),
+  axis.line.x = element_line(linewidth = 1, color = "grey65"),#
   plot.margin = margin(rep(15, 4))
 )
 

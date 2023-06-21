@@ -109,7 +109,7 @@ formula = Y ~ - 1 + beta.0 + beta.z +
 
 
 ## ----r------------------------------------------------------------------------
-model_sim <- inla(formula, data = dd, scale = scale.vec,
+model_sim <- inla(formula, data = dd,
                   family = c("gaussian", "gaussian", "gaussian", "gaussian"),
                   control.family = list(
                     list(hyper = list(prec = list(initial = log(prec.y),

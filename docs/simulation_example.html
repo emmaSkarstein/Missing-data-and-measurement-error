@@ -567,7 +567,7 @@ z_n \\
 <li><code>control.fixed</code>: Prior specification for the fixed effects.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>model_sim <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula, <span class="at">data =</span> dd, <span class="at">scale =</span> scale.vec,</span>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>model_sim <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula, <span class="at">data =</span> dd,</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">family =</span> <span class="fu">c</span>(<span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>),</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">control.family =</span> <span class="fu">list</span>(</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.y),</span>

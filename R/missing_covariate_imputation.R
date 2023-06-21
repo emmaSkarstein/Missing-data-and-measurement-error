@@ -1,4 +1,4 @@
-## ------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 library(mice)       # Just used for the nhanes2 data set
 library(INLA)       # INLA modelling
 library(dplyr)      # Data wrangling of the results
@@ -8,11 +8,11 @@ library(showtext)   # Font
 library(colorspace) # Color adjustments
 
 
-## ------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 inla.setOption(num.threads = "1:1")
 
 
-## ------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 # Using the nhanes data set found in mice:
 data(nhanes2)
 
@@ -29,7 +29,7 @@ chl <- scale(nhanes2$chl, scale = FALSE)[,1]
 bmi <- scale(nhanes2$bmi, scale = FALSE)[,1]
 
 
-## ------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 # Priors for model of interest coefficients
 prior.beta = c(0, 0.001) # Gaussian, c(mean, precision)
 
@@ -48,7 +48,7 @@ prec.u_c <- 1
 prec.x <- 1/71.07
 
 
-## ------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 Y <- matrix(NA, 3*n, 3)
 
 Y[1:n, 1] <- chl             # Regression model of interest response
@@ -75,7 +75,7 @@ dd <- data.frame(Y = Y,
                  offset.imp = offset.imp)
 
 
-## ------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 formula = Y ~ - 1 + beta.0 + beta.age2 + beta.age3 + 
   f(beta.bmi, copy="id.x", 
     hyper = list(beta = list(param = prior.beta, fixed=FALSE))) +
@@ -83,11 +83,11 @@ formula = Y ~ - 1 + beta.0 + beta.age2 + beta.age3 +
     hyper = list(prec = list(initial = -15, fixed=TRUE)))
 
 
-## ------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 Scale <- c(rep(1, n), rep(10^12, n), rep(1, n))
 
 
-## ------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 model_missing1 <- inla(formula, data = dd, scale = Scale, offset = log(dat$pop),
                      family = c("gaussian", "gaussian", "gaussian"),
                      control.family = list(
@@ -112,7 +112,7 @@ model_missing1$summary.fixed
 model_missing1$summary.hyperpar
 
 
-## ------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 # Priors for model of interest coefficients
 prior.beta = c(0, 1e-6) # Gaussian, c(mean, precision)
 
@@ -120,7 +120,7 @@ prior.beta = c(0, 1e-6) # Gaussian, c(mean, precision)
 prior.alpha <- c(0, 1e-6) # Gaussian, c(mean, precision)
 
 
-## ------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 # Priors for y, measurement error and true x-value precision
 # Start by getting a reasonable prior guess for the standard error of the regression and exp. models
 summary(lm(chl~bmi+age2+age3))$sigma
@@ -144,7 +144,7 @@ prec.u_c <- 1
 prec.x <- 1/4.2^2
 
 
-## ------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 Y <- matrix(NA, 3*n, 3)
 
 
@@ -176,7 +176,7 @@ dd <- data.frame(Y = Y,
                  alpha.age3 = alpha.age3)
 
 
-## ------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 formula = Y ~ - 1 + beta.0 + beta.age2 + beta.age3 + 
   f(beta.bmi, copy="id.x", 
     hyper = list(beta = list(param = prior.beta, fixed=FALSE))) +
@@ -185,11 +185,11 @@ formula = Y ~ - 1 + beta.0 + beta.age2 + beta.age3 +
   alpha.0 + alpha.age2 + alpha.age3
 
 
-## ------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 Scale <- c(rep(1, n), rep(10^12, n), rep(1, n))
 
 
-## ------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 model_missing2 <- inla(formula, data = dd, scale = Scale,
                      family = c("gaussian", "gaussian", "gaussian"),
                      control.family = list(
@@ -226,7 +226,7 @@ model_missing2 <- inla(formula, data = dd, scale = Scale,
 
 
 
-## ------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 # https://stefvanbuuren.name/RECAPworkshop/Practicals/RECAP_Practical_II.html 
 
 
@@ -234,7 +234,7 @@ model_missing2 <- inla(formula, data = dd, scale = Scale,
 
 
 
-## ------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
 bmi_imputed <- model_missing2$marginals.random$id.x[missing_bmi]
 bmi_imp_df <- data.table::rbindlist(lapply(bmi_imputed, as.data.frame), idcol = TRUE)
 
@@ -244,6 +244,10 @@ ggplot(bmi_imp_df, aes(x = x, y = y)) +
   theme_minimal()
 
 
-## ------------------------------------------------------------------------------------------
+## ----r------------------------------------------------------------------------
+model_missing2$summary.random$id.x[,1:6]
+
+
+## ----r------------------------------------------------------------------------
 summary(model_missing2)
 
