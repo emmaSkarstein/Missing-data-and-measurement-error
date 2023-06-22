@@ -356,4 +356,6 @@ ggplot(simulation_results, aes(x = value, y = model, color = model)) +
 
 ggsave("figures/simulation_boxplot.pdf", 
        width = 10, height = 4, dpi = 600)
+ggsave("figures/simulation_boxplot.eps", width = 10, height = 4, dpi = 600, 
+       device = cairo_ps)
 

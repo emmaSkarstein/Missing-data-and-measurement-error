@@ -44,7 +44,7 @@ n <- nrow(simulated_data)
 
 ## ----r------------------------------------------------------------------------
 # Priors for model of interest coefficients
-prior.beta = c(0, 1/1000) # N(0, 10^3)
+prior.beta <- c(0, 1/1000) # N(0, 10^3)
 
 # Priors for exposure model coefficients
 prior.alpha <- c(0, 1/10000) # N(0, 10^4)
@@ -80,8 +80,8 @@ weight.x <- c(rep(NA, n), rep(-1, n), rep(NA, n), rep(NA, n))
 id.r <- c(rep(NA, n), 1:n, 1:n, 1:n)
 weight.r <- c(rep(NA, n), rep(1, n), rep(1, n), rep(-1, n))
 
-alpha.0 = c(rep(NA, 3*n), rep(1, n))
-alpha.z = c(rep(NA, 3*n), z)
+alpha.0 <- c(rep(NA, 3*n), rep(1, n))
+alpha.z <- c(rep(NA, 3*n), z)
 
 
 ## ----r------------------------------------------------------------------------
@@ -98,7 +98,7 @@ dd <- list(Y = Y,
 
 
 ## ----r------------------------------------------------------------------------
-formula = Y ~ - 1 + beta.0 + beta.z +
+formula <- Y ~ - 1 + beta.0 + beta.z +
   f(beta.x, copy = "id.x",  
     hyper = list(beta = list(param = prior.beta, fixed = FALSE))) +
   f(id.x, weight.x, model = "iid", values = 1:n, 

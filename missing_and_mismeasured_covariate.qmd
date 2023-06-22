@@ -487,6 +487,8 @@ ggplot(all_models, aes(y = model)) +
 #| echo: false
 #| warning: false
 ggsave("figures/bloodpressure_figure.pdf", height = 4, width = 10, dpi = 600)
+ggsave("figures/bloodpressure_figure.eps", height = 4, width = 10, dpi = 600, 
+       device = cairo_ps)
 ```
 
 If we compare this to the results from Keogh and Bartlett (2021) (see Figure 2 in their paper), our "Complete case naive" corresponds to their "Naive", and our "ME adjusted complete case" corresponds to their "Bayes^c". Our "ME adjusted and imputation does not quite correspond to their "Bayes^d", since they also include an imputation model for smoking in their final model, which we do not. 

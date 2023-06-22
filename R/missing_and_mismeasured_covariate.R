@@ -338,4 +338,6 @@ all_models <- bind_rows("Complete case,\nnaive" = naive,
 
 ## ----r------------------------------------------------------------------------
 ggsave("figures/bloodpressure_figure.pdf", height = 4, width = 10, dpi = 600)
+ggsave("figures/bloodpressure_figure.eps", height = 4, width = 10, dpi = 600, 
+       device = cairo_ps)
 

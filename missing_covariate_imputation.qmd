@@ -493,6 +493,8 @@ ggplot(all_models_for_plot, aes(y = model)) +
 #| warning: false
 #| purl: false
 ggsave("figures/missing_figure.pdf", height = 4, width = 10, dpi = 600)
+ggsave("figures/missing_figure.eps", height = 4, width = 10, dpi = 600, 
+       device = cairo_ps)
 ```
 
 We can also look at the imputed values themselves, they can be found in `marginals.random$id.x` inside the model object.
