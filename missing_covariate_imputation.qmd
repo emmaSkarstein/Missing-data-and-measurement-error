@@ -431,9 +431,9 @@ all_models_for_plot <- bind_rows("me1" = me_plot1,
   filter(coef_name %in% c("beta.age2", "beta.age3", "beta.bmi")) %>% 
   tidyr::separate(coef_name, c("sub_model", "coef_name")) %>% 
   mutate(coef_pretty = paste0(sub_model, "[", coef_name, "]")) %>% 
-  mutate(model = fct_relevel(model, levels = c("me2", "inla_mcmc", "me1", "naive"))) %>% 
+  mutate(model = fct_relevel(model, "me2", "inla_mcmc", "me1", "naive")) %>% 
   mutate(model = recode(model, "me1" = "Simple imputation model", "me2" = "Full imputation model", "naive" = "Complete case analysis", "inla_mcmc" = "Goméz-Rubio & Rue (2018)")) %>% 
-  mutate(coef_pretty = fct_relevel(coef_pretty, levels = c("beta[0]", "beta[age2]", "beta[age3]", "beta[bmi]", "alpha[0]", "alpha[age2]", "alpha[age3]")))
+  mutate(coef_pretty = fct_relevel(coef_pretty, "beta[0]", "beta[age2]", "beta[age3]", "beta[bmi]", "alpha[0]", "alpha[age2]", "alpha[age3]"))
 
 showtext_auto()
 

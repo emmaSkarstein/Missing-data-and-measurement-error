@@ -337,7 +337,7 @@ true_values <- data.frame(variable = c("beta[0]", "beta[x]", "beta[z]"),
 
 simulation_results <- readRDS("results/simulation_results.rds") %>% 
   mutate(variable = paste0("beta[", variable, "]")) %>% 
-  mutate(model = fct_relevel(model, levels = c("true", "ME", "naive"))) %>% 
+  mutate(model = fct_relevel(model, "true", "ME", "naive")) %>% 
   mutate(model = recode(model, "ME" = "Imputation, ME adjusted",
                         "true" = "Best case model",
                         "naive" = "Complete case model")) %>%

@@ -329,9 +329,9 @@ all_models <- bind_rows("Complete case,\nnaive" = naive,
   tidyr::separate(coef_name, c("sub_model", "coef_name")) %>% 
   mutate(coef_pretty = paste0("beta[", coef_name, "]")) %>% 
   rename(quant_0.025 = "0.025quant", quant_0.975 = "0.975quant") %>% 
-  mutate(model = fct_relevel(model, levels = c("Imputation,\nME adjusted",
-                                               "Complete case,\nME adjusted",
-                                               "Complete case,\nnaive")))
+  mutate(model = fct_relevel(model, "Imputation,\nME adjusted",
+                                    "Complete case,\nME adjusted",
+                                    "Complete case,\nnaive"))
 
 
 

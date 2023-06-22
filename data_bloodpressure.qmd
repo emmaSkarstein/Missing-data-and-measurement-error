@@ -28,7 +28,7 @@ A data frame with 6519 rows and 8 variables:
 
 - `sbp1`: systolic blood pressure (standardized), first measurement
 - `sbp2`: systolic blood pressure (standardized), second measurement
-- `sex`: Sex (0 = ?, 1 = ?)
+- `sex`: Sex (0 = female, 1 = male)
 - `age`: Age (standardized)
 - `smoke`: Smoking status (0 = no, 1 = yes)
 - `diabetes`: diabetes status (0 = no, 1 = yes)
