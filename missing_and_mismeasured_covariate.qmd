@@ -104,7 +104,6 @@ The priors are set up the same way as in Keogh and Bartlett (2018).
 # Priors for measurement error variance and true x-value
 prior.prec.u <- c(0.5, 0.5) # Gamma(0.5, 0.5) (same as Keogh&Bartlett)
 prior.prec.x <- c(0.5, 0.5) # Gamma(0.5, 0.5) (same as K&B)
-#prec.u = 1/sigma_uu
 prec.u <- 2.8
 prec.x = 1
 

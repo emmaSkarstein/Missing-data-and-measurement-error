@@ -394,7 +394,7 @@ ggplot(simulation_results, aes(x = value, y = model, color = model)) +
   # Line going up from best case model
   geom_segment(aes(x = true_value, xend = true_value), 
                y = "Best case model", yend = Inf, 
-               color = "grey30", linetype = "dotted", size = 0.8) +
+               color = "grey30", linetype = "dotted", linewidth = 0.8) +
   # Points for each run
   geom_point(aes(fill = stage(model, after_scale = lighten(fill, 0.4))), 
              alpha = 0.7, size = 1.5, pch = 21, stroke = 0,
@@ -404,7 +404,7 @@ ggplot(simulation_results, aes(x = value, y = model, color = model)) +
                fun.min = function(z) {quantile(z, 0.025)},
                fun.max = function(z) {quantile(z, 0.975)},
                position = position_dodge(width = 0.75),
-               size = 1.3) +
+               linewidth = 1.3) +
   # Point for mean
   geom_point(aes(x = mean), size = 3) +
   # Numeric text at mean

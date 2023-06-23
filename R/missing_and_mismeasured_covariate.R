@@ -56,7 +56,6 @@ model_naive$summary.fixed[c("mean", "0.025quant", "0.975quant")]
 # Priors for measurement error variance and true x-value
 prior.prec.u <- c(0.5, 0.5) # Gamma(0.5, 0.5) (same as Keogh&Bartlett)
 prior.prec.x <- c(0.5, 0.5) # Gamma(0.5, 0.5) (same as K&B)
-#prec.u = 1/sigma_uu
 prec.u <- 2.8
 prec.x = 1
 

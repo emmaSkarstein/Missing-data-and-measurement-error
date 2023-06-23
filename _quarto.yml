@@ -28,7 +28,6 @@ website:
 format:
   html:
     theme: journal
-    css: styles.css
     toc: true
 
 
