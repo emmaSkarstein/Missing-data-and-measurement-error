@@ -265,7 +265,6 @@ names(results_naive) <- c("beta.0", "beta.x", "beta.z")
 results_true <- data.frame(matrix(NA, nrow=niter, ncol=3))
 names(results_true) <- c("beta.0", "beta.x", "beta.z")
 
-
 for(i in 1:niter){
   n <- 1000
   data <- simulate_data(n)

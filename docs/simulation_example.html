@@ -327,7 +327,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><span class="math inline">\(\boldsymbol{r} \sim N(\alpha_0 + \alpha_z \boldsymbol{z}, \tau_r \boldsymbol{I})\)</span>,</li>
 <li><span class="math inline">\(\beta_0, \beta_x, \beta_z \sim N(0, \tau_{\beta})\)</span>, with <span class="math inline">\(\tau_{\beta} = 0.001\)</span>,</li>
 <li><span class="math inline">\(\alpha_0, \alpha_z \sim N(0, \tau_{\alpha})\)</span>, with <span class="math inline">\(\tau_{\alpha} = 0.0001\)</span></li>
-<li><span class="math inline">\(\tau_{y}, \tau_{u_b}, \tau_{u_c}, \tau_{r} \sim \text{Gamma}(0.5, 0.5)\)</span>,</li>
+<li><span class="math inline">\(\tau_{y}, \tau_{u_b}, \tau_{u_c}, \tau_{r} \sim \text{Gamma}(10, 9)\)</span>,</li>
 </ul>
 <p>We specify the priors in the code:</p>
 <div class="cell">
@@ -338,10 +338,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>prior.alpha <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">10000</span>) <span class="co"># N(0, 10^4)</span></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Priors for y, measurement error and true x-value precision</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>prior.prec.y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">9</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>prior.prec.u_b <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">9</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>prior.prec.u_c <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">9</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>prior.prec.r <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="co"># Gamma(0.5, 0.5)</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>prior.prec.y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">9</span>) <span class="co"># Gamma(10, 9)</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>prior.prec.u_b <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">9</span>) <span class="co"># Gamma(10, 9)</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>prior.prec.u_c <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">9</span>) <span class="co"># Gamma(10, 9)</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>prior.prec.r <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">9</span>) <span class="co"># Gamma(10, 9)</span></span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial values</span></span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>prec.y <span class="ot">&lt;-</span> <span class="dv">1</span></span>
@@ -585,21 +585,21 @@ z_n \\
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>fixed[<span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"0.025quant"</span>, <span class="st">"0.975quant"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>             mean 0.025quant 0.975quant
-beta.0  0.8898437  0.4685879   1.308287
-beta.z  1.8470322  1.1129882   2.552218
-alpha.0 1.0053107  0.9123763   1.098255
-alpha.z 1.9877052  1.8916567   2.083789</code></pre>
+beta.0  0.8756918  0.4616193   1.289751
+beta.z  1.8198743  1.1043619   2.532432
+alpha.0 1.0053009  0.9124957   1.098115
+alpha.z 1.9876663  1.8917445   2.083621</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of random effects:</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>hyper <span class="ot">&lt;-</span> model_sim<span class="sc">$</span>summary.hyperpar[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>hyper[<span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"0.025quant"</span>, <span class="st">"0.975quant"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                                               mean 0.025quant 0.975quant
-Precision for the Gaussian observations    1.124858  0.5850520   1.894618
-Precision for the Gaussian observations[2] 1.124856  0.6300563   1.847473
-Precision for the Gaussian observations[3] 1.108296  0.8691138   1.397281
-Precision for the Gaussian observations[4] 1.007254  0.7881092   1.266117
-Beta for beta.x                            2.059575  1.6762611   2.434780</code></pre>
+Precision for the Gaussian observations    1.128685  0.5880514   1.897609
+Precision for the Gaussian observations[2] 1.144966  0.6498227   1.870505
+Precision for the Gaussian observations[3] 1.097582  0.8662580   1.373371
+Precision for the Gaussian observations[4] 1.021726  0.8093557   1.271716
+Beta for beta.x                            2.075447  1.7019279   2.444794</code></pre>
 </div>
 </div>
 <p>The fixed effects can then be accessed through <code>model$summary.fixed</code>, whereas the posterior mean and sd for the coefficient of <span class="math inline">\(\boldsymbol{x}\)</span> can be accessed through <code>model$summary.hyperpar</code>, since <span class="math inline">\(\beta_x\)</span> is actually a hyperparameter of the model. In <code>model$summary.hyperpar</code> we also get the precision terms for each of the sub-models in the order they have been defined, so the first precision is <span class="math inline">\(\tau_y\)</span>, the second one <span class="math inline">\(\tau_{u_b}\)</span>, the third one <span class="math inline">\(\tau_{u_c}\)</span> and the final one is <span class="math inline">\(\tau_r\)</span>.</p>
