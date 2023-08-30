@@ -5,7 +5,7 @@ library(tidyverse)
 
 
 ## ----r------------------------------------------------------------------------
-inla.setOption(num.threads = "1:1")
+#inla.setOption(num.threads = "1:1")
 
 
 ## ----r------------------------------------------------------------------------
@@ -118,10 +118,10 @@ fit_model_ME <- function(data_matrix) {
   prior.alpha <- c(0, 1/10000) # N(0, 10^4)
   
   # Priors for y, measurement error and true x-value precision
-  prior.prec.y <- c(0.5, 0.5) # Gamma(0.5, 0.5)
-  prior.prec.u_b <- c(0.5, 0.5) # Gamma(0.5, 0.5)
-  prior.prec.u_c <- c(0.5, 0.5) # Gamma(0.5, 0.5)
-  prior.prec.r <- c(0.5, 0.5) # Gamma(0.5, 0.5)
+  prior.prec.y <- c(10, 9) # Gamma(10, 9)
+  prior.prec.u_b <- c(10, 9) # Gamma(10, 9)
+  prior.prec.u_c <- c(10, 9) # Gamma(10, 9)
+  prior.prec.r <- c(10, 9) # Gamma(10, 9)
   
   # Initial values
   prec.y <- 1
@@ -179,7 +179,7 @@ fit_model_naive_true <- function(data_matrix){
   prior.beta <- c(0, 1/1000) # N(0, 10^3)
 
   # Priors for y, measurement error and true x-value precision
-  prior.prec.y <- c(0.5, 0.5) # Gamma(0.5, 0.5)
+  prior.prec.y <- c(10, 9) # Gamma(10, 9)
   
   # Initial values
   prec.y <- 1

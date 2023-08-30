@@ -337,24 +337,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>formula.naive <span class="ot">&lt;-</span> <span class="fu">inla.surv</span>(t<span class="sc">/</span><span class="dv">10</span>, d) <span class="sc">~</span> sbp1 <span class="sc">+</span> sex <span class="sc">+</span> age <span class="sc">+</span> smoke <span class="sc">+</span> diabetes</span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>model_naive <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula.naive,</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">family =</span><span class="st">"weibullsurv"</span>,</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> ccdata,</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                    <span class="at">control.family =</span> <span class="fu">list</span>(<span class="fu">list</span>(<span class="at">variant =</span> <span class="dv">0</span>)))</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Naive model"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>model_naive <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula.naive,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">family =</span><span class="st">"weibullsurv"</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> ccdata,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>                    <span class="at">control.family =</span> <span class="fu">list</span>(<span class="fu">list</span>(<span class="at">variant =</span> <span class="dv">0</span>)))</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Naive model"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Naive model</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>model_naive<span class="sc">$</span>summary.fixed[<span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"0.025quant"</span>, <span class="st">"0.975quant"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                  mean  0.025quant 0.975quant
-(Intercept) -2.3611508 -2.55027441 -2.1786506
-sbp1         0.0852421  0.01318898  0.1560199
-sex          0.4872863  0.30313969  0.6759058
-age          0.8762591  0.76273395  0.9894474
-smoke        0.2621554  0.06417933  0.4554144
-diabetes     0.5032389  0.27969458  0.7178608</code></pre>
+<pre><code>                   mean  0.025quant 0.975quant
+(Intercept) -2.36410193 -2.55014306 -2.1782302
+sbp1         0.08463356  0.01324038  0.1560304
+sex          0.48931519  0.30295979  0.6756689
+age          0.87588494  0.76248797  0.9893941
+smoke        0.25996333  0.06437931  0.4555485
+diabetes     0.49923215  0.28017221  0.7182927</code></pre>
 </div>
 </div>
 </section>
@@ -451,54 +452,55 @@ diabetes     0.5032389  0.27969458  0.7178608</code></pre>
 </div>
 <p>The model is then fit.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula1, <span class="at">data =</span> mat1,</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">family =</span> <span class="fu">c</span>(<span class="st">"weibull.surv"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>),</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.family =</span> <span class="fu">list</span>(</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">alpha =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.exp,</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">initial =</span> <span class="fu">log</span>(exp.init),</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x),</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">param =</span> prior.prec.x,</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u),</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">param =</span> prior.prec.u,</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">fixed =</span> <span class="cn">FALSE</span>)))</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>                 ),</span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.predictor=</span><span class="fu">list</span>(<span class="at">link=</span><span class="dv">3</span>),</span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">scale =</span> Scale,</span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.fixed =</span> <span class="fu">list</span>(</span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>                   <span class="at">mean =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">1</span>],</span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.sex =</span> prior.beta[<span class="dv">1</span>],</span>
-<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.age =</span> prior.beta[<span class="dv">1</span>],</span>
-<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.smoke =</span> prior.beta[<span class="dv">1</span>],</span>
-<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.diabetes =</span> prior.beta[<span class="dv">1</span>],</span>
-<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">1</span>],</span>
-<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.sex =</span> prior.alpha[<span class="dv">1</span>],</span>
-<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.age =</span> prior.alpha[<span class="dv">1</span>],</span>
-<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.smoke =</span> prior.alpha[<span class="dv">1</span>],</span>
-<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.diabetes =</span> prior.alpha[<span class="dv">1</span>]),</span>
-<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>                   <span class="at">prec =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">2</span>],</span>
-<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.sex =</span> prior.beta[<span class="dv">2</span>],</span>
-<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.age =</span> prior.beta[<span class="dv">2</span>],</span>
-<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.smoke =</span> prior.beta[<span class="dv">2</span>],</span>
-<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.diabetes =</span> prior.beta[<span class="dv">2</span>],</span>
-<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">2</span>],</span>
-<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.sex =</span> prior.alpha[<span class="dv">2</span>],</span>
-<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.age =</span> prior.alpha[<span class="dv">2</span>],</span>
-<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.smoke =</span> prior.alpha[<span class="dv">2</span>],</span>
-<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.diabetes =</span> prior.alpha[<span class="dv">2</span>])))</span>
-<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a><span class="fu">view_relevant</span>(model1, <span class="st">"Repeated measurement"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula1, <span class="at">data =</span> mat1,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">family =</span> <span class="fu">c</span>(<span class="st">"weibull.surv"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>),</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.family =</span> <span class="fu">list</span>(</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">alpha =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.exp,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">initial =</span> <span class="fu">log</span>(exp.init),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x),</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">param =</span> prior.prec.x,</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u),</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">param =</span> prior.prec.u,</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">fixed =</span> <span class="cn">FALSE</span>)))</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>                 ),</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.predictor=</span><span class="fu">list</span>(<span class="at">link=</span><span class="dv">3</span>),</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>                 <span class="at">scale =</span> Scale,</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.fixed =</span> <span class="fu">list</span>(</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>                   <span class="at">mean =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.sex =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.age =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.smoke =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.diabetes =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.sex =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.age =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.smoke =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.diabetes =</span> prior.alpha[<span class="dv">1</span>]),</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>                   <span class="at">prec =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.sex =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.age =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.smoke =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.diabetes =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.sex =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.age =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.smoke =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.diabetes =</span> prior.alpha[<span class="dv">2</span>])))</span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a><span class="fu">view_relevant</span>(model1, <span class="st">"Repeated measurement"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Repeated measurement </code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                   mean 0.025quant 0.975quant
-beta.sbp      0.1121153 0.01386680  0.2082771
-beta.age      0.8716486 0.75627658  0.9866010
-beta.diabetes 0.5019704 0.27834125  0.7167173
-beta.sex      0.4903540 0.30615108  0.6789968
-beta.smoke    0.2631645 0.06519664  0.4564406</code></pre>
+beta.sbp      0.1123761 0.01573387  0.2096303
+beta.age      0.8710328 0.75575309  0.9861345
+beta.diabetes 0.4978007 0.27868432  0.7168916
+beta.sex      0.4921693 0.30584786  0.6785008
+beta.smoke    0.2607401 0.06522804  0.4562660</code></pre>
 </div>
 </div>
 </section>
@@ -567,54 +569,55 @@ beta.smoke    0.2631645 0.06519664  0.4564406</code></pre>
 </div>
 <p>The model is then fit.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>model_bloodpressure <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula2, <span class="at">data =</span> mat2,</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">family =</span> <span class="fu">c</span>(<span class="st">"weibull.surv"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>),</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.family =</span> <span class="fu">list</span>(</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">alpha =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.exp,</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">initial =</span> <span class="fu">log</span>(exp.init),</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x),</span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">param =</span> prior.prec.x,</span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u),</span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">param =</span> prior.prec.u,</span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">fixed =</span> <span class="cn">FALSE</span>)))</span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>                 ),</span>
-<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.predictor=</span><span class="fu">list</span>(<span class="at">link=</span><span class="dv">3</span>),</span>
-<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">scale =</span> Scale,</span>
-<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.fixed =</span> <span class="fu">list</span>(</span>
-<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>                   <span class="at">mean =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">1</span>],</span>
-<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.sex =</span> prior.beta[<span class="dv">1</span>],</span>
-<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.age =</span> prior.beta[<span class="dv">1</span>],</span>
-<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.smoke =</span> prior.beta[<span class="dv">1</span>],</span>
-<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.diabetes =</span> prior.beta[<span class="dv">1</span>],</span>
-<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">1</span>],</span>
-<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.sex =</span> prior.alpha[<span class="dv">1</span>],</span>
-<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.age =</span> prior.alpha[<span class="dv">1</span>],</span>
-<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.smoke =</span> prior.alpha[<span class="dv">1</span>],</span>
-<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.diabetes =</span> prior.alpha[<span class="dv">1</span>]),</span>
-<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>                   <span class="at">prec =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">2</span>],</span>
-<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.sex =</span> prior.beta[<span class="dv">2</span>],</span>
-<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.age =</span> prior.beta[<span class="dv">2</span>],</span>
-<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.smoke =</span> prior.beta[<span class="dv">2</span>],</span>
-<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.diabetes =</span> prior.beta[<span class="dv">2</span>],</span>
-<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">2</span>],</span>
-<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.sex =</span> prior.alpha[<span class="dv">2</span>],</span>
-<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.age =</span> prior.alpha[<span class="dv">2</span>],</span>
-<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.smoke =</span> prior.alpha[<span class="dv">2</span>],</span>
-<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.diabetes =</span> prior.alpha[<span class="dv">2</span>])))</span>
-<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a><span class="fu">view_relevant</span>(model_bloodpressure, <span class="st">"Repeated measurement"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>model_bloodpressure <span class="ot">&lt;-</span> <span class="fu">inla</span>(formula2, <span class="at">data =</span> mat2,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">family =</span> <span class="fu">c</span>(<span class="st">"weibull.surv"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>),</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.family =</span> <span class="fu">list</span>(</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">alpha =</span> <span class="fu">list</span>(<span class="at">param =</span> prior.exp,</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">initial =</span> <span class="fu">log</span>(exp.init),</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.x),</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">param =</span> prior.prec.x,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">fixed =</span> <span class="cn">FALSE</span>))),</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="fu">log</span>(prec.u),</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">param =</span> prior.prec.u,</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">fixed =</span> <span class="cn">FALSE</span>)))</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>                 ),</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.predictor=</span><span class="fu">list</span>(<span class="at">link=</span><span class="dv">3</span>),</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>                 <span class="at">scale =</span> Scale,</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.fixed =</span> <span class="fu">list</span>(</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>                   <span class="at">mean =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.sex =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.age =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.smoke =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.diabetes =</span> prior.beta[<span class="dv">1</span>],</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.sex =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.age =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.smoke =</span> prior.alpha[<span class="dv">1</span>],</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.diabetes =</span> prior.alpha[<span class="dv">1</span>]),</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>                   <span class="at">prec =</span> <span class="fu">list</span>(<span class="at">beta.0 =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.sex =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.age =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.smoke =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>                               <span class="at">beta.diabetes =</span> prior.beta[<span class="dv">2</span>],</span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.0 =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.sex =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.age =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.smoke =</span> prior.alpha[<span class="dv">2</span>],</span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>                               <span class="at">alpha.diabetes =</span> prior.alpha[<span class="dv">2</span>])))</span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a><span class="fu">view_relevant</span>(model_bloodpressure, <span class="st">"Repeated measurement"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Repeated measurement </code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                   mean 0.025quant 0.975quant
-beta.sbp      0.1143296 0.01809562  0.2098860
-beta.age      0.9062324 0.80813899  1.0039959
-beta.diabetes 0.5949565 0.40939702  0.7746122
-beta.sex      0.4443801 0.29083679  0.6006210
-beta.smoke    0.2717879 0.10401999  0.4363125</code></pre>
+beta.sbp      0.1126364 0.01618257  0.2066256
+beta.age      0.9042129 0.80623731  1.0023738
+beta.diabetes 0.5913641 0.40869941  0.7740074
+beta.sex      0.4451584 0.29027300  0.6000667
+beta.smoke    0.2696819 0.10353073  0.4358463</code></pre>
 </div>
 </div>
 </section>
@@ -626,35 +629,35 @@ beta.smoke    0.2717879 0.10401999  0.4363125</code></pre>
 <pre><code>Naive model</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                  mean  0.025quant 0.975quant
-(Intercept) -2.3611508 -2.55027441 -2.1786506
-sbp1         0.0852421  0.01318898  0.1560199
-sex          0.4872863  0.30313969  0.6759058
-age          0.8762591  0.76273395  0.9894474
-smoke        0.2621554  0.06417933  0.4554144
-diabetes     0.5032389  0.27969458  0.7178608</code></pre>
+<pre><code>                   mean  0.025quant 0.975quant
+(Intercept) -2.36410193 -2.55014306 -2.1782302
+sbp1         0.08463356  0.01324038  0.1560304
+sex          0.48931519  0.30295979  0.6756689
+age          0.87588494  0.76248797  0.9893941
+smoke        0.25996333  0.06437931  0.4555485
+diabetes     0.49923215  0.28017221  0.7182927</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Adjusts for ME, but only complete cases for SBP1 </code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                   mean 0.025quant 0.975quant
-beta.sbp      0.1121153 0.01386680  0.2082771
-beta.age      0.8716486 0.75627658  0.9866010
-beta.diabetes 0.5019704 0.27834125  0.7167173
-beta.sex      0.4903540 0.30615108  0.6789968
-beta.smoke    0.2631645 0.06519664  0.4564406</code></pre>
+beta.sbp      0.1123761 0.01573387  0.2096303
+beta.age      0.8710328 0.75575309  0.9861345
+beta.diabetes 0.4978007 0.27868432  0.7168916
+beta.sex      0.4921693 0.30584786  0.6785008
+beta.smoke    0.2607401 0.06522804  0.4562660</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Missingness in both SBP measurements (only complete cases of smoking) </code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                   mean 0.025quant 0.975quant
-beta.sbp      0.1143296 0.01809562  0.2098860
-beta.age      0.9062324 0.80813899  1.0039959
-beta.diabetes 0.5949565 0.40939702  0.7746122
-beta.sex      0.4443801 0.29083679  0.6006210
-beta.smoke    0.2717879 0.10401999  0.4363125</code></pre>
+beta.sbp      0.1126364 0.01618257  0.2066256
+beta.age      0.9042129 0.80623731  1.0023738
+beta.diabetes 0.5913641 0.40869941  0.7740074
+beta.sex      0.4451584 0.29027300  0.6000667
+beta.smoke    0.2696819 0.10353073  0.4358463</code></pre>
 </div>
 </div>
 <div class="cell" data-fig.showtext="true">

@@ -43,6 +43,7 @@ head(ccdata)
 
 formula.naive <- inla.surv(t/10, d) ~ sbp1 + sex + age + smoke + diabetes
 
+set.seed(1)
 model_naive <- inla(formula.naive,
                     family ="weibullsurv",
                     data = ccdata,
@@ -136,6 +137,7 @@ formula1 <- Y ~ beta.0 - 1 +
 
 
 ## ----r------------------------------------------------------------------------
+set.seed(1)
 model1 <- inla(formula1, data = mat1,
                  family = c("weibull.surv", "gaussian", "gaussian"),
                  control.family = list(
@@ -237,6 +239,7 @@ formula2 <- Y ~ beta.0 - 1 +
 
 
 ## ----r------------------------------------------------------------------------
+set.seed(1)
 model_bloodpressure <- inla(formula2, data = mat2,
                  family = c("weibull.surv", "gaussian", "gaussian"),
                  control.family = list(
