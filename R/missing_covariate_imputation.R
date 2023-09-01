@@ -88,6 +88,7 @@ Scale <- c(rep(1, n), rep(10^12, n), rep(1, n))
 
 
 ## ----r------------------------------------------------------------------------
+set.seed(1)
 model_missing1 <- inla(formula, data = dd, scale = Scale, offset = log(dat$pop),
                      family = c("gaussian", "gaussian", "gaussian"),
                      control.family = list(
@@ -190,6 +191,7 @@ Scale <- c(rep(1, n), rep(10^12, n), rep(1, n))
 
 
 ## ----r------------------------------------------------------------------------
+set.seed(1)
 model_missing2 <- inla(formula, data = dd, scale = Scale,
                      family = c("gaussian", "gaussian", "gaussian"),
                      control.family = list(

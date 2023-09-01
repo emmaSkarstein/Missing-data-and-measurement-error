@@ -585,21 +585,21 @@ z_n \\
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>fixed[<span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"0.025quant"</span>, <span class="st">"0.975quant"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>             mean 0.025quant 0.975quant
-beta.0  0.8756918  0.4616193   1.289751
-beta.z  1.8198743  1.1043619   2.532432
-alpha.0 1.0053009  0.9124957   1.098115
-alpha.z 1.9876663  1.8917445   2.083621</code></pre>
+beta.0  0.8998756  0.4776995   1.314176
+beta.z  1.8725735  1.1416468   2.630045
+alpha.0 1.0053010  0.9124819   1.098130
+alpha.z 1.9876665  1.8917313   2.083639</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of random effects:</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>hyper <span class="ot">&lt;-</span> model_sim<span class="sc">$</span>summary.hyperpar[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>hyper[<span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"0.025quant"</span>, <span class="st">"0.975quant"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                                               mean 0.025quant 0.975quant
-Precision for the Gaussian observations    1.128685  0.5880514   1.897609
-Precision for the Gaussian observations[2] 1.144966  0.6498227   1.870505
-Precision for the Gaussian observations[3] 1.097582  0.8662580   1.373371
-Precision for the Gaussian observations[4] 1.021726  0.8093557   1.271716
-Beta for beta.x                            2.075447  1.7019279   2.444794</code></pre>
+Precision for the Gaussian observations    1.138481  0.5754676   1.974405
+Precision for the Gaussian observations[2] 1.110389  0.6546450   1.809842
+Precision for the Gaussian observations[3] 1.111414  0.8559788   1.409087
+Precision for the Gaussian observations[4] 1.008175  0.8036644   1.256288
+Beta for beta.x                            2.054708  1.7038111   2.420799</code></pre>
 </div>
 </div>
 <p>The fixed effects can then be accessed through <code>model$summary.fixed</code>, whereas the posterior mean and sd for the coefficient of <span class="math inline">\(\boldsymbol{x}\)</span> can be accessed through <code>model$summary.hyperpar</code>, since <span class="math inline">\(\beta_x\)</span> is actually a hyperparameter of the model. In <code>model$summary.hyperpar</code> we also get the precision terms for each of the sub-models in the order they have been defined, so the first precision is <span class="math inline">\(\tau_y\)</span>, the second one <span class="math inline">\(\tau_{u_b}\)</span>, the third one <span class="math inline">\(\tau_{u_c}\)</span> and the final one is <span class="math inline">\(\tau_r\)</span>.</p>

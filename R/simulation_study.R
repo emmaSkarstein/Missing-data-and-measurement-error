@@ -1,11 +1,10 @@
 ## ----r------------------------------------------------------------------------
 library(INLA)
-library(inlabru)
 library(tidyverse)
 
 
 ## ----r------------------------------------------------------------------------
-#inla.setOption(num.threads = "1:1")
+inla.setOption(num.threads = "1:1")
 
 
 ## ----r------------------------------------------------------------------------
@@ -224,7 +223,6 @@ names(results_naive) <- c("beta.0", "beta.x", "beta.z")
 
 results_true <- data.frame(matrix(NA, nrow=niter, ncol=3))
 names(results_true) <- c("beta.0", "beta.x", "beta.z")
-
 
 for(i in 1:niter){
   n <- 1000

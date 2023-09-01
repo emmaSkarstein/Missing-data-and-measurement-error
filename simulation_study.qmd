@@ -16,13 +16,12 @@ knitr::purl(input = "simulation_study.qmd",
 
 ```{r}
 library(INLA)
-library(inlabru)
 library(tidyverse)
 ```
 
 ```{r}
 #| echo: false
-#inla.setOption(num.threads = "1:1")
+inla.setOption(num.threads = "1:1")
 ```
 
 In the vignette [Simulation example](Simulation_example.qmd), we simulate a single data set with Berkson error, classical error and missing data, and then fit a measurement error model to adjust for these errors. In this simulation study, we do the exact same steps, but repeated on 100 simulated data sets instead of just one, to ensure that the results are not an artifact of one particular data set. This vignette consists of mostly just code, for detailed explanations on the steps taken in the analysis, please refer to [Simulation example](Simulation_example.qmd).

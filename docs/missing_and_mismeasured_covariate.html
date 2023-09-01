@@ -349,13 +349,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>model_naive<span class="sc">$</span>summary.fixed[<span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"0.025quant"</span>, <span class="st">"0.975quant"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                   mean  0.025quant 0.975quant
-(Intercept) -2.36410194 -2.55014306 -2.1782302
-sbp1         0.08463356  0.01324038  0.1560304
-sex          0.48931519  0.30295979  0.6756689
-age          0.87588494  0.76248797  0.9893941
-smoke        0.25996333  0.06437931  0.4555485
-diabetes     0.49923216  0.28017222  0.7182927</code></pre>
+<pre><code>                  mean  0.025quant 0.975quant
+(Intercept) -2.3611508 -2.55027441 -2.1786506
+sbp1         0.0852421  0.01318898  0.1560199
+sex          0.4872863  0.30313969  0.6759058
+age          0.8762591  0.76273395  0.9894474
+smoke        0.2621554  0.06417933  0.4554144
+diabetes     0.5032389  0.27969458  0.7178608</code></pre>
 </div>
 </div>
 </section>
@@ -496,11 +496,11 @@ diabetes     0.49923216  0.28017222  0.7182927</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                   mean 0.025quant 0.975quant
-beta.sbp      0.1123761 0.01573371  0.2096301
-beta.age      0.8710324 0.75575281  0.9861341
-beta.diabetes 0.4978006 0.27868418  0.7168915
-beta.sex      0.4921692 0.30584778  0.6785007
-beta.smoke    0.2607400 0.06522794  0.4562659</code></pre>
+beta.sbp      0.1121153 0.01386680  0.2082771
+beta.age      0.8716486 0.75627658  0.9866010
+beta.diabetes 0.5019704 0.27834125  0.7167173
+beta.sex      0.4903540 0.30615108  0.6789968
+beta.smoke    0.2631645 0.06519664  0.4564406</code></pre>
 </div>
 </div>
 </section>
@@ -613,11 +613,11 @@ beta.smoke    0.2607400 0.06522794  0.4562659</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                   mean 0.025quant 0.975quant
-beta.sbp      0.1126364 0.01618241  0.2066255
-beta.age      0.9042127 0.80623704  1.0023736
-beta.diabetes 0.5913640 0.40869929  0.7740073
-beta.sex      0.4451584 0.29027294  0.6000666
-beta.smoke    0.2696818 0.10353066  0.4358462</code></pre>
+beta.sbp      0.1143296 0.01809562  0.2098860
+beta.age      0.9062324 0.80813899  1.0039959
+beta.diabetes 0.5949565 0.40939702  0.7746122
+beta.sex      0.4443801 0.29083679  0.6006210
+beta.smoke    0.2717879 0.10401999  0.4363125</code></pre>
 </div>
 </div>
 </section>
@@ -629,35 +629,35 @@ beta.smoke    0.2696818 0.10353066  0.4358462</code></pre>
 <pre><code>Naive model</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                   mean  0.025quant 0.975quant
-(Intercept) -2.36410194 -2.55014306 -2.1782302
-sbp1         0.08463356  0.01324038  0.1560304
-sex          0.48931519  0.30295979  0.6756689
-age          0.87588494  0.76248797  0.9893941
-smoke        0.25996333  0.06437931  0.4555485
-diabetes     0.49923216  0.28017222  0.7182927</code></pre>
+<pre><code>                  mean  0.025quant 0.975quant
+(Intercept) -2.3611508 -2.55027441 -2.1786506
+sbp1         0.0852421  0.01318898  0.1560199
+sex          0.4872863  0.30313969  0.6759058
+age          0.8762591  0.76273395  0.9894474
+smoke        0.2621554  0.06417933  0.4554144
+diabetes     0.5032389  0.27969458  0.7178608</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Adjusts for ME, but only complete cases for SBP1 </code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                   mean 0.025quant 0.975quant
-beta.sbp      0.1123761 0.01573371  0.2096301
-beta.age      0.8710324 0.75575281  0.9861341
-beta.diabetes 0.4978006 0.27868418  0.7168915
-beta.sex      0.4921692 0.30584778  0.6785007
-beta.smoke    0.2607400 0.06522794  0.4562659</code></pre>
+beta.sbp      0.1121153 0.01386680  0.2082771
+beta.age      0.8716486 0.75627658  0.9866010
+beta.diabetes 0.5019704 0.27834125  0.7167173
+beta.sex      0.4903540 0.30615108  0.6789968
+beta.smoke    0.2631645 0.06519664  0.4564406</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Missingness in both SBP measurements (only complete cases of smoking) </code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                   mean 0.025quant 0.975quant
-beta.sbp      0.1126364 0.01618241  0.2066255
-beta.age      0.9042127 0.80623704  1.0023736
-beta.diabetes 0.5913640 0.40869929  0.7740073
-beta.sex      0.4451584 0.29027294  0.6000666
-beta.smoke    0.2696818 0.10353066  0.4358462</code></pre>
+beta.sbp      0.1143296 0.01809562  0.2098860
+beta.age      0.9062324 0.80813899  1.0039959
+beta.diabetes 0.5949565 0.40939702  0.7746122
+beta.sex      0.4443801 0.29083679  0.6006210
+beta.smoke    0.2717879 0.10401999  0.4363125</code></pre>
 </div>
 </div>
 <div class="cell" data-fig.showtext="true">
