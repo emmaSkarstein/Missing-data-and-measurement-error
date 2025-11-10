@@ -21,6 +21,7 @@ As noted in the paper, the `nhanes2` data set is really small, it only has 25 ob
 
 ```{r}
 #| message: false
+#| warning: false
 library(mice)       # Just used for the nhanes2 data set
 library(INLA)       # INLA modelling
 library(dplyr)      # Data wrangling of the results
@@ -132,14 +133,14 @@ formula = Y ~ - 1 + beta.0 + beta.age2 + beta.age3 +
 
 Since we are not assuming any measurement error here, we need to "turn off" the error model by scaling the error precision to be very large (it makes no difference if we scale the precision only for the observed values or for the observed and missing values).
 ```{r}
-Scale <- c(rep(1, n), rep(10^12, n), rep(1, n))
+Scale <- c(rep(1, n), rep(10^8, n), rep(1, n))
 ```
 
 ### Fitting the model
 
 ```{r}
 set.seed(1)
-model_missing1 <- inla(formula, data = dd, scale = Scale, offset = log(dat$pop),
+model_missing1 <- inla(formula, data = dd, scale = Scale, offset = offset.imp,
                      family = c("gaussian", "gaussian", "gaussian"),
                      control.family = list(
                        list(hyper = list(prec = list(initial = log(prec.y), 
@@ -258,7 +259,7 @@ formula = Y ~ - 1 + beta.0 + beta.age2 + beta.age3 +
 
 Since we are (again) not assuming any measurement error here, we need to "turn off" the error model by scaling the error precision to be very large (it makes no difference if we scale the precision only for the observed values or for the observed and missing values).
 ```{r}
-Scale <- c(rep(1, n), rep(10^12, n), rep(1, n))
+Scale <- c(rep(1, n), rep(10^8, n), rep(1, n))
 ```
 
 ### Fitting the model
